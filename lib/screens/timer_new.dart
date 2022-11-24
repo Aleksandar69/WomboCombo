@@ -4,6 +4,7 @@ import '../widgets/timer_button.dart';
 import '../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:is_lock_screen/is_lock_screen.dart';
 
 class TimerNew extends StatefulWidget {
   static const routeName = 'timer-new';
@@ -11,7 +12,7 @@ class TimerNew extends StatefulWidget {
   _TimerNewState createState() => _TimerNewState();
 }
 
-class _TimerNewState extends State<TimerNew> {
+class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   static var maxSeconds = 60;
   late int secs = maxSeconds;
   Timer? timer;
@@ -21,20 +22,32 @@ class _TimerNewState extends State<TimerNew> {
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
 
+  var isRunning = false;
+
   var started = false;
-  final player = AudioPlayer();
+  final playerBeep = AudioPlayer();
+  final playerRing = AudioPlayer();
   // late var firstBeep = getBeepOne();
   // late var secondBeep = getBeepTwo();
   // late var playBeepOneTest = playBeepOne();
 
   void playBell() async {
-    return await player.play(AssetSource('sounds/bell.mp3'), volume: 1);
+    return await playerBeep.play(AssetSource('sounds/bell.mp3'), volume: 1);
   }
 
   void playBeep() async {
-    return await player.play(AssetSource('sounds/beep-0.mp3'), volume: 0.2);
+    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
   }
 
+  void playerSetSource() async {
+    await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
+    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+  }
+
+  void stopBeeps() async {
+    await playerBeep.stop();
+    await playerRing.stop();
+  }
 
   @override
   void didChangeDependencies() {
@@ -49,14 +62,43 @@ class _TimerNewState extends State<TimerNew> {
     maxSeconds = totalDuration;
     secs = maxSeconds;
     rounds = maxRounds;
+    playerSetSource();
     startTimer();
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
-    timer!.cancel();
+    stopBeeps();
+    stopTimer();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+//bool? result = await isLockScreen();
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.inactive) {
+      stopBeeps();
+      stopTimer();
+    } else if (state == AppLifecycleState.resumed) {
+      print('app resumed');
+    } else if (state == AppLifecycleState.paused) {
+      stopBeeps();
+      stopTimer();
+    } else if (state == AppLifecycleState.detached) {
+      stopBeeps();
+      stopTimer();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    playerSetSource();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void resetTimer() {
@@ -80,6 +122,9 @@ class _TimerNewState extends State<TimerNew> {
   }
 
   void stopTimer({bool reset = false, resetAndStart = false}) {
+    setState(() {
+      isRunning = false;
+    });
     setState(() => timer?.cancel());
     if (reset) {
       resetTimer();
@@ -90,6 +135,9 @@ class _TimerNewState extends State<TimerNew> {
   }
 
   void startTimer({bool reset = false}) {
+    setState(() {
+      isRunning = true;
+    });
     if (reset) {
       resetTimer();
     }
@@ -104,7 +152,7 @@ class _TimerNewState extends State<TimerNew> {
         }
       }
       if (secs > 0) {
-        var initialBeep = maxSeconds-3;
+        var initialBeep = maxSeconds - 3;
         if (secs == initialBeep) {
           playBell();
         }
@@ -144,7 +192,7 @@ class _TimerNewState extends State<TimerNew> {
       );
 
   Widget buildButtons() {
-    final isRunning = timer == null ? false : timer!.isActive;
+    final isActive = timer == null ? false : timer!.isActive;
     final isCompleted = secs == maxSeconds || secs == 0;
 
     return Column(
@@ -153,10 +201,10 @@ class _TimerNewState extends State<TimerNew> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(width: 12),
-            isRunning || !isCompleted
+            isActive || !isCompleted
                 ? RawMaterialButton(
                     onPressed: () {
-                      if (isRunning) {
+                      if (isActive) {
                         stopTimer(reset: false);
                       } else {
                         startTimer(reset: false);
@@ -178,10 +226,10 @@ class _TimerNewState extends State<TimerNew> {
                   )
                 : RawMaterialButton(
                     onPressed: () {
-                      if (isRunning) {
+                      if (isActive) {
                         stopTimer(reset: false);
                       } else {
-                        startTimer(reset: true);
+                        startTimer();
                       }
                     },
                     elevation: 2.0,

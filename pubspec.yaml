@@ -26,6 +26,8 @@ dependencies:
   provider: ^4.0.0
   wheel_chooser: ^1.0.0
   audioplayers: ^1.1.1
+  is_lock_screen: ^2.0.0
+  flutter_ringtone_player: ^3.2.0
   
 
 
