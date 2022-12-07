@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import '../widgets/timer_button.dart';
-import '../widgets/gradient.dart';
+import '../../widgets/buttons/timer_button.dart';
+import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:is_lock_screen/is_lock_screen.dart';

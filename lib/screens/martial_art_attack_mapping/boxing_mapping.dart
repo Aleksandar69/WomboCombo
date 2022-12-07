@@ -5,8 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
-import 'package:wombocombo/widgets/attack_list_item.dart';
-import 'package:wombocombo/widgets/attack_list_item_row.dart';
+import 'package:wombocombo/widgets/list_builders/attack_list_item_row.dart';
 
 class BoxingMapping extends StatefulWidget {
   static const routeName = '/boxing-mapping';

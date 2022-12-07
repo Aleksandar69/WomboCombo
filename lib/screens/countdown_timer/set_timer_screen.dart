@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wombocombo/screens/coundown_timer_new.dart';
-import 'package:wombocombo/screens/coundown_timer_screen.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
-import 'package:wombocombo/screens/timer_new.dart';
+import './timer_new.dart';
 
 class SetTimeScreen extends StatelessWidget {
   static const routeName = '/settimer';

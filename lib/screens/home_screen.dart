@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wombocombo/screens/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos_screen.dart';
-import 'package:wombocombo/screens/coundown_timer_new.dart';
 import 'package:wombocombo/screens/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/quick_combos_screen.dart';
-import 'package:wombocombo/screens/coundown_timer_screen.dart';
-import 'package:wombocombo/screens/set_timer_screen.dart';
-import 'package:wombocombo/screens/timer_new.dart';
+import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
+import 'package:wombocombo/screens/countdown_timer/timer_new.dart';
 
 class HomeScreen extends StatelessWidget {
   var menuItems = [
