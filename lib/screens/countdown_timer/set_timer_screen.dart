@@ -98,12 +98,6 @@ class SetTimeScreen extends StatelessWidget {
               TimerNew.routeName,
               arguments: [_hoursController.selectedItem, _minutesController.selectedItem, _secondsController.selectedItem, _roundsController.selectedItem] 
             ),
-          //  onPressed: () => CountdownTimerScreen(
-          //     _hoursController.selectedItem,
-          //     _minutesController.selectedItem,
-          //     _secondsController.selectedItem,
-          //     _roundsController.selectedItem,
-          //   ),
             elevation: 2.0,
             fillColor: Colors.white,
             child: Icon(
