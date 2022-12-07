@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wombocombo/screens/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos_screen.dart';
+import 'package:wombocombo/screens/coundown_timer_new.dart';
 import 'package:wombocombo/screens/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/quick_combos_screen.dart';
 import 'package:wombocombo/screens/coundown_timer_screen.dart';
@@ -29,7 +31,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () =>
-                    Navigator.of(context).pushNamed(QuickCombosScreen.routeName),
+                    Navigator.of(context).pushNamed(ChooseMartialArt.routeName),
                 child: Container(
                   height: 100,
                   child: Card(
