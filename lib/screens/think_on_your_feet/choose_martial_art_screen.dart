@@ -2,9 +2,9 @@ import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
-import 'package:wombocombo/screens/martial_art_attack_mapping/boxing_mapping.dart';
-import 'package:wombocombo/screens/martial_art_attack_mapping/kickboxing_mapping.dart';
-import 'package:wombocombo/screens/martial_art_attack_mapping/muay_thai_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/boxing_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/kickboxing_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/muay_thai_mapping.dart';
 
 class ChooseMartialArt extends StatelessWidget {
   static const routeName = '/choose-martialart';

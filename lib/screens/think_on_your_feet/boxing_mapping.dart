@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/widgets/list_builders/attack_list_item_row.dart';
 
 class BoxingMapping extends StatefulWidget {
@@ -22,15 +23,15 @@ class _BoxingMappingState extends State<BoxingMapping> {
         Provider.of<BoxingAttacksProvider>(context, listen: false).attacks;
 
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.black,
         extendedPadding: EdgeInsets.all(100),
         elevation: 12,
         onPressed: () {
-          
+          Navigator.of(context).pushNamed(SetTimeScreen.routeName);
         },
-        label: const Text('Start'),
+        label: const Text('Next'),
         icon: const Icon(Icons.play_arrow),
       ),
       body: ListView.builder(
