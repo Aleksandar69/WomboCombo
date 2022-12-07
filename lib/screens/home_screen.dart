@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wombocombo/screens/choose_martial_art_screen.dart';
+import 'package:wombocombo/screens/martial_art_attack_mapping/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos_screen.dart';
 import 'package:wombocombo/screens/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/quick_combos_screen.dart';
