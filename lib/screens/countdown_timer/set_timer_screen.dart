@@ -2,13 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import './timer_new.dart';
 
-class SetTimeScreen extends StatelessWidget {
+class SetTimeScreen extends StatefulWidget {
   static const routeName = '/settimer';
 
+  @override
+  State<SetTimeScreen> createState() => _SetTimeScreenState();
+}
+
+class _SetTimeScreenState extends State<SetTimeScreen> {
   final _secondsController = FixedExtentScrollController(initialItem: 1);
   final _minutesController = FixedExtentScrollController(initialItem: 0);
   final _hoursController = FixedExtentScrollController(initialItem: 0);
   final _roundsController = FixedExtentScrollController(initialItem: 2);
+  late final previousScreen;
+
+  @override
+  void didChangeDependencies() {
+    previousScreen =
+        ModalRoute.of(context)!.settings.arguments as String;
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,10 +108,14 @@ class SetTimeScreen extends StatelessWidget {
             ),
           ),
           RawMaterialButton(
-            onPressed: () => Navigator.of(context).pushNamed(
-              TimerNew.routeName,
-              arguments: [_hoursController.selectedItem, _minutesController.selectedItem, _secondsController.selectedItem, _roundsController.selectedItem] 
-            ),
+            onPressed: () =>
+                Navigator.of(context).pushNamed(TimerNew.routeName, arguments: [
+              _hoursController.selectedItem,
+              _minutesController.selectedItem,
+              _secondsController.selectedItem,
+              _roundsController.selectedItem,
+              previousScreen
+            ]),
             elevation: 2.0,
             fillColor: Colors.white,
             child: Icon(

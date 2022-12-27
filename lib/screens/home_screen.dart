@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wombocombo/screens/speechscreanstest/otherscreen.dart';
+import 'package:wombocombo/screens/speechscreanstest/ttsscreen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
@@ -41,7 +43,7 @@ class HomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () =>
-                    Navigator.of(context).pushNamed(MakeYourComboScreen.routeName),
+                    Navigator.of(context).pushNamed(OtherScreen.routeName),
                 child: Container(
                   height: 100,
                   child: Card(
@@ -53,7 +55,7 @@ class HomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () =>
-                    Navigator.of(context).pushNamed(CombosScreen.routeName),
+                    Navigator.of(context).pushNamed(TtsScreen.routeName),
                 child: Container(
                   height: 100,
                   child: Card(
@@ -67,7 +69,7 @@ class HomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () =>
-                    Navigator.of(context).pushNamed(SetTimeScreen.routeName),
+                    Navigator.of(context).pushNamed(SetTimeScreen.routeName, arguments: 'fromHomeScreen'),
                 child: Container(
                   height: 100,
                   child: Card(

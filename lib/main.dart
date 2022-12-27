@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/screens/speechscreanstest/otherscreen.dart';
+import 'package:wombocombo/screens/speechscreanstest/ttsscreen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
@@ -43,6 +45,9 @@ class MyApp extends StatelessWidget {
               BoxingMapping.routeName: (context) => BoxingMapping(),
               MuayThaiMapping.routeName: (context) => MuayThaiMapping(),
               KickBoxingMapping.routeName: (context) => KickBoxingMapping(),
+              TtsScreen.routeName: (context) => TtsScreen(),
+              OtherScreen.routeName: (context) => OtherScreen(),
+
             }));
   }
 }

@@ -16,7 +16,6 @@ class BoxingMapping extends StatefulWidget {
 }
 
 class _BoxingMappingState extends State<BoxingMapping> {
-  // final List<BoxingAttack> boxingAttacks = [
   @override
   Widget build(BuildContext context) {
     final attacks =
@@ -26,10 +25,10 @@ class _BoxingMappingState extends State<BoxingMapping> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.black,
-        extendedPadding: EdgeInsets.all(100),
+        extendedPadding: EdgeInsets.all(25),
         elevation: 12,
         onPressed: () {
-          Navigator.of(context).pushNamed(SetTimeScreen.routeName);
+          Navigator.of(context).pushNamed(SetTimeScreen.routeName, arguments: 'fromQuickCombos');
         },
         label: const Text('Next'),
         icon: const Icon(Icons.play_arrow),

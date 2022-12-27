@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:math';
+
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../widgets/buttons/timer_button.dart';
 import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:is_lock_screen/is_lock_screen.dart';
+import 'package:text_to_speech/text_to_speech.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 
 class TimerNew extends StatefulWidget {
   static const routeName = 'timer-new';
@@ -12,24 +16,43 @@ class TimerNew extends StatefulWidget {
   _TimerNewState createState() => _TimerNewState();
 }
 
+enum TtsState { playing, stopped, paused, continued }
+
 class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
+  var terms = ['2 4 3', '1 2 3 4', '1 1 5'];
+  late FlutterTts flutterTts;
+  String? language = 'en_US';
+  String? engine = 'com.google.android.tts';
+  double volume = 0.5;
+  double pitch = 1.0;
+  double rate = 0.5;
+
   static var maxSeconds = 60;
   late int secs = maxSeconds;
   Timer? timer;
+  Timer? timerSpeak;
+
   int maxRounds = 0;
   late int rounds = maxRounds;
   var currentRound = 1;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
+  late final previousScreen;
+  TtsState ttsState = TtsState.stopped;
+  var futureTimerHasEnded = true;
+
+  var currentTermToPrint = 'READY';
+
+  get isPlaying => ttsState == TtsState.playing;
+  get isStopped => ttsState == TtsState.stopped;
+  get isPaused => ttsState == TtsState.paused;
+  get isContinued => ttsState == TtsState.continued;
 
   var isRunning = false;
 
   var started = false;
   final playerBeep = AudioPlayer();
   final playerRing = AudioPlayer();
-  // late var firstBeep = getBeepOne();
-  // late var secondBeep = getBeepTwo();
-  // late var playBeepOneTest = playBeepOne();
 
   void playBell() async {
     return await playerBeep.play(AssetSource('sounds/bell.mp3'), volume: 1);
@@ -57,6 +80,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     final mnts = countdownTimerStuff[1];
     final scnds = countdownTimerStuff[2];
     final rnds = countdownTimerStuff[3];
+    previousScreen = countdownTimerStuff[4] as String;
     final totalDuration = scnds + (mnts * 60) + (hrs * 3600) + 3;
     maxRounds = rnds;
     maxSeconds = totalDuration;
@@ -74,8 +98,6 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
-
-//bool? result = await isLockScreen();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
@@ -98,7 +120,62 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     playerSetSource();
+    initTts();
     WidgetsBinding.instance.addObserver(this);
+  }
+
+  initTts() async {
+    flutterTts = FlutterTts();
+    await flutterTts.setLanguage(language!);
+    await flutterTts.setEngine(engine!);
+
+    _setAwaitOptions();
+
+    flutterTts.setStartHandler(() {
+      setState(() {
+        print("Playing");
+        ttsState = TtsState.playing;
+      });
+    });
+
+    flutterTts.setCompletionHandler(() {
+      setState(() {
+        print("Complete");
+        ttsState = TtsState.stopped;
+      });
+    });
+
+    flutterTts.setCancelHandler(() {
+      setState(() {
+        print("Cancel");
+        ttsState = TtsState.stopped;
+      });
+    });
+
+    flutterTts.setPauseHandler(() {
+      setState(() {
+        print("Paused");
+        ttsState = TtsState.paused;
+      });
+    });
+
+    flutterTts.setContinueHandler(() {
+      setState(() {
+        print("Continued");
+        ttsState = TtsState.continued;
+      });
+    });
+
+    flutterTts.setErrorHandler((msg) {
+      setState(() {
+        print("error: $msg");
+        ttsState = TtsState.stopped;
+      });
+    });
+  }
+
+  Future _setAwaitOptions() async {
+    await flutterTts.awaitSpeakCompletion(true);
   }
 
   void resetTimer() {
@@ -110,6 +187,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
       secs = maxSeconds;
     });
     stopTimer();
+    timerAttacks?.cancel();
+    _stop();
   }
 
   void resetAndStartTimer() {
@@ -118,6 +197,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
       initialCountdown = initialCountdownMax;
       secs = maxSeconds;
     });
+    _stop();
+    timerAttacks?.cancel();
     startTimer();
   }
 
@@ -141,20 +222,36 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     if (reset) {
       resetTimer();
     }
-
     timer = Timer.periodic(Duration(seconds: 1), (_) {
+      print('in timer 1');
       if (started == false) {
         if (initialCountdown > 0) {
+          print('cd tz timer ended');
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
           playBeep();
           setState(() => initialCountdown--);
         } else {
           setState(() => started = true);
         }
+
+        if (maxSeconds - secs == 1) {
+          print('cd tz timer ended');
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
+        }
       }
       if (secs > 0) {
         var initialBeep = maxSeconds - 3;
         if (secs == initialBeep) {
+          print('cd tz timer ended');
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
           playBell();
+        }
+        if (secs < initialBeep && futureTimerHasEnded == true) {
+          print('tz timer called');
+          startSpeakTimer();
         }
         setState(() => secs = secs - 1);
       } else {
@@ -168,6 +265,51 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         }
       }
     });
+  }
+
+  Future _speak() async {
+    await flutterTts.speak(currentTermToPrint);
+  }
+
+  Future _stop() async {
+    await flutterTts.stop();
+  }
+
+  Timer? timerAttacks;
+
+  void startSpeakTimer() {
+    // print('startspeakertimer before delayed: ' +
+    //     currentTermToPrint +
+    //     ' ' +
+    //     DateTime.now().millisecondsSinceEpoch.toString());
+    // Future.delayed(const Duration(seconds: 5), () {
+    //   print('5 second has passed speak'); // Prints after 1 second.
+    //   currentTermToPrint = currentTerms;
+    //   _speak();
+    //   print('startspeakertimer after delayed _speak(): ' +
+    //       currentTermToPrint +
+    //       ' ' +
+    //       DateTime.now().millisecondsSinceEpoch.toString());
+    //   futureTimerHasEnded = true;
+    // });
+    futureTimerHasEnded = false;
+    print('tz in timer');
+    timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+      print('tz timer started');
+      var rng = Random();
+      var currentTerms = terms[rng.nextInt(2)].toString();
+      currentTermToPrint = currentTerms;
+      _speak();
+      futureTimerHasEnded = true;
+      timerAttacks?.cancel();
+      print('tz timer ended');
+    });
+
+    // timerAttacks = Timer(Duration(seconds: 5), () {
+    //   currentTermToPrint = currentTerms;
+    //   _speak();
+    //   futureTimerHasEnded = true;
+    // });
   }
 
   @override
@@ -208,6 +350,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                         stopTimer(reset: false);
                       } else {
                         startTimer(reset: false);
+                        startSpeakTimer();
+                        print('StartSpeak button');
                       }
                     },
                     elevation: 2.0,
@@ -230,6 +374,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                         stopTimer(reset: false);
                       } else {
                         startTimer();
+                        startSpeakTimer();
+                        print('StartSpeak button2');
                       }
                     },
                     elevation: 2.0,
@@ -260,11 +406,21 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
             resetTimer();
           },
         ),
+        ButtonWidget(
+          text: 'playSound',
+          color: Colors.black,
+          backgroundColor: Colors.white,
+          onClicked: () {
+            startSpeakTimer();
+          },
+        ),
       ],
     );
   }
 
-  Widget buildTimer() => SizedBox(
+  Widget buildTimer() {
+    if (previousScreen == 'fromHomeScreen') {
+      return SizedBox(
         width: 200,
         height: 200,
         child: Stack(
@@ -291,29 +447,96 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                 ],
         ),
       );
+    } else {
+      return started
+          ? Column(
+              children: [
+                Center(child: buildTime()),
+                Transform.rotate(
+                  angle: pi / 180 * 180,
+                  alignment: Alignment.center,
+                  child: LinearProgressIndicator(
+                    value: secs / (maxSeconds - 3), // 1 - seconds / maxSeconds
+                    valueColor: AlwaysStoppedAnimation(Colors.white),
+                    backgroundColor: Colors.green,
+                  ),
+                ),
+              ],
+            )
+          : Column(children: [
+              Center(child: buildTime()),
+              Transform.rotate(
+                angle: pi / 180 * 180,
+                alignment: Alignment.center,
+                child: LinearProgressIndicator(
+                  value: initialCountdown /
+                      initialCountdownMax, // 1 - seconds / maxSeconds
+                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  backgroundColor: Colors.green,
+                ),
+              ),
+            ]);
+    }
+  }
 
   Widget buildTime() {
     final time = secs;
-    if (time == 0) {
-      return Icon(Icons.done, color: Colors.green, size: 112);
+    if (previousScreen == 'fromHomeScreen') {
+      if (time == 0) {
+        return Icon(Icons.done, color: Colors.green, size: 112);
+      } else {
+        return started
+            ? Text(
+                '${secs}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 80,
+                ),
+              )
+            : Text(
+                '${initialCountdown}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 80,
+                ),
+              );
+      }
+    } else if (previousScreen == 'fromQuickCombos') {
+      return
+          // AnimatedTextKit(
+          //   animatedTexts: [
+          //     FadeAnimatedText(currentTermToPrint,
+          //         duration: Duration(seconds: 5),
+          //         fadeOutBegin: 0.8,
+          //         fadeInEnd: 0.4,
+          //         textStyle: TextStyle(
+          //           fontSize: 30,
+          //           fontWeight: FontWeight.bold,
+          //         )),
+          //   ],
+          //   pause: Duration(seconds: 5),
+          //   onTap: () {},
+          //   isRepeatingAnimation: true,
+          // );
+          Text(
+        currentTermToPrint,
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 80,
+        ),
+      );
     } else {
-      return started
-          ? Text(
-              '${secs}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 80,
-              ),
-            )
-          : Text(
-              '${initialCountdown}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 80,
-              ),
-            );
+      return Text(
+        'test2',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+          fontSize: 80,
+        ),
+      );
     }
   }
 }

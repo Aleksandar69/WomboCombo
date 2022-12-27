@@ -18,14 +18,14 @@ class BoxingAttacksProvider with ChangeNotifier {
     BoxingAttack('left uppercut', 'assets/images/leftupperreal.png', '5'),
     BoxingAttack(
         'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
-    BoxingAttack('right uppercut', 'assets/images/rightUppercut.png', '6'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '6b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '9b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '8b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '7b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '11b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '12b'),
-    BoxingAttack('right uppercut', 'assets/images/rightupperbodee.png', '13b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '9b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '8b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '7b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '11b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '12b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '13b'),
   ];
 
   List<BoxingAttack> get attacks {
