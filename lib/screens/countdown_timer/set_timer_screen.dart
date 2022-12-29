@@ -14,12 +14,13 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   final _minutesController = FixedExtentScrollController(initialItem: 0);
   final _hoursController = FixedExtentScrollController(initialItem: 0);
   final _roundsController = FixedExtentScrollController(initialItem: 2);
+  final _restController = FixedExtentScrollController(initialItem: 10);
+
   late final previousScreen;
 
   @override
   void didChangeDependencies() {
-    previousScreen =
-        ModalRoute.of(context)!.settings.arguments as String;
+    previousScreen = ModalRoute.of(context)!.settings.arguments as String;
 
     super.didChangeDependencies();
   }
@@ -32,7 +33,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
           Center(
             child: Text(
               'Timer:',
-              style: TextStyle(fontSize: 45),
+              style: TextStyle(fontSize: 25),
             ),
           ),
           Row(
@@ -47,7 +48,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     onValueChanged: (i) => print(i),
                     maxValue: 99,
                     minValue: 00,
-                    listHeight: 400,
+                    listHeight: 300,
                     step: 1,
                     unSelectTextStyle: TextStyle(color: Colors.grey),
                     controller: _hoursController,
@@ -61,7 +62,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     magnification: 2,
                     onValueChanged: (i) => print(i),
                     maxValue: 59,
-                    listHeight: 400,
+                    listHeight: 300,
                     minValue: 0,
                     step: 1,
                     unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -76,7 +77,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     magnification: 2,
                     onValueChanged: (i) => print(i),
                     maxValue: 59,
-                    listHeight: 400,
+                    listHeight: 300,
                     minValue: 0,
                     step: 1,
                     unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -86,26 +87,41 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               ),
             ],
           ),
-          Center(
-            child: Text(
-              'Rounds:',
-              style: TextStyle(fontSize: 45),
-            ),
-          ),
-          Container(
-            child: Flexible(
-              child: WheelChooser.integer(
-                listWidth: 80,
-                magnification: 2,
-                onValueChanged: (i) => print(i),
-                maxValue: 20,
-                listHeight: 400,
-                minValue: 1,
-                step: 1,
-                unSelectTextStyle: TextStyle(color: Colors.grey),
-                controller: _roundsController,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Flexible(
+                  child: WheelChooser.integer(
+                    listWidth: 80,
+                    magnification: 2,
+                    onValueChanged: (i) => print(i),
+                    maxValue: 20,
+                    listHeight: 300,
+                    minValue: 1,
+                    step: 1,
+                    unSelectTextStyle: TextStyle(color: Colors.grey),
+                    controller: _roundsController,
+                  ),
+                ),
               ),
-            ),
+              Container(
+                child: Flexible(
+                  child: WheelChooser.integer(
+                    listWidth: 80,
+                    magnification: 2,
+                    onValueChanged: (i) => print(i),
+                    maxValue: 20,
+                    listHeight: 300,
+                    minValue: 1,
+                    step: 1,
+                    unSelectTextStyle: TextStyle(color: Colors.grey),
+                    controller: _restController,
+                  ),
+                ),
+              ),
+            ],
           ),
           RawMaterialButton(
             onPressed: () =>
@@ -114,7 +130,8 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               _minutesController.selectedItem,
               _secondsController.selectedItem,
               _roundsController.selectedItem,
-              previousScreen
+              previousScreen,
+              _restController.selectedItem,
             ]),
             elevation: 2.0,
             fillColor: Colors.white,

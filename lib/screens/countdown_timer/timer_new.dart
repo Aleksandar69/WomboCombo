@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:text_to_speech/text_to_speech.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:wakelock/wakelock.dart';
 
 class TimerNew extends StatefulWidget {
   static const routeName = 'timer-new';
@@ -40,8 +41,11 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   late final previousScreen;
   TtsState ttsState = TtsState.stopped;
   var futureTimerHasEnded = true;
+  late int restTimeMax;
+  late int restTime = restTimeMax;
+  bool isInitialRun = true;
 
-  var currentTermToPrint = 'READY';
+  var currentTerm = 'READY';
 
   get isPlaying => ttsState == TtsState.playing;
   get isStopped => ttsState == TtsState.stopped;
@@ -53,27 +57,38 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   var started = false;
   final playerBeep = AudioPlayer();
   final playerRing = AudioPlayer();
+  final playerTenSecs = AudioPlayer();
 
   void playBell() async {
-    return await playerBeep.play(AssetSource('sounds/bell.mp3'), volume: 1);
+    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
   }
 
   void playBeep() async {
     return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
   }
 
+  void playTenSecsSound() async {
+    return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
+        volume: 1);
+  }
+
   void playerSetSource() async {
     await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
     await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+    await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
   }
 
   void stopBeeps() async {
     await playerBeep.stop();
     await playerRing.stop();
+    await playerTenSecs.stop();
   }
 
   @override
   void didChangeDependencies() {
+    setState(() {
+      Wakelock.enable();
+    });
     final countdownTimerStuff =
         ModalRoute.of(context)!.settings.arguments as List;
     final hrs = countdownTimerStuff[0];
@@ -81,7 +96,9 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     final scnds = countdownTimerStuff[2];
     final rnds = countdownTimerStuff[3];
     previousScreen = countdownTimerStuff[4] as String;
-    final totalDuration = scnds + (mnts * 60) + (hrs * 3600) + 3;
+
+    restTimeMax = countdownTimerStuff[5];
+    final totalDuration = scnds + (mnts * 60) + (hrs * 3600);
     maxRounds = rnds;
     maxSeconds = totalDuration;
     secs = maxSeconds;
@@ -95,6 +112,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   void dispose() {
     stopBeeps();
     stopTimer();
+    timerAttacks?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -103,14 +121,16 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.inactive) {
+      timerAttacks?.cancel();
       stopBeeps();
       stopTimer();
     } else if (state == AppLifecycleState.resumed) {
-      print('app resumed');
     } else if (state == AppLifecycleState.paused) {
+      timerAttacks?.cancel();
       stopBeeps();
       stopTimer();
     } else if (state == AppLifecycleState.detached) {
+      timerAttacks?.cancel();
       stopBeeps();
       stopTimer();
     }
@@ -119,6 +139,9 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      Wakelock.enable();
+    });
     playerSetSource();
     initTts();
     WidgetsBinding.instance.addObserver(this);
@@ -133,42 +156,36 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
 
     flutterTts.setStartHandler(() {
       setState(() {
-        print("Playing");
         ttsState = TtsState.playing;
       });
     });
 
     flutterTts.setCompletionHandler(() {
       setState(() {
-        print("Complete");
         ttsState = TtsState.stopped;
       });
     });
 
     flutterTts.setCancelHandler(() {
       setState(() {
-        print("Cancel");
         ttsState = TtsState.stopped;
       });
     });
 
     flutterTts.setPauseHandler(() {
       setState(() {
-        print("Paused");
         ttsState = TtsState.paused;
       });
     });
 
     flutterTts.setContinueHandler(() {
       setState(() {
-        print("Continued");
         ttsState = TtsState.continued;
       });
     });
 
     flutterTts.setErrorHandler((msg) {
       setState(() {
-        print("error: $msg");
         ttsState = TtsState.stopped;
       });
     });
@@ -180,10 +197,16 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
 
   void resetTimer() {
     setState(() {
+      currentTerm = 'READY';
+      isInitialRun = true;
       currentRound = 1;
       rounds = maxRounds;
       started = false;
-      initialCountdown = initialCountdownMax;
+      if (isInitialRun) {
+        initialCountdown = initialCountdownMax;
+      } else {
+        initialCountdown = restTimeMax;
+      }
       secs = maxSeconds;
     });
     stopTimer();
@@ -193,8 +216,13 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
 
   void resetAndStartTimer() {
     setState(() {
+      currentTerm = 'READY';
       started = false;
-      initialCountdown = initialCountdownMax;
+      if (isInitialRun) {
+        initialCountdown = initialCountdownMax;
+      } else {
+        initialCountdown = restTimeMax;
+      }
       secs = maxSeconds;
     });
     _stop();
@@ -217,44 +245,77 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
 
   void startTimer({bool reset = false}) {
     setState(() {
+      Wakelock.enable();
+    });
+    setState(() {
       isRunning = true;
     });
     if (reset) {
       resetTimer();
     }
     timer = Timer.periodic(Duration(seconds: 1), (_) {
-      print('in timer 1');
-      if (started == false) {
+      if (!started && isInitialRun) {
+        print('secs: $secs');
         if (initialCountdown > 0) {
-          print('cd tz timer ended');
           timerAttacks?.cancel();
           futureTimerHasEnded = true;
           playBeep();
           setState(() => initialCountdown--);
         } else {
-          setState(() => started = true);
-        }
-
-        if (maxSeconds - secs == 1) {
-          print('cd tz timer ended');
-          timerAttacks?.cancel();
-          futureTimerHasEnded = true;
-        }
-      }
-      if (secs > 0) {
-        var initialBeep = maxSeconds - 3;
-        if (secs == initialBeep) {
-          print('cd tz timer ended');
-          timerAttacks?.cancel();
-          futureTimerHasEnded = true;
           playBell();
+          setState(() {
+            started = true;
+            isInitialRun = false;
+          });
         }
-        if (secs < initialBeep && futureTimerHasEnded == true) {
-          print('tz timer called');
+      } else if (!started && !isInitialRun) {
+        timerAttacks?.cancel();
+        initialCountdownMax = restTimeMax;
+        initialCountdown = restTime;
+
+        if (initialCountdown > 3) {
+          setState(() {
+            restTime--;
+            initialCountdown = restTime;
+          });
+        } else if (initialCountdown > 0 && initialCountdown <= 3) {
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
+          playBeep();
+          setState(() {
+            restTime--;
+            initialCountdown = restTime;
+          });
+        } else if (initialCountdown == 0) {
+          playBell();
+          setState(() {
+            restTime = restTimeMax;
+            started = true;
+            isInitialRun = false;
+          });
+        }
+      } else if (secs > 0) {
+        if (secs == 10) {
+          playTenSecsSound();
+        } else if (secs <= 3 && secs > 0) {
+          playBeep();
+        }
+        if (maxSeconds - secs == 1) {
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
+        }
+        if (secs == maxSeconds) {
+          timerAttacks?.cancel();
+          futureTimerHasEnded = true;
+        }
+        if (secs < maxSeconds &&
+            futureTimerHasEnded == true &&
+            previousScreen == 'fromQuickCombos') {
           startSpeakTimer();
         }
         setState(() => secs = secs - 1);
       } else {
+        playBell();
         if (rounds > 0) {
           setState(() => rounds--);
           setState(() => currentRound++);
@@ -268,7 +329,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   }
 
   Future _speak() async {
-    await flutterTts.speak(currentTermToPrint);
+    await flutterTts.speak(currentTerm);
   }
 
   Future _stop() async {
@@ -278,38 +339,16 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   Timer? timerAttacks;
 
   void startSpeakTimer() {
-    // print('startspeakertimer before delayed: ' +
-    //     currentTermToPrint +
-    //     ' ' +
-    //     DateTime.now().millisecondsSinceEpoch.toString());
-    // Future.delayed(const Duration(seconds: 5), () {
-    //   print('5 second has passed speak'); // Prints after 1 second.
-    //   currentTermToPrint = currentTerms;
-    //   _speak();
-    //   print('startspeakertimer after delayed _speak(): ' +
-    //       currentTermToPrint +
-    //       ' ' +
-    //       DateTime.now().millisecondsSinceEpoch.toString());
-    //   futureTimerHasEnded = true;
-    // });
     futureTimerHasEnded = false;
-    print('tz in timer');
-    timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
-      print('tz timer started');
+
+    timerAttacks = Timer.periodic(Duration(seconds: 3), (_) {
       var rng = Random();
       var currentTerms = terms[rng.nextInt(2)].toString();
-      currentTermToPrint = currentTerms;
+      currentTerm = currentTerms;
       _speak();
       futureTimerHasEnded = true;
       timerAttacks?.cancel();
-      print('tz timer ended');
     });
-
-    // timerAttacks = Timer(Duration(seconds: 5), () {
-    //   currentTermToPrint = currentTerms;
-    //   _speak();
-    //   futureTimerHasEnded = true;
-    // });
   }
 
   @override
@@ -347,11 +386,13 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                 ? RawMaterialButton(
                     onPressed: () {
                       if (isActive) {
+                        timerAttacks?.cancel();
                         stopTimer(reset: false);
                       } else {
                         startTimer(reset: false);
-                        startSpeakTimer();
-                        print('StartSpeak button');
+                        if (previousScreen == 'fromQuickCombos') {
+                          startSpeakTimer();
+                        }
                       }
                     },
                     elevation: 2.0,
@@ -372,10 +413,10 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                     onPressed: () {
                       if (isActive) {
                         stopTimer(reset: false);
+                        timerAttacks?.cancel();
                       } else {
                         startTimer();
                         startSpeakTimer();
-                        print('StartSpeak button2');
                       }
                     },
                     elevation: 2.0,
@@ -406,14 +447,6 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
             resetTimer();
           },
         ),
-        ButtonWidget(
-          text: 'playSound',
-          color: Colors.black,
-          backgroundColor: Colors.white,
-          onClicked: () {
-            startSpeakTimer();
-          },
-        ),
       ],
     );
   }
@@ -428,7 +461,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
           children: started
               ? [
                   CircularProgressIndicator(
-                    value: secs / (maxSeconds - 3), // 1 - seconds / maxSeconds
+                    value: secs / (maxSeconds), // 1 - seconds / maxSeconds
                     valueColor: AlwaysStoppedAnimation(Colors.white),
                     strokeWidth: 12,
                     backgroundColor: Colors.green,
@@ -456,7 +489,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                   angle: pi / 180 * 180,
                   alignment: Alignment.center,
                   child: LinearProgressIndicator(
-                    value: secs / (maxSeconds - 3), // 1 - seconds / maxSeconds
+                    value: secs / (maxSeconds), // 1 - seconds / maxSeconds
                     valueColor: AlwaysStoppedAnimation(Colors.white),
                     backgroundColor: Colors.green,
                   ),
@@ -504,24 +537,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
               );
       }
     } else if (previousScreen == 'fromQuickCombos') {
-      return
-          // AnimatedTextKit(
-          //   animatedTexts: [
-          //     FadeAnimatedText(currentTermToPrint,
-          //         duration: Duration(seconds: 5),
-          //         fadeOutBegin: 0.8,
-          //         fadeInEnd: 0.4,
-          //         textStyle: TextStyle(
-          //           fontSize: 30,
-          //           fontWeight: FontWeight.bold,
-          //         )),
-          //   ],
-          //   pause: Duration(seconds: 5),
-          //   onTap: () {},
-          //   isRepeatingAnimation: true,
-          // );
-          Text(
-        currentTermToPrint,
+      return Text(
+        currentTerm,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.white,
