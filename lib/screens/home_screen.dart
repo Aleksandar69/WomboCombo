@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:wombocombo/screens/speechscreanstest/otherscreen.dart';
-import 'package:wombocombo/screens/speechscreanstest/ttsscreen.dart';
+import 'combos/training_levels.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/quick_combos_screen.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/countdown_timer/timer_new.dart';
+import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 
 class HomeScreen extends StatelessWidget {
   var menuItems = [
@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         title: Text('text'),
       ),
       body: Container(
@@ -42,8 +42,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () =>
-                    Navigator.of(context).pushNamed(OtherScreen.routeName),
+                onTap: () {},
                 child: Container(
                   height: 100,
                   child: Card(
@@ -55,7 +54,7 @@ class HomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () =>
-                    Navigator.of(context).pushNamed(TtsScreen.routeName),
+                    Navigator.of(context).pushNamed(TrainingLevel.routeName),
                 child: Container(
                   height: 100,
                   child: Card(
@@ -68,8 +67,9 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () =>
-                    Navigator.of(context).pushNamed(SetTimeScreen.routeName, arguments: 'fromHomeScreen'),
+                onTap: () => Navigator.of(context).pushNamed(
+                    SetTimeScreen.routeName,
+                    arguments: 'fromHomeScreen'),
                 child: Container(
                   height: 100,
                   child: Card(

@@ -10,17 +10,21 @@ class SetTimeScreen extends StatefulWidget {
 }
 
 class _SetTimeScreenState extends State<SetTimeScreen> {
-  final _secondsController = FixedExtentScrollController(initialItem: 1);
-  final _minutesController = FixedExtentScrollController(initialItem: 0);
-  final _hoursController = FixedExtentScrollController(initialItem: 0);
-  final _roundsController = FixedExtentScrollController(initialItem: 2);
-  final _restController = FixedExtentScrollController(initialItem: 10);
+  final _secondsController = FixedExtentScrollController(initialItem: 0);
+  final _minutesController = FixedExtentScrollController(initialItem: 1);
+  final _restControllerSec = FixedExtentScrollController(initialItem: 30);
+  final _restControllerMin = FixedExtentScrollController(initialItem: 0);
+  final _roundsController = FixedExtentScrollController(initialItem: 3);
 
   late final previousScreen;
+  late final trainingLevel;
 
   @override
   void didChangeDependencies() {
-    previousScreen = ModalRoute.of(context)!.settings.arguments as String;
+    var previousArgs = ModalRoute.of(context)!.settings.arguments as List;
+
+    previousScreen = previousArgs[0] as String;
+    trainingLevel = previousArgs[1] as String;
 
     super.didChangeDependencies();
   }
@@ -32,7 +36,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
         children: [
           Center(
             child: Text(
-              'Timer:',
+              'Round duration:',
               style: TextStyle(fontSize: 25),
             ),
           ),
@@ -42,50 +46,55 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             children: [
               Container(
                 child: Flexible(
-                  child: WheelChooser.integer(
-                    magnification: 2,
-                    listWidth: 80,
-                    onValueChanged: (i) => print(i),
-                    maxValue: 99,
-                    minValue: 00,
-                    listHeight: 300,
-                    step: 1,
-                    unSelectTextStyle: TextStyle(color: Colors.grey),
-                    controller: _hoursController,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      WheelChooser.integer(
+                        listWidth: 80,
+                        magnification: 2,
+                        onValueChanged: (i) => print(i),
+                        maxValue: 59,
+                        listHeight: 200,
+                        minValue: 0,
+                        step: 1,
+                        unSelectTextStyle: TextStyle(color: Colors.grey),
+                        controller: _minutesController,
+                      ),
+                      Text('Min'),
+                    ],
                   ),
                 ),
               ),
               Container(
                 child: Flexible(
-                  child: WheelChooser.integer(
-                    listWidth: 80,
-                    magnification: 2,
-                    onValueChanged: (i) => print(i),
-                    maxValue: 59,
-                    listHeight: 300,
-                    minValue: 0,
-                    step: 1,
-                    unSelectTextStyle: TextStyle(color: Colors.grey),
-                    controller: _minutesController,
-                  ),
-                ),
-              ),
-              Container(
-                child: Flexible(
-                  child: WheelChooser.integer(
-                    listWidth: 80,
-                    magnification: 2,
-                    onValueChanged: (i) => print(i),
-                    maxValue: 59,
-                    listHeight: 300,
-                    minValue: 0,
-                    step: 1,
-                    unSelectTextStyle: TextStyle(color: Colors.grey),
-                    controller: _secondsController,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      WheelChooser.integer(
+                        listWidth: 80,
+                        magnification: 2,
+                        onValueChanged: (i) => print(i),
+                        maxValue: 59,
+                        listHeight: 200,
+                        minValue: 0,
+                        step: 1,
+                        unSelectTextStyle: TextStyle(color: Colors.grey),
+                        controller: _secondsController,
+                      ),
+                      Text('Sec'),
+                    ],
                   ),
                 ),
               ),
             ],
+          ),
+          Center(
+            child: Text(
+              'Rest duration:',
+              style: TextStyle(fontSize: 25),
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -93,45 +102,82 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             children: [
               Container(
                 child: Flexible(
-                  child: WheelChooser.integer(
-                    listWidth: 80,
-                    magnification: 2,
-                    onValueChanged: (i) => print(i),
-                    maxValue: 20,
-                    listHeight: 300,
-                    minValue: 1,
-                    step: 1,
-                    unSelectTextStyle: TextStyle(color: Colors.grey),
-                    controller: _roundsController,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      WheelChooser.integer(
+                        listWidth: 80,
+                        magnification: 2,
+                        onValueChanged: (i) => print(i),
+                        maxValue: 20,
+                        listHeight: 200,
+                        minValue: 0,
+                        step: 1,
+                        unSelectTextStyle: TextStyle(color: Colors.grey),
+                        controller: _restControllerMin,
+                      ),
+                      Text('Min'),
+                    ],
                   ),
                 ),
               ),
               Container(
                 child: Flexible(
-                  child: WheelChooser.integer(
-                    listWidth: 80,
-                    magnification: 2,
-                    onValueChanged: (i) => print(i),
-                    maxValue: 20,
-                    listHeight: 300,
-                    minValue: 1,
-                    step: 1,
-                    unSelectTextStyle: TextStyle(color: Colors.grey),
-                    controller: _restController,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      WheelChooser.integer(
+                        listWidth: 80,
+                        magnification: 2,
+                        onValueChanged: (i) => print(i),
+                        maxValue: 99,
+                        listHeight: 200,
+                        minValue: 0,
+                        step: 1,
+                        unSelectTextStyle: TextStyle(color: Colors.grey),
+                        controller: _restControllerSec,
+                      ),
+                      Text('Sec'),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
+          Container(
+            child: Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  WheelChooser.integer(
+                    listWidth: 80,
+                    magnification: 2,
+                    onValueChanged: (i) => print(i),
+                    maxValue: 99,
+                    listHeight: 200,
+                    minValue: 0,
+                    step: 1,
+                    unSelectTextStyle: TextStyle(color: Colors.grey),
+                    controller: _roundsController,
+                  ),
+                  Text('Rounds'),
+                ],
+              ),
+            ),
+          ),
           RawMaterialButton(
             onPressed: () =>
                 Navigator.of(context).pushNamed(TimerNew.routeName, arguments: [
-              _hoursController.selectedItem,
               _minutesController.selectedItem,
               _secondsController.selectedItem,
+              _restControllerMin.selectedItem,
+              _restControllerSec.selectedItem,
               _roundsController.selectedItem,
               previousScreen,
-              _restController.selectedItem,
+              trainingLevel
             ]),
             elevation: 2.0,
             fillColor: Colors.white,

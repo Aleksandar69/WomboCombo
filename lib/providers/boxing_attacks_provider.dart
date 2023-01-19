@@ -1,63 +1,56 @@
 import 'package:flutter/material.dart.';
-import 'package:wombocombo/models/boxing_attack.dart';
-import '../helpers/db_helper.dart';
 
 class BoxingAttacksProvider with ChangeNotifier {
-  List<BoxingAttack> _attacks = [];
-
-  late List<BoxingAttack> _boxingAttacks = [
-    BoxingAttack('jab', 'assets/images/jab.png', '1'),
-    BoxingAttack('jab body', 'assets/images/jabBody.png', '1b'),
-    BoxingAttack('cross', 'assets/images/cross.png', '2'),
-    BoxingAttack('cross body', 'assets/images/crossBody.png', '2b'),
-    BoxingAttack('left hook', 'assets/images/leftHook.png', '3'),
-    BoxingAttack('left hook body', 'assets/images/leftUppercutBody.png', '3b'),
-    BoxingAttack('right hook', 'assets/images/rightHook.png', '4'),
-    BoxingAttack(
-        'right hook body', 'assets/images/rightUppercutBody.png', '4b'),
-    BoxingAttack('left uppercut', 'assets/images/leftupperreal.png', '5'),
-    BoxingAttack(
-        'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '9b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '8b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '7b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '11b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '12b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '13b'),
+  var _attacksBeginner = [
+    '2 4 3',
+    '1 2 3',
+    '1 1 5',
+    '1 1 2',
+    '1 6 4',
   ];
 
-  List<BoxingAttack> get attacks {
+  var _attacksIntermediate = [
+    '2 4 3',
+    '1 2 3 4',
+    '1 1 5 6',
+    '1 1 2',
+    '1 6 4 3',
+  ];
+
+  var _attacksAdvanced = [
+    '2 4 3 3',
+    '1 2 3 4 1',
+    '1 1 5 6 2 ',
+    '1 1 2 3',
+    '1 6 4 3 3'
+  ];
+
+  var _attacksNightmare = [
+    '2 4 3 3 3',
+    '1 2 3 4 1 2',
+    '1 1 5 6 2 2',
+    '1 1 2 3 1',
+    '1 6 4 3 3 4'
+  ];
+
+  List<String> get begginerAttacks {
     print('getAttacks');
-    return [..._attacks];
+    return [..._attacksBeginner];
   }
 
-  void initAttacks() {
-    DBHelper.drop();
-    _boxingAttacks.forEach(
-      (attack) => DBHelper.insert(
-        'boxing_attacks',
-        {
-          'attackName': attack.attackName,
-          'attackImage': attack.attackImage,
-          'correspondingNumber': attack.correspondingNumber
-        },
-      ),
-    );
+  List<String> get intermediateAttacks {
+    print('getAttacks');
+    return [..._attacksIntermediate];
   }
 
-  Future<void> fetchAttacks() async {
-    final dataList = await DBHelper.getData('boxing_attacks');
-    _attacks = dataList
-        .map(
-          (attack) => BoxingAttack(
-            attack['attackName'],
-            attack['attackImage'],
-            attack['correspondingNumber'],
-          ),
-        )
-        .toList();
-    notifyListeners();
+  List<String> get advancedAttacks {
+    print('getAttacks');
+    return [..._attacksAdvanced];
   }
+
+  List<String> get nightmareAttacks {
+    print('getAttacks');
+    return [..._attacksNightmare];
+  }
+
 }

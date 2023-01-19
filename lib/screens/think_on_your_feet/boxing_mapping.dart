@@ -4,8 +4,9 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
-import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/providers/boxing_attacks_list_provider.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
+import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:wombocombo/widgets/list_builders/attack_list_item_row.dart';
 
 class BoxingMapping extends StatefulWidget {
@@ -19,7 +20,7 @@ class _BoxingMappingState extends State<BoxingMapping> {
   @override
   Widget build(BuildContext context) {
     final attacks =
-        Provider.of<BoxingAttacksProvider>(context, listen: false).attacks;
+        Provider.of<BoxingAttacksListProvider>(context, listen: false).attacks;
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -28,7 +29,7 @@ class _BoxingMappingState extends State<BoxingMapping> {
         extendedPadding: EdgeInsets.all(25),
         elevation: 12,
         onPressed: () {
-          Navigator.of(context).pushNamed(SetTimeScreen.routeName, arguments: 'fromQuickCombos');
+          Navigator.of(context).pushNamed(TrainingDiff.routeName);
         },
         label: const Text('Next'),
         icon: const Icon(Icons.play_arrow),

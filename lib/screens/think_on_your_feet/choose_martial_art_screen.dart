@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
-import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/providers/boxing_attacks_list_provider.dart';
 import 'package:wombocombo/screens/think_on_your_feet/boxing_mapping.dart';
 import 'package:wombocombo/screens/think_on_your_feet/kickboxing_mapping.dart';
 import 'package:wombocombo/screens/think_on_your_feet/muay_thai_mapping.dart';
@@ -11,8 +11,10 @@ class ChooseMartialArt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<BoxingAttacksProvider>(context, listen: false).initAttacks();
-    Provider.of<BoxingAttacksProvider>(context, listen: false).fetchAttacks();
+    Provider.of<BoxingAttacksListProvider>(context, listen: false)
+        .initAttacks();
+    Provider.of<BoxingAttacksListProvider>(context, listen: false)
+        .fetchAttacks();
     return Scaffold(
       appBar: AppBar(
         title: Text('text'),

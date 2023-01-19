@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/boxing_attacks_provider.dart';
 
 import '../../widgets/buttons/timer_button.dart';
 import '../../widgets/gradient.dart';
@@ -20,7 +22,8 @@ class TimerNew extends StatefulWidget {
 enum TtsState { playing, stopped, paused, continued }
 
 class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
-  var terms = ['2 4 3', '1 2 3 4', '1 1 5'];
+  var currentAttacks = [];
+
   late FlutterTts flutterTts;
   String? language = 'en_US';
   String? engine = 'com.google.android.tts';
@@ -44,6 +47,9 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   late int restTimeMax;
   late int restTime = restTimeMax;
   bool isInitialRun = true;
+  late String trainingLevel;
+
+  List<String> attacks = [];
 
   var currentTerm = 'READY';
 
@@ -91,14 +97,30 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     });
     final countdownTimerStuff =
         ModalRoute.of(context)!.settings.arguments as List;
-    final hrs = countdownTimerStuff[0];
-    final mnts = countdownTimerStuff[1];
-    final scnds = countdownTimerStuff[2];
-    final rnds = countdownTimerStuff[3];
-    previousScreen = countdownTimerStuff[4] as String;
+    final mnts = countdownTimerStuff[0];
+    final scnds = countdownTimerStuff[1];
+    final restMins = countdownTimerStuff[2];
+    final restSecs = countdownTimerStuff[3];
+    final rnds = countdownTimerStuff[4];
+    previousScreen = countdownTimerStuff[5] as String;
+    trainingLevel = countdownTimerStuff[6] as String;
 
-    restTimeMax = countdownTimerStuff[5];
-    final totalDuration = scnds + (mnts * 60) + (hrs * 3600);
+    if (trainingLevel == 'Beginner') {
+      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
+        .begginerAttacks;
+    } else if (trainingLevel == 'Intermediate') {
+      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
+        .intermediateAttacks;
+    } else if (trainingLevel == 'Advanced') {
+      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
+        .advancedAttacks;
+    } else if (trainingLevel == 'Nightmare') {
+      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
+        .nightmareAttacks;
+    }
+
+    restTimeMax = restSecs + (restMins * 60);
+    final totalDuration = scnds + (mnts * 60);
     maxRounds = rnds;
     maxSeconds = totalDuration;
     secs = maxSeconds;
@@ -316,7 +338,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         setState(() => secs = secs - 1);
       } else {
         playBell();
-        if (rounds > 0) {
+        if (rounds > 1) {
           setState(() => rounds--);
           setState(() => currentRound++);
           stopTimer(resetAndStart: true);
@@ -341,14 +363,47 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   void startSpeakTimer() {
     futureTimerHasEnded = false;
 
-    timerAttacks = Timer.periodic(Duration(seconds: 3), (_) {
-      var rng = Random();
-      var currentTerms = terms[rng.nextInt(2)].toString();
-      currentTerm = currentTerms;
-      _speak();
-      futureTimerHasEnded = true;
-      timerAttacks?.cancel();
-    });
+    if (trainingLevel == 'Beginner') {
+      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+        var rng = Random();
+        var currentTerms =
+            currentAttacks[rng.nextInt(currentAttacks.length)].toString();
+        currentTerm = currentTerms;
+        _speak();
+        futureTimerHasEnded = true;
+        timerAttacks?.cancel();
+      });
+    } else if (trainingLevel == 'Intermediate') {
+      timerAttacks = Timer.periodic(Duration(seconds: 3), (_) {
+        var rng = Random();
+        var currentTerms =
+            currentAttacks[rng.nextInt(currentAttacks.length)].toString();
+        currentTerm = currentTerms;
+        _speak();
+        futureTimerHasEnded = true;
+        timerAttacks?.cancel();
+      });
+    } else if (trainingLevel == 'Advanced') {
+      timerAttacks = Timer.periodic(Duration(milliseconds: 2500), (_) {
+        var rng = Random();
+        var currentTerms =
+            currentAttacks[rng.nextInt(currentAttacks.length)].toString();
+        currentTerm = currentTerms;
+        _speak();
+        futureTimerHasEnded = true;
+        timerAttacks?.cancel();
+      });
+    } else if (trainingLevel == 'Nightmare') {
+      timerAttacks = Timer.periodic(Duration(seconds: 2), (_) {
+        var rng = Random();
+        var currentTerms =
+            currentAttacks[rng.nextInt(currentAttacks.length)].toString();
+        currentTerm = currentTerms;
+        _speak();
+        futureTimerHasEnded = true;
+        timerAttacks?.cancel();
+      });
+    }
   }
 
   @override
@@ -536,18 +591,9 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                 ),
               );
       }
-    } else if (previousScreen == 'fromQuickCombos') {
-      return Text(
-        currentTerm,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontSize: 80,
-        ),
-      );
     } else {
       return Text(
-        'test2',
+        currentTerm,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           color: Colors.white,

@@ -34,6 +34,7 @@ dependencies:
   text_to_speech: ^0.2.3
   animated_text_kit: ^4.2.2
   wakelock: ^0.6.2
+  video_player: ^2.4.10
   
 
 
@@ -59,6 +60,7 @@ flutter:
   assets:
     - assets/sounds/
     - assets/images/
+    - assets/videos/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
