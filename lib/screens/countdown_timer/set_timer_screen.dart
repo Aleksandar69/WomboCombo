@@ -17,15 +17,23 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   final _roundsController = FixedExtentScrollController(initialItem: 3);
 
   late final previousScreen;
-  late final trainingLevel;
+  late String difficultyLevel = 'Beginner';
 
   @override
   void didChangeDependencies() {
-    var previousArgs = ModalRoute.of(context)!.settings.arguments as List;
+    var previousArgs;
+    if (ModalRoute.of(context)!.settings.arguments is List) {
+      previousArgs = ModalRoute.of(context)!.settings.arguments as List;
+    } else if (ModalRoute.of(context)!.settings.arguments is String) {
+      previousArgs = ModalRoute.of(context)!.settings.arguments as String;
+    }
 
-    previousScreen = previousArgs[0] as String;
-    trainingLevel = previousArgs[1] as String;
-
+    if (previousArgs is List) {
+      previousScreen = previousArgs[0] as String;
+      difficultyLevel = previousArgs[1] as String;
+    } else {
+      previousScreen = previousArgs;
+    }
     super.didChangeDependencies();
   }
 
@@ -177,7 +185,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               _restControllerSec.selectedItem,
               _roundsController.selectedItem,
               previousScreen,
-              trainingLevel
+              difficultyLevel
             ]),
             elevation: 2.0,
             fillColor: Colors.white,

@@ -4,13 +4,14 @@ import 'dart:math';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/widgets/timer/build_buttons.dart';
 
-import '../../widgets/buttons/timer_button.dart';
 import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:text_to_speech/text_to_speech.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import '../../widgets/timer/build_timer.dart';
+
+
 import 'package:wakelock/wakelock.dart';
 
 class TimerNew extends StatefulWidget {
@@ -106,17 +107,21 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     trainingLevel = countdownTimerStuff[6] as String;
 
     if (trainingLevel == 'Beginner') {
-      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
-        .begginerAttacks;
+      currentAttacks =
+          Provider.of<BoxingAttacksProvider>(context, listen: false)
+              .begginerAttacks;
     } else if (trainingLevel == 'Intermediate') {
-      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
-        .intermediateAttacks;
+      currentAttacks =
+          Provider.of<BoxingAttacksProvider>(context, listen: false)
+              .intermediateAttacks;
     } else if (trainingLevel == 'Advanced') {
-      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
-        .advancedAttacks;
+      currentAttacks =
+          Provider.of<BoxingAttacksProvider>(context, listen: false)
+              .advancedAttacks;
     } else if (trainingLevel == 'Nightmare') {
-      currentAttacks = Provider.of<BoxingAttacksProvider>(context, listen: false)
-        .nightmareAttacks;
+      currentAttacks =
+          Provider.of<BoxingAttacksProvider>(context, listen: false)
+              .nightmareAttacks;
     }
 
     restTimeMax = restSecs + (restMins * 60);
@@ -418,188 +423,22 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
                 SizedBox(height: 40),
-                buildTimer(),
+                buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown, currentTerm, initialCountdownMax),
                 const SizedBox(height: 80),
-                buildButtons(),
+                buildButtons(
+                    timer,
+                    secs,
+                    maxSeconds,
+                    timerAttacks,
+                    stopTimer,
+                    startTimer,
+                    previousScreen,
+                    startSpeakTimer,
+                    isRunning,
+                    resetTimer),
               ],
             ),
           ),
         ),
       );
-
-  Widget buildButtons() {
-    final isActive = timer == null ? false : timer!.isActive;
-    final isCompleted = secs == maxSeconds || secs == 0;
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(width: 12),
-            isActive || !isCompleted
-                ? RawMaterialButton(
-                    onPressed: () {
-                      if (isActive) {
-                        timerAttacks?.cancel();
-                        stopTimer(reset: false);
-                      } else {
-                        startTimer(reset: false);
-                        if (previousScreen == 'fromQuickCombos') {
-                          startSpeakTimer();
-                        }
-                      }
-                    },
-                    elevation: 2.0,
-                    fillColor: Colors.white,
-                    child: !isRunning
-                        ? Icon(
-                            Icons.play_arrow,
-                            size: 55.0,
-                          )
-                        : Icon(
-                            Icons.pause,
-                            size: 55.0,
-                          ),
-                    padding: EdgeInsets.all(15.0),
-                    shape: CircleBorder(),
-                  )
-                : RawMaterialButton(
-                    onPressed: () {
-                      if (isActive) {
-                        stopTimer(reset: false);
-                        timerAttacks?.cancel();
-                      } else {
-                        startTimer();
-                        startSpeakTimer();
-                      }
-                    },
-                    elevation: 2.0,
-                    fillColor: Colors.white,
-                    child: !isRunning
-                        ? Icon(
-                            Icons.play_arrow,
-                            size: 55.0,
-                          )
-                        : Icon(
-                            Icons.pause,
-                            size: 55.0,
-                          ),
-                    padding: EdgeInsets.all(15.0),
-                    shape: CircleBorder(),
-                  ),
-          ],
-        ),
-        const SizedBox(
-          width: 12,
-          height: 12,
-        ),
-        ButtonWidget(
-          text: 'Reset',
-          color: Colors.black,
-          backgroundColor: Colors.white,
-          onClicked: () {
-            resetTimer();
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget buildTimer() {
-    if (previousScreen == 'fromHomeScreen') {
-      return SizedBox(
-        width: 200,
-        height: 200,
-        child: Stack(
-          fit: StackFit.expand,
-          children: started
-              ? [
-                  CircularProgressIndicator(
-                    value: secs / (maxSeconds), // 1 - seconds / maxSeconds
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    strokeWidth: 12,
-                    backgroundColor: Colors.green,
-                  ),
-                  Center(child: buildTime()),
-                ]
-              : [
-                  CircularProgressIndicator(
-                    value: initialCountdown /
-                        initialCountdownMax, // 1 - seconds / maxSeconds
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    strokeWidth: 12,
-                    backgroundColor: Colors.green,
-                  ),
-                  Center(child: buildTime()),
-                ],
-        ),
-      );
-    } else {
-      return started
-          ? Column(
-              children: [
-                Center(child: buildTime()),
-                Transform.rotate(
-                  angle: pi / 180 * 180,
-                  alignment: Alignment.center,
-                  child: LinearProgressIndicator(
-                    value: secs / (maxSeconds), // 1 - seconds / maxSeconds
-                    valueColor: AlwaysStoppedAnimation(Colors.white),
-                    backgroundColor: Colors.green,
-                  ),
-                ),
-              ],
-            )
-          : Column(children: [
-              Center(child: buildTime()),
-              Transform.rotate(
-                angle: pi / 180 * 180,
-                alignment: Alignment.center,
-                child: LinearProgressIndicator(
-                  value: initialCountdown /
-                      initialCountdownMax, // 1 - seconds / maxSeconds
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: Colors.green,
-                ),
-              ),
-            ]);
-    }
-  }
-
-  Widget buildTime() {
-    final time = secs;
-    if (previousScreen == 'fromHomeScreen') {
-      if (time == 0) {
-        return Icon(Icons.done, color: Colors.green, size: 112);
-      } else {
-        return started
-            ? Text(
-                '${secs}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 80,
-                ),
-              )
-            : Text(
-                '${initialCountdown}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 80,
-                ),
-              );
-      }
-    } else {
-      return Text(
-        currentTerm,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontSize: 80,
-        ),
-      );
-    }
-  }
 }

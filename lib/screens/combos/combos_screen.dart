@@ -1,5 +1,12 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wakelock/wakelock.dart';
+import 'package:wombocombo/widgets/timer/build_buttons.dart';
+import 'package:wombocombo/widgets/timer/build_timer.dart';
 
 class CombosScreen extends StatefulWidget {
   static const routeName = '/combos';
@@ -9,17 +16,23 @@ class CombosScreen extends StatefulWidget {
 
 class _CombosScreenState extends State<CombosScreen> {
   late VideoPlayerController _controller;
+  late String currentLevel;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.asset('assets/videos/movie_008.mp4');
-    _controller.addListener(() {
-      setState(() {});
-    });
     _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
     _controller.play();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final countdownTimerStuff =
+        ModalRoute.of(context)!.settings.arguments as List;
+
+    currentLevel = countdownTimerStuff[0] as String;
   }
 
   @override
@@ -30,29 +43,13 @@ class _CombosScreenState extends State<CombosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        key: const ValueKey<String>('home_page'),
-        appBar: AppBar(
-          title: const Text('Video player example'),
-          actions: <Widget>[
-            IconButton(
-              key: const ValueKey<String>('push_tab'),
-              icon: const Icon(Icons.navigation),
-              onPressed: () {
-                Navigator.push<_PlayerVideoAndPopPage>(
-                  context,
-                  MaterialPageRoute<_PlayerVideoAndPopPage>(
-                    builder: (BuildContext context) => _PlayerVideoAndPopPage(),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-        body: _ButterFlyAssetVideo(),
+    return Scaffold(
+      key: const ValueKey<String>('home_page'),
+      appBar: AppBar(
+        title: Text(currentLevel),
+        actions: <Widget>[],
       ),
+      body: _ButterFlyAssetVideo(),
     );
   }
 }
@@ -84,203 +81,122 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
     super.dispose();
   }
 
+  String previousScreen = 'fromHomeScreen';
+  var started = false;
+  var maxSeconds = 11;
+  late int secs = maxSeconds;
+  int initialCountdownMax = 3;
+  late int initialCountdown = initialCountdownMax;
+  String currentTerm = 'none';
+
+  Timer? timer;
+  var isRunning = false;
+
+  final playerBeep = AudioPlayer();
+  final playerRing = AudioPlayer();
+  final playerTenSecs = AudioPlayer();
+
+  void playBell() async {
+    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
+  }
+
+  void playBeep() async {
+    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
+  }
+
+  void playTenSecsSound() async {
+    return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
+        volume: 1);
+  }
+
+  void resetTimer() {
+    setState(() {
+      started = false;
+      secs = maxSeconds;
+      initialCountdown = initialCountdownMax;
+    });
+    stopTimer();
+  }
+
+  void resetAndStartTimer() {
+    setState(() {
+      started = false;
+      secs = maxSeconds;
+      initialCountdown = initialCountdownMax;
+    });
+    startTimer();
+  }
+
+  void stopTimer({bool reset = false, resetAndStart = false}) {
+    setState(() {
+      isRunning = false;
+    });
+    setState(() => timer?.cancel());
+    if (reset) {
+      resetTimer();
+    }
+    if (resetAndStart) {
+      resetAndStartTimer();
+    }
+  }
+
+  void startTimer({bool reset = false}) {
+    setState(() {
+      Wakelock.enable();
+    });
+    setState(() {
+      isRunning = true;
+    });
+    if (reset) {
+      resetTimer();
+    }
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (!started) {
+        print('secs: $secs');
+        if (initialCountdown > 0) {
+          playBeep();
+          setState(() => initialCountdown--);
+        } else {
+          playBell();
+          setState(() {
+            started = true;
+          });
+        }
+      } else if (secs > 0 && started) {
+        if (secs == 10) {
+          playTenSecsSound();
+        } else if (secs <= 3 && secs > 0) {
+          playBeep();
+        }
+        setState(() => secs = secs - 1);
+      } else {
+        playBell();
+        setState(() => started = false);
+        stopTimer(reset: false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.only(top: 20.0),
-          ),
-          Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(_controller),
-                  _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
-                ],
-              ),
+              child: VideoPlayer(_controller),
             ),
           ),
+          Text('Jab - Cross - Lef Hook'),
+          SizedBox(height: 40),
+          buildTimer(previousScreen, started, secs, maxSeconds,
+              initialCountdown, currentTerm, initialCountdownMax),
+          SizedBox(height: 10),
+          buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
+              previousScreen, null, isRunning, resetTimer),
         ],
-      ),
-    );
-  }
-}
-
-class _ControlsOverlay extends StatelessWidget {
-  const _ControlsOverlay({Key? key, required this.controller})
-      : super(key: key);
-
-  static const List<Duration> _exampleCaptionOffsets = <Duration>[
-    Duration(seconds: -10),
-    Duration(seconds: -3),
-    Duration(seconds: -1, milliseconds: -500),
-    Duration(milliseconds: -250),
-    Duration.zero,
-    Duration(milliseconds: 250),
-    Duration(seconds: 1, milliseconds: 500),
-    Duration(seconds: 3),
-    Duration(seconds: 10),
-  ];
-  static const List<double> _examplePlaybackRates = <double>[
-    0.25,
-    0.5,
-    1.0,
-    1.5,
-    2.0,
-    3.0,
-    5.0,
-    10.0,
-  ];
-
-  final VideoPlayerController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 50),
-          reverseDuration: const Duration(milliseconds: 200),
-          child: controller.value.isPlaying
-              ? const SizedBox.shrink()
-              : Container(
-                  color: Colors.black26,
-                  child: const Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 100.0,
-                      semanticLabel: 'Play',
-                    ),
-                  ),
-                ),
-        ),
-        GestureDetector(
-          onTap: () {
-            controller.value.isPlaying ? controller.pause() : controller.play();
-          },
-        ),
-        Align(
-          alignment: Alignment.topLeft,
-          child: PopupMenuButton<Duration>(
-            initialValue: controller.value.captionOffset,
-            tooltip: 'Caption Offset',
-            onSelected: (Duration delay) {
-              controller.setCaptionOffset(delay);
-            },
-            itemBuilder: (BuildContext context) {
-              return <PopupMenuItem<Duration>>[
-                for (final Duration offsetDuration in _exampleCaptionOffsets)
-                  PopupMenuItem<Duration>(
-                    value: offsetDuration,
-                    child: Text('${offsetDuration.inMilliseconds}ms'),
-                  )
-              ];
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.captionOffset.inMilliseconds}ms'),
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: PopupMenuButton<double>(
-            initialValue: controller.value.playbackSpeed,
-            tooltip: 'Playback speed',
-            onSelected: (double speed) {
-              controller.setPlaybackSpeed(speed);
-            },
-            itemBuilder: (BuildContext context) {
-              return <PopupMenuItem<double>>[
-                for (final double speed in _examplePlaybackRates)
-                  PopupMenuItem<double>(
-                    value: speed,
-                    child: Text('${speed}x'),
-                  )
-              ];
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                // Using less vertical padding as the text is also longer
-                // horizontally, so it feels like it would need more spacing
-                // horizontally (matching the aspect ratio of the video).
-                vertical: 12,
-                horizontal: 16,
-              ),
-              child: Text('${controller.value.playbackSpeed}x'),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PlayerVideoAndPopPage extends StatefulWidget {
-  @override
-  _PlayerVideoAndPopPageState createState() => _PlayerVideoAndPopPageState();
-}
-
-class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
-  late VideoPlayerController _videoPlayerController;
-  bool startedPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _videoPlayerController =
-        VideoPlayerController.asset('assets/videos/movie_008.mp4');
-    _videoPlayerController.addListener(() {
-      if (startedPlaying && !_videoPlayerController.value.isPlaying) {
-        Navigator.pop(context);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _videoPlayerController.dispose();
-    super.dispose();
-  }
-
-  Future<bool> started() async {
-    await _videoPlayerController.initialize();
-    await _videoPlayerController.play();
-    startedPlaying = true;
-    return true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      child: Center(
-        child: FutureBuilder<bool>(
-          future: started(),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.data ?? false) {
-              return AspectRatio(
-                aspectRatio: _videoPlayerController.value.aspectRatio,
-                child: VideoPlayer(_videoPlayerController),
-              );
-            } else {
-              return const Text('waiting for video to load');
-            }
-          },
-        ),
       ),
     );
   }
