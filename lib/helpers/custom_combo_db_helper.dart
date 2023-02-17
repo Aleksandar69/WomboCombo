@@ -4,40 +4,30 @@ import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
 
-class DBHelper {
+class CustomComboDBhelper {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
 
-    return await sql.openDatabase(path.join(dbPath, 'boxingattacks.db'),
+    return await sql.openDatabase(path.join(dbPath, 'customCombos.db'),
         onCreate: (db, version) {
       return db.execute(
-          'CREATE TABLE boxing_attacks(attackName TEXT, attackImage TEXT, correspondingNumber TEXT PRIMARY KEY)');
+          'CREATE TABLE custom_combos(comboName TEXT PRIMARY KEY, attacks TEXT)');
     }, version: 1);
   }
 
-  static Future<void> initialInsert() async {
-    final db = await DBHelper.database();
-    db.transaction(
-      (txn) async {
-        int id1 = await txn.rawInsert(
-            'INSERT INTO boxing_attacks(attackName, attackImage, correspondingNumber) VALUES("test", "test", "test1")');
-        print('insert1 $id1');
-      },
-    );
+  static Future<void> drop() async {
+    final db = await CustomComboDBhelper.database();
+    db.delete('custom_combos');
   }
 
-  static Future<void> drop() async {
-    final db = await DBHelper.database();
-    db.delete('boxing_attacks');
-  }
   static Future<void> insert(String table, Map<String, Object> data) async {
-    final db = await DBHelper.database();
+    final db = await CustomComboDBhelper.database();
 
     db.insert(table, data, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   static Future<List<Map<String, dynamic>>> getData(String table) async {
-    final db = await DBHelper.database();
+    final db = await CustomComboDBhelper.database();
     return db.query(table);
   }
 }

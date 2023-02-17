@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/boxing_attacks_list_provider.dart';
 import 'package:wombocombo/providers/boxing_attacks_provider.dart';
+import 'package:wombocombo/providers/custom_combo_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
+import 'package:wombocombo/screens/make_your_combo/saved_combos_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
@@ -32,6 +34,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
             create: (context) => BoxingAttacksProvider(),
           ),
+          ChangeNotifierProvider(
+            create: (context) => CustomComboProvider(),
+          ),
         ],
         child: MaterialApp(
             title: 'Flutter Demo',
@@ -51,6 +56,7 @@ class MyApp extends StatelessWidget {
               KickBoxingMapping.routeName: (context) => KickBoxingMapping(),
               TrainingDiff.routeName: (context) => TrainingDiff(),
               TrainingLevel.routeName: (context) => TrainingLevel(),
+              SavedCombos.routeName: (context) => SavedCombos(),
             }));
   }
 }

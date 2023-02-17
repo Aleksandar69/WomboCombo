@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
 
-class AttackListItemRow extends StatelessWidget {
-  AttackListItemRow({required this.boxingAttack});
+class AttackListItem extends StatelessWidget {
+  AttackListItem({required this.boxingAttack});
 
   final BoxingAttack boxingAttack;
 
@@ -18,10 +18,10 @@ class AttackListItemRow extends StatelessWidget {
               width: 50,
               height: 50,
               child: Image(
-                fit: BoxFit.contain,
-                image:
-                    AssetImage(boxingAttack.attackImage,)
-              ),
+                  fit: BoxFit.contain,
+                  image: AssetImage(
+                    boxingAttack.attackImage,
+                  )),
             ),
             Container(
               width: 175,

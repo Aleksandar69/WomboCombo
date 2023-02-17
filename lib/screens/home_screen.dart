@@ -42,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () => Navigator.of(context).pushNamed(MakeYourComboScreen.routeName),
                 child: Container(
                   height: 100,
                   child: Card(

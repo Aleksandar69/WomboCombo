@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../widgets/timer/build_timer.dart';
 
-
 import 'package:wakelock/wakelock.dart';
 
 class TimerNew extends StatefulWidget {
@@ -49,6 +48,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   late int restTime = restTimeMax;
   bool isInitialRun = true;
   late String trainingLevel;
+  late List customCombos = [];
 
   List<String> attacks = [];
 
@@ -105,20 +105,28 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     final rnds = countdownTimerStuff[4];
     previousScreen = countdownTimerStuff[5] as String;
     trainingLevel = countdownTimerStuff[6] as String;
+    customCombos = countdownTimerStuff[7] as List;
 
-    if (trainingLevel == 'Beginner') {
+    if (previousScreen == 'fromMakeYourComboScreen') {
+      currentAttacks = List.from(customCombos);
+    }
+
+    if (trainingLevel == 'Beginner' && previousScreen == 'fromQuickCombos') {
       currentAttacks =
           Provider.of<BoxingAttacksProvider>(context, listen: false)
               .begginerAttacks;
-    } else if (trainingLevel == 'Intermediate') {
+    } else if (trainingLevel == 'Intermediate' &&
+        previousScreen == 'fromQuickCombos') {
       currentAttacks =
           Provider.of<BoxingAttacksProvider>(context, listen: false)
               .intermediateAttacks;
-    } else if (trainingLevel == 'Advanced') {
+    } else if (trainingLevel == 'Advanced' &&
+        previousScreen == 'fromQuickCombos') {
       currentAttacks =
           Provider.of<BoxingAttacksProvider>(context, listen: false)
               .advancedAttacks;
-    } else if (trainingLevel == 'Nightmare') {
+    } else if (trainingLevel == 'Nightmare' &&
+        previousScreen == 'fromQuickCombos') {
       currentAttacks =
           Provider.of<BoxingAttacksProvider>(context, listen: false)
               .nightmareAttacks;
@@ -282,7 +290,6 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
     }
     timer = Timer.periodic(Duration(seconds: 1), (_) {
       if (!started && isInitialRun) {
-        print('secs: $secs');
         if (initialCountdown > 0) {
           timerAttacks?.cancel();
           futureTimerHasEnded = true;
@@ -337,7 +344,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         }
         if (secs < maxSeconds &&
             futureTimerHasEnded == true &&
-            previousScreen == 'fromQuickCombos') {
+            (previousScreen == 'fromQuickCombos' ||
+                previousScreen == 'fromMakeYourComboScreen')) {
           startSpeakTimer();
         }
         setState(() => secs = secs - 1);
@@ -368,7 +376,7 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
   void startSpeakTimer() {
     futureTimerHasEnded = false;
 
-    if (trainingLevel == 'Beginner') {
+    if (previousScreen == 'fromMakeYourComboScreen') {
       timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
         var rng = Random();
         var currentTerms =
@@ -378,7 +386,19 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         futureTimerHasEnded = true;
         timerAttacks?.cancel();
       });
-    } else if (trainingLevel == 'Intermediate') {
+    } else if (trainingLevel == 'Beginner' &&
+        previousScreen == 'fromQuickCombos') {
+      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+        var rng = Random();
+        var currentTerms =
+            currentAttacks[rng.nextInt(currentAttacks.length)].toString();
+        currentTerm = currentTerms;
+        _speak();
+        futureTimerHasEnded = true;
+        timerAttacks?.cancel();
+      });
+    } else if (trainingLevel == 'Intermediate' &&
+        previousScreen == 'fromQuickCombos') {
       timerAttacks = Timer.periodic(Duration(seconds: 3), (_) {
         var rng = Random();
         var currentTerms =
@@ -388,7 +408,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         futureTimerHasEnded = true;
         timerAttacks?.cancel();
       });
-    } else if (trainingLevel == 'Advanced') {
+    } else if (trainingLevel == 'Advanced' &&
+        previousScreen == 'fromQuickCombos') {
       timerAttacks = Timer.periodic(Duration(milliseconds: 2500), (_) {
         var rng = Random();
         var currentTerms =
@@ -398,7 +419,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
         futureTimerHasEnded = true;
         timerAttacks?.cancel();
       });
-    } else if (trainingLevel == 'Nightmare') {
+    } else if (trainingLevel == 'Nightmare' &&
+        previousScreen == 'fromQuickCombos') {
       timerAttacks = Timer.periodic(Duration(seconds: 2), (_) {
         var rng = Random();
         var currentTerms =
@@ -423,7 +445,8 @@ class _TimerNewState extends State<TimerNew> with WidgetsBindingObserver {
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
                 SizedBox(height: 40),
-                buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown, currentTerm, initialCountdownMax),
+                buildTimer(previousScreen, started, secs, maxSeconds,
+                    initialCountdown, currentTerm, initialCountdownMax),
                 const SizedBox(height: 80),
                 buildButtons(
                     timer,

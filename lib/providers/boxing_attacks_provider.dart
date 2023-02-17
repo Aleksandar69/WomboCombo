@@ -34,23 +34,18 @@ class BoxingAttacksProvider with ChangeNotifier {
   ];
 
   List<String> get begginerAttacks {
-    print('getAttacks');
     return [..._attacksBeginner];
   }
 
   List<String> get intermediateAttacks {
-    print('getAttacks');
     return [..._attacksIntermediate];
   }
 
   List<String> get advancedAttacks {
-    print('getAttacks');
     return [..._attacksAdvanced];
   }
 
   List<String> get nightmareAttacks {
-    print('getAttacks');
     return [..._attacksNightmare];
   }
-
 }

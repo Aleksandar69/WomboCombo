@@ -18,6 +18,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
   late final previousScreen;
   late String difficultyLevel = 'Beginner';
+  late List customCombos = [];
 
   @override
   void didChangeDependencies() {
@@ -30,7 +31,13 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
     if (previousArgs is List) {
       previousScreen = previousArgs[0] as String;
-      difficultyLevel = previousArgs[1] as String;
+      if (previousScreen == 'fromQuickCombos') {
+        difficultyLevel = previousArgs[1] as String;
+      } else if (previousScreen == 'fromMakeYourComboScreen') {
+        var combos = previousArgs[1] as List;
+        customCombos = List.from(combos);
+        for (var combo in customCombos) {}
+      }
     } else {
       previousScreen = previousArgs;
     }
@@ -185,7 +192,8 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               _restControllerSec.selectedItem,
               _roundsController.selectedItem,
               previousScreen,
-              difficultyLevel
+              difficultyLevel,
+              customCombos
             ]),
             elevation: 2.0,
             fillColor: Colors.white,

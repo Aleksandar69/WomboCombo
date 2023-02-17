@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart.';
 import 'package:wombocombo/models/boxing_attack.dart';
-import '../helpers/db_helper.dart';
+import '../helpers/boxing_db_helper.dart';
 
 class BoxingAttacksListProvider with ChangeNotifier {
   List<BoxingAttack> _attacks = [];
@@ -29,14 +29,13 @@ class BoxingAttacksListProvider with ChangeNotifier {
   ];
 
   List<BoxingAttack> get attacks {
-    print('getAttacks');
     return [..._attacks];
   }
 
   void initAttacks() {
-    DBHelper.drop();
+    BoxingDBHelper.drop();
     _boxingAttacks.forEach(
-      (attack) => DBHelper.insert(
+      (attack) => BoxingDBHelper.insert(
         'boxing_attacks',
         {
           'attackName': attack.attackName,
@@ -48,7 +47,7 @@ class BoxingAttacksListProvider with ChangeNotifier {
   }
 
   Future<void> fetchAttacks() async {
-    final dataList = await DBHelper.getData('boxing_attacks');
+    final dataList = await BoxingDBHelper.getData('boxing_attacks');
     _attacks = dataList
         .map(
           (attack) => BoxingAttack(

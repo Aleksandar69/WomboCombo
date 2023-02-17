@@ -152,7 +152,6 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
     }
     timer = Timer.periodic(Duration(seconds: 1), (_) {
       if (!started) {
-        print('secs: $secs');
         if (initialCountdown > 0) {
           playBeep();
           setState(() => initialCountdown--);
