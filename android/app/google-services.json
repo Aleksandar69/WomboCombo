@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "710716955400",
+    "firebase_url": "https://wombocomboservice-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "wombocomboservice",
+    "storage_bucket": "wombocomboservice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710716955400:android:17d3ff24910c9776006abd",
+        "android_client_info": {
+          "package_name": "com.example.wombocombo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710716955400-nimoi8tethfrm47diupaaqofk8imn30t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWhW0tMEWbRMW57U8SnMbkBL3tSK3OLzE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710716955400-nimoi8tethfrm47diupaaqofk8imn30t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

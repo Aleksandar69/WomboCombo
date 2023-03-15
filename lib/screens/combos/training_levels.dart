@@ -15,8 +15,8 @@ class TrainingLevel extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context)
-                .pushNamed(CombosScreen.routeName, arguments: ['Level 1']),
+            onTap: () => Navigator.of(context).pushNamed(CombosScreen.routeName,
+                arguments: ['Level 1', 'assets/videos/movie_008.mp4']),
             child: Card(
               elevation: 5,
               child: Container(
@@ -31,8 +31,8 @@ class TrainingLevel extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.of(context)
-                .pushNamed(CombosScreen.routeName, arguments: ['Level 2']),
+            onTap: () => Navigator.of(context).pushNamed(CombosScreen.routeName,
+                arguments: ['Level 2', 'assets/videos/movie_005.mp4']),
             child: Card(
               elevation: 5,
               child: Container(
@@ -47,8 +47,8 @@ class TrainingLevel extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.of(context)
-                .pushNamed(CombosScreen.routeName, arguments: ['Level 3']),
+            onTap: () => Navigator.of(context).pushNamed(CombosScreen.routeName,
+                arguments: ['Level 3', 'assets/videos/movie_007.mp4']),
             child: Card(
               elevation: 5,
               child: Container(
@@ -63,8 +63,8 @@ class TrainingLevel extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.of(context)
-                .pushNamed(CombosScreen.routeName, arguments: ['Level 4']),
+            onTap: () => Navigator.of(context).pushNamed(CombosScreen.routeName,
+                arguments: ['Level 4', 'assets/videos/movie_002.mp4']),
             child: Card(
               elevation: 5,
               child: Container(

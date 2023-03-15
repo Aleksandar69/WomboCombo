@@ -15,15 +15,12 @@ class CombosScreen extends StatefulWidget {
 }
 
 class _CombosScreenState extends State<CombosScreen> {
-  late VideoPlayerController _controller;
   late String currentLevel;
+  late String currentVideo;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/movie_008.mp4');
-    _controller.setLooping(true);
-    _controller.play();
   }
 
   @override
@@ -33,11 +30,11 @@ class _CombosScreenState extends State<CombosScreen> {
         ModalRoute.of(context)!.settings.arguments as List;
 
     currentLevel = countdownTimerStuff[0] as String;
+    currentVideo = countdownTimerStuff[1] as String;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
@@ -49,23 +46,26 @@ class _CombosScreenState extends State<CombosScreen> {
         title: Text(currentLevel),
         actions: <Widget>[],
       ),
-      body: _ButterFlyAssetVideo(),
+      body: _FighterVideoRemote(),
     );
   }
 }
 
-class _ButterFlyAssetVideo extends StatefulWidget {
+class _FighterVideoLocal extends StatefulWidget {
   @override
-  _ButterFlyAssetVideoState createState() => _ButterFlyAssetVideoState();
+  _FighterVideoLocalState createState() => _FighterVideoLocalState();
+
+  String videolocation;
+  _FighterVideoLocal(this.videolocation);
 }
 
-class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
+class _FighterVideoLocalState extends State<_FighterVideoLocal> {
   late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/movie_008.mp4');
+    _controller = VideoPlayerController.asset(widget.videolocation);
 
     _controller.addListener(() {
       setState(() {});
@@ -197,6 +197,180 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
               previousScreen, null, isRunning, resetTimer),
         ],
       ),
+    );
+  }
+}
+
+class _FighterVideoRemote extends StatefulWidget {
+  @override
+  _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
+}
+
+class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(
+      'https://firebasestorage.googleapis.com/v0/b/wombocomboservice.appspot.com/o/1-2-3b-3.mp4?alt=media&token=edccbe5a-d29d-45b9-98e0-db9070b5850f',
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    );
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.play();
+    _controller.initialize();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  VideoPlayer(_controller),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ControlsOverlay extends StatelessWidget {
+  const _ControlsOverlay({Key? key, required this.controller})
+      : super(key: key);
+
+  static const List<Duration> _exampleCaptionOffsets = <Duration>[
+    Duration(seconds: -10),
+    Duration(seconds: -3),
+    Duration(seconds: -1, milliseconds: -500),
+    Duration(milliseconds: -250),
+    Duration.zero,
+    Duration(milliseconds: 250),
+    Duration(seconds: 1, milliseconds: 500),
+    Duration(seconds: 3),
+    Duration(seconds: 10),
+  ];
+  static const List<double> _examplePlaybackRates = <double>[
+    0.25,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    10.0,
+  ];
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 50),
+          reverseDuration: const Duration(milliseconds: 200),
+          child: controller.value.isPlaying
+              ? const SizedBox.shrink()
+              : Container(
+                  color: Colors.black26,
+                  child: const Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 100.0,
+                      semanticLabel: 'Play',
+                    ),
+                  ),
+                ),
+        ),
+        GestureDetector(
+          onTap: () {
+            controller.value.isPlaying ? controller.pause() : controller.play();
+          },
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: PopupMenuButton<Duration>(
+            initialValue: controller.value.captionOffset,
+            tooltip: 'Caption Offset',
+            onSelected: (Duration delay) {
+              controller.setCaptionOffset(delay);
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<Duration>>[
+                for (final Duration offsetDuration in _exampleCaptionOffsets)
+                  PopupMenuItem<Duration>(
+                    value: offsetDuration,
+                    child: Text('${offsetDuration.inMilliseconds}ms'),
+                  )
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                // Using less vertical padding as the text is also longer
+                // horizontally, so it feels like it would need more spacing
+                // horizontally (matching the aspect ratio of the video).
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text('${controller.value.captionOffset.inMilliseconds}ms'),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: PopupMenuButton<double>(
+            initialValue: controller.value.playbackSpeed,
+            tooltip: 'Playback speed',
+            onSelected: (double speed) {
+              controller.setPlaybackSpeed(speed);
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<double>>[
+                for (final double speed in _examplePlaybackRates)
+                  PopupMenuItem<double>(
+                    value: speed,
+                    child: Text('${speed}x'),
+                  )
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                // Using less vertical padding as the text is also longer
+                // horizontally, so it feels like it would need more spacing
+                // horizontally (matching the aspect ratio of the video).
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text('${controller.value.playbackSpeed}x'),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
