@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/screens/home_screen.dart';
+import 'package:wombocombo/screens/profile/profile_screen.dart';
+import 'package:wombocombo/screens/profile/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainDrawer extends StatelessWidget {
+  final _auth = FirebaseAuth.instance;
+
+  void logOut() async {
+    await _auth.signOut();
+  }
+
   Widget buildListTile(String title, IconData icon, VoidCallback tapHandler) {
     return ListTile(
       leading: Icon(
@@ -32,15 +42,15 @@ class MainDrawer extends StatelessWidget {
           ),
           Divider(),
           buildListTile('Menu', Icons.home, () {
-            Navigator.of(context).pushReplacementNamed('/home-screen');
+            Navigator.of(context).pushNamed(HomeScreen.routeName);
           }),
           Divider(),
           buildListTile('Profile', Icons.person, () {
-            Navigator.of(context).pushReplacementNamed('/profile');
+            Navigator.of(context).pushNamed(ProfileScreen.routeName);
           }),
           Divider(),
           buildListTile('Log Out', Icons.logout, () {
-            Provider.of<AuthProvider>(context, listen: false).logOut();
+            logOut();
           }),
           Divider(),
         ],

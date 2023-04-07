@@ -9,12 +9,40 @@ import 'package:wombocombo/screens/think_on_your_feet/muay_thai_mapping.dart';
 class ChooseMartialArt extends StatelessWidget {
   static const routeName = '/choose-martialart';
 
+  var _attacksBeginner = [
+    '2 4 3',
+    '1 2 3',
+    '1 1 5',
+    '1 1 2',
+    '1 6 4',
+  ];
+
+  var _attacksIntermediate = [
+    '2 4 3',
+    '1 2 3 4',
+    '1 1 5 6',
+    '1 1 2',
+    '1 6 4 3',
+  ];
+
+  var _attacksAdvanced = [
+    '2 4 3 3',
+    '1 2 3 4 1',
+    '1 1 5 6 2 ',
+    '1 1 2 3',
+    '1 6 4 3 3'
+  ];
+
+  var _attacksNightmare = [
+    '2 4 3 3 3',
+    '1 2 3 4 1 2',
+    '1 1 5 6 2 2',
+    '1 1 2 3 1',
+    '1 6 4 3 3 4'
+  ];
+
   @override
   Widget build(BuildContext context) {
-    Provider.of<BoxingAttacksListProvider>(context, listen: false)
-        .initAttacks();
-    Provider.of<BoxingAttacksListProvider>(context, listen: false)
-        .fetchAttacks();
     return Scaffold(
       appBar: AppBar(
         title: Text('text'),

@@ -17,11 +17,30 @@ class BoxingMapping extends StatefulWidget {
 }
 
 class _BoxingMappingState extends State<BoxingMapping> {
+  late List<BoxingAttack> _boxingAttacks = [
+    BoxingAttack('jab', 'assets/images/jab.png', '1'),
+    BoxingAttack('jab body', 'assets/images/jabBody.png', '1b'),
+    BoxingAttack('cross', 'assets/images/cross.png', '2'),
+    BoxingAttack('cross body', 'assets/images/crossBody.png', '2b'),
+    BoxingAttack('left hook', 'assets/images/leftHook.png', '3'),
+    BoxingAttack('left hook body', 'assets/images/leftUppercutBody.png', '3b'),
+    BoxingAttack('right hook', 'assets/images/rightHook.png', '4'),
+    BoxingAttack(
+        'right hook body', 'assets/images/rightUppercutBody.png', '4b'),
+    BoxingAttack('left uppercut', 'assets/images/leftupperreal.png', '5'),
+    BoxingAttack(
+        'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '9b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '8b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '7b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '11b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '12b'),
+    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '13b'),
+  ];
   @override
   Widget build(BuildContext context) {
-    final attacks =
-        Provider.of<BoxingAttacksListProvider>(context, listen: false).attacks;
-
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
@@ -36,9 +55,9 @@ class _BoxingMappingState extends State<BoxingMapping> {
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {
-          return AttackListItem(boxingAttack: attacks[index]);
+          return AttackListItem(boxingAttack: _boxingAttacks[index]);
         },
-        itemCount: attacks.length,
+        itemCount: _boxingAttacks.length,
       ),
     );
   }

@@ -41,13 +41,17 @@ class _CombosScreenState extends State<CombosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const ValueKey<String>('home_page'),
-      appBar: AppBar(
-        title: Text(currentLevel),
-        actions: <Widget>[],
-      ),
-      body: _FighterVideoRemote(),
-    );
+        key: const ValueKey<String>('home_page'),
+        appBar: AppBar(
+          title: Text(currentLevel),
+          actions: <Widget>[],
+        ),
+        body: Column(
+          children: [
+            Expanded(child: _FighterVideoRemote()),
+            Container(height: 100, width: 100, child: Text('asd')),
+          ],
+        ));
   }
 }
 

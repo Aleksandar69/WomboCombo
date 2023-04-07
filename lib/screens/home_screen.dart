@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wombocombo/providers/user_provider.dart';
+import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
+import 'package:wombocombo/screens/recording/start_recording_screen.dart';
 import 'package:wombocombo/widgets/main_drawer.dart';
 import 'combos/training_levels.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
@@ -21,12 +22,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void addUser() async {
-      await Provider.of<UserProvider>(context, listen: false)
-          .addUserInitially();
-    }
-
-    addUser();
     return Scaffold(
       appBar: AppBar(
         title: Text("Activities"),
@@ -104,6 +99,34 @@ class HomeScreen extends StatelessWidget {
                     child: Center(
                       child: Text(
                         'Timer',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () =>
+                    Navigator.of(context).pushNamed(StartRecording.routeName),
+                child: Container(
+                  height: 100,
+                  child: Card(
+                    child: Center(
+                      child: Text(
+                        'Record your session',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context)
+                    .pushNamed(LeaderboardScreen.routeName),
+                child: Container(
+                  height: 100,
+                  child: Card(
+                    child: Center(
+                      child: Text(
+                        'Leaderboard',
                       ),
                     ),
                   ),

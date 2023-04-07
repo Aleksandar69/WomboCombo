@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
-import './timer_new.dart';
+import 'countdown_timer.dart';
 
 class SetTimeScreen extends StatefulWidget {
   static const routeName = '/settimer';
@@ -184,8 +184,8 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             ),
           ),
           RawMaterialButton(
-            onPressed: () =>
-                Navigator.of(context).pushNamed(TimerNew.routeName, arguments: [
+            onPressed: () => Navigator.of(context)
+                .pushNamed(CountdownTimer.routeName, arguments: [
               _minutesController.selectedItem,
               _secondsController.selectedItem,
               _restControllerMin.selectedItem,
