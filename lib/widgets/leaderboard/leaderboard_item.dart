@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:wombocombo/models/user.dart';
 
 class LeaderboardItem extends StatelessWidget {
-  User user;
+  var userName;
+  int userPoints;
+  var imgUrl;
 
-  LeaderboardItem(this.user);
+  LeaderboardItem(this.userName, this.userPoints, this.imgUrl);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,10 @@ class LeaderboardItem extends StatelessWidget {
           ),
         ),
         title: Text(
-          'Steve-o',
+          userName,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        subtitle: Text('355 points'),
+        subtitle: Text(userPoints.toString()),
         trailing: MediaQuery.of(context).size.width > 360
             ? TextButton.icon(
                 label: Text('Add Friend'),

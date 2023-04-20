@@ -127,16 +127,15 @@ class _CountdownTimerState extends State<CountdownTimer>
     setState(() {
       Wakelock.enable();
     });
-    final countdownTimerStuff =
-        ModalRoute.of(context)!.settings.arguments as List;
-    final mnts = countdownTimerStuff[0];
-    final scnds = countdownTimerStuff[1];
-    final restMins = countdownTimerStuff[2];
-    final restSecs = countdownTimerStuff[3];
-    final rnds = countdownTimerStuff[4];
-    previousScreen = countdownTimerStuff[5] as String;
-    trainingLevel = countdownTimerStuff[6] as String;
-    customCombos = countdownTimerStuff[7] as List;
+    final args = ModalRoute.of(context)!.settings.arguments as List;
+    final mnts = args[0];
+    final scnds = args[1];
+    final restMins = args[2];
+    final restSecs = args[3];
+    final rnds = args[4];
+    previousScreen = args[5] as String;
+    trainingLevel = args[6] as String;
+    customCombos = args[7] as List;
 
     if (previousScreen == 'fromMakeYourComboScreen') {
       currentAttacks = List.from(customCombos);
@@ -227,7 +226,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     playerSetSource();
     initTts();
     WidgetsBinding.instance.addObserver(this);
-    // getUser();
+    getUser();
   }
 
   initTts() async {
@@ -404,23 +403,48 @@ class _CountdownTimerState extends State<CountdownTimer>
           setState(() => currentRound++);
           stopTimer(resetAndStart: true);
         } else {
-          // if (trainingLevel == 'Beginner' &&
-          //     previousScreen == 'fromQuickCombos') {
-          //   setUserPoints(currentPoints + 1);
-          //   pointsEarnedText = '+1 WomboCombo Points';
-          // } else if (trainingLevel == 'Intermediate' &&
-          //     previousScreen == 'fromQuickCombos') {
-          //   setUserPoints(currentPoints + 2);
-          //   pointsEarnedText = '+2 WomboCombo Points';
-          // } else if (trainingLevel == 'Advanced' &&
-          //     previousScreen == 'fromQuickCombos') {
-          //   setUserPoints(currentPoints + 3);
-          //   pointsEarnedText = '+3 WomboCombo Points';
-          // } else if (trainingLevel == 'Nightmare' &&
-          //     previousScreen == 'fromQuickCombos') {
-          //   setUserPoints(currentPoints + 4);
-          //   pointsEarnedText = '+4 WomboCombo Points';
-          // }
+          var totalPts;
+          if (trainingLevel == 'Beginner' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds >= 60) {
+            totalPts = 1 + rounds;
+          } else if (trainingLevel == 'Beginner' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds < 60) {
+            totalPts = 1;
+          } else if (trainingLevel == 'Intermediate' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds >= 60) {
+            totalPts = 2 + rounds;
+          } else if (trainingLevel == 'Intermediate' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds < 60) {
+            totalPts = 2;
+          } else if (trainingLevel == 'Advanced' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds >= 60) {
+            totalPts = 3 + rounds;
+          } else if (trainingLevel == 'Advanced' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds < 60) {
+            totalPts = 3;
+          } else if (trainingLevel == 'Nightmare' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds >= 60) {
+            totalPts = 5 + rounds;
+          } else if (trainingLevel == 'Nightmare' &&
+              previousScreen == 'fromQuickCombos' &&
+              maxSeconds < 60) {
+            totalPts = 5;
+          }
+          pointsEarnedText = '+$totalPts WomboCombo Points';
+          setUserPoints(currentPoints + totalPts);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(pointsEarnedText),
+            ),
+          );
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(
           //     content: Text(pointsEarnedText),

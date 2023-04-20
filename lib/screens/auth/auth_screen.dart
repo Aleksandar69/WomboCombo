@@ -57,6 +57,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'username': username,
           'email': email,
           'image_url': url,
+          'userPoints': 0,
         });
       }
     } on PlatformException catch (e) {

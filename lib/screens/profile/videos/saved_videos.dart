@@ -14,16 +14,24 @@ class SavedVideos extends StatefulWidget {
 }
 
 class _SavedVideosState extends State<SavedVideos> {
-  var currentUser = FirebaseAuth.instance.currentUser;
   bool isLoading = false;
-  var dbFetch;
+  var userId;
   @override
   void initState() {
     super.initState();
-    dbFetch = FirebaseFirestore.instance
-        .collection('videos')
-        .where('userId', isEqualTo: currentUser!.uid)
-        .snapshots();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    var currentUser = FirebaseAuth.instance.currentUser;
+    userId = currentUser!.uid;
+
+    if (ModalRoute.of(context)!.settings.arguments != null) {
+      final args = ModalRoute.of(context)!.settings.arguments as List;
+      userId = args[0];
+    }
   }
 
   @override
@@ -33,7 +41,10 @@ class _SavedVideosState extends State<SavedVideos> {
         title: Text('asd'),
       ),
       body: StreamBuilder(
-        stream: dbFetch,
+        stream: FirebaseFirestore.instance
+            .collection('videos')
+            .where('userId', isEqualTo: userId)
+            .snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

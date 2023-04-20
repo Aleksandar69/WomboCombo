@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import '../../widgets/timer/build_time.dart';
 import 'dart:math';
 
-
-
-Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown, currentTerm, initialCountdownMax) {
+Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
+    currentTerm, initialCountdownMax) {
   if (previousScreen == 'fromHomeScreen') {
     return SizedBox(
       width: 200,
