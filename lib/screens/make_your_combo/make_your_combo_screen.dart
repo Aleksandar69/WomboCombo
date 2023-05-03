@@ -96,14 +96,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
       savedComboList = savedCustomCombo.getAttacks.split('|');
 
       if (savedComboList.length > 0) {
-        var kojajevrijednost = savedComboList.asMap()[0][0];
-        var kojajevrijednostvanindeksa2 = savedComboList.asMap()[7];
-        var duzinaje = savedComboList.asMap()[0].length;
-        var duzinaje1 = savedComboList.asMap()[1].length;
-        var kojajevrijednost2 = savedComboList[0][0];
-        // var kojajevrijednost3 = savedComboList[0][7];
-        // var kojajevrijednost4 = savedComboList[4][1];
-
         if (savedComboList.asMap()[0] != null) {
           var attacksList = savedComboList.asMap()[0].split(' ');
           var attacksLength = attacksList.length;

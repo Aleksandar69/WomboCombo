@@ -30,12 +30,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userId = args[0];
     }
     getUser();
+    checkIfUserIsAddedAsFriend();
   }
+
+  var currentUserUsername;
+  var currentUserUserImg;
+  var currentUser2;
 
   void getUser() async {
     currentUser = FirebaseAuth.instance.currentUser;
 
-    currentUser == userId
+    userId == null
         ? await FirebaseFirestore.instance
             .collection('users')
             .doc(currentUser!.uid)
@@ -57,9 +62,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
             });
           });
 
-    username = user['username'];
-    userPoints = user['userPoints'];
-    imgUrl = user['image_url'];
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  var user1CurrentUser;
+  var user2CurrentUser;
+  bool isAlreadyFriendRequested = false;
+
+  void checkIfUserIsAddedAsFriend() async {
+    await FirebaseFirestore.instance
+        .collection('friendList')
+        .where('user1', isEqualTo: currentUser.uid)
+        .get()
+        .then((value) {
+      user1CurrentUser = value;
+      setState(() {
+        isLoading = true;
+      });
+    });
+    await FirebaseFirestore.instance
+        .collection('friendList')
+        .where('user2', isEqualTo: currentUser.uid)
+        .get()
+        .then((value) {
+      user2CurrentUser = value;
+      setState(() {
+        isLoading = true;
+      });
+    });
+
+    for (var user in user1CurrentUser!.docs) {
+      if (user['user2'] == userId) {
+        isAlreadyFriendRequested = true;
+      }
+    }
+
+    for (var user in user2CurrentUser!.docs) {
+      if (user['user1'] == userId) {
+        isAlreadyFriendRequested = true;
+      }
+    }
 
     setState(() {
       isLoading = false;
@@ -161,6 +205,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SavedVideos.routeName,
                           arguments: [userId]),
                     ),
+                    if (!isCurrentUser)
+                      SizedBox(
+                        height: 30,
+                      ),
+                    !isAlreadyFriendRequested
+                        ? GestureDetector(
+                            child: Container(
+                              height: 80,
+                              width: double.infinity,
+                              child: Card(
+                                child: Text(
+                                  'Add Friend',
+                                  style: TextStyle(fontSize: 35),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              FirebaseFirestore.instance
+                                  .collection('friendList')
+                                  .add({
+                                'user1': currentUser.uid,
+                                'user2': userId,
+                                'status': 0
+                              });
+                            })
+                        : GestureDetector(
+                            child: Container(
+                              height: 80,
+                              width: double.infinity,
+                              child: Card(
+                                child: Text(
+                                  'Add Friend',
+                                  style: TextStyle(
+                                      fontSize: 35, color: Colors.grey),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            onTap: () {}),
                   ],
                 ),
               ),

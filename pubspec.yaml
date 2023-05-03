@@ -30,7 +30,7 @@ dependencies:
   flutter_ringtone_player: ^3.2.0
   path: ^1.8.2
   sqflite: ^2.2.0+3
-  flutter_tts: ^3.6.2
+  flutter_tts: ^3.6.3
   text_to_speech: ^0.2.3
   animated_text_kit: ^4.2.2
   wakelock: ^0.6.2

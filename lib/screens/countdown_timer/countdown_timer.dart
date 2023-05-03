@@ -233,6 +233,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     flutterTts = FlutterTts();
     await flutterTts.setLanguage(language!);
     await flutterTts.setEngine(engine!);
+    await flutterTts.setSpeechRate(0.7);
 
     _setAwaitOptions();
 

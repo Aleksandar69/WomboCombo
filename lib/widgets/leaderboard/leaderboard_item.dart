@@ -28,17 +28,17 @@ class LeaderboardItem extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         subtitle: Text(userPoints.toString()),
-        trailing: MediaQuery.of(context).size.width > 360
-            ? TextButton.icon(
-                label: Text('Add Friend'),
-                onPressed: () {},
-                icon: Icon(Icons.add),
-              )
-            : IconButton(
-                icon: Icon(Icons.add),
-                color: Theme.of(context).errorColor,
-                onPressed: () {},
-              ),
+        // trailing: MediaQuery.of(context).size.width > 360
+        //     ? TextButton.icon(
+        //         label: Text('Add Friend'),
+        //         onPressed: () {},
+        //         icon: Icon(Icons.add),
+        //       )
+        //     : IconButton(
+        //         icon: Icon(Icons.add),
+        //         color: Theme.of(context).errorColor,
+        //         onPressed: () {},
+        //       ),
       ),
     );
   }
