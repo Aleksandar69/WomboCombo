@@ -173,7 +173,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     onValueChanged: (i) => print(i),
                     maxValue: 99,
                     listHeight: 200,
-                    minValue: 0,
+                    minValue: 1,
                     step: 1,
                     unSelectTextStyle: TextStyle(color: Colors.grey),
                     controller: _roundsController,
@@ -184,17 +184,40 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             ),
           ),
           RawMaterialButton(
-            onPressed: () => Navigator.of(context)
-                .pushNamed(CountdownTimer.routeName, arguments: [
-              _minutesController.selectedItem,
-              _secondsController.selectedItem,
-              _restControllerMin.selectedItem,
-              _restControllerSec.selectedItem,
-              _roundsController.selectedItem,
-              previousScreen,
-              difficultyLevel,
-              customCombos
-            ]),
+            onPressed: () {
+              if (_minutesController.selectedItem <= 0 &&
+                  _secondsController.selectedItem < 15) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('A round must be at least 15 seconds long'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              if (_restControllerMin.selectedItem <= 0 &&
+                  _restControllerSec.selectedItem < 5) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text('A rest timer must be at least 5 seconds long'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              Navigator.of(context)
+                  .pushNamed(CountdownTimer.routeName, arguments: [
+                _minutesController.selectedItem,
+                _secondsController.selectedItem,
+                _restControllerMin.selectedItem,
+                _restControllerSec.selectedItem,
+                _roundsController.selectedItem,
+                previousScreen,
+                difficultyLevel,
+                customCombos
+              ]);
+            },
             elevation: 2.0,
             fillColor: Colors.white,
             child: Icon(

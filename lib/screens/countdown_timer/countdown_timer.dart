@@ -132,7 +132,8 @@ class _CountdownTimerState extends State<CountdownTimer>
     final scnds = args[1];
     final restMins = args[2];
     final restSecs = args[3];
-    final rnds = args[4];
+    final rnds = args[4] + 1;
+    print('runde:  $rnds');
     previousScreen = args[5] as String;
     trainingLevel = args[6] as String;
     customCombos = args[7] as List;
@@ -198,24 +199,24 @@ class _CountdownTimerState extends State<CountdownTimer>
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.inactive) {
-      timerAttacks?.cancel();
-      stopBeeps();
-      stopTimer();
-    } else if (state == AppLifecycleState.resumed) {
-    } else if (state == AppLifecycleState.paused) {
-      timerAttacks?.cancel();
-      stopBeeps();
-      stopTimer();
-    } else if (state == AppLifecycleState.detached) {
-      timerAttacks?.cancel();
-      stopBeeps();
-      stopTimer();
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) async {
+  //   super.didChangeAppLifecycleState(state);
+  //   if (state == AppLifecycleState.inactive) {
+  //     timerAttacks?.cancel();
+  //     stopBeeps();
+  //     stopTimer();
+  //   } else if (state == AppLifecycleState.resumed) {
+  //   } else if (state == AppLifecycleState.paused) {
+  //     timerAttacks?.cancel();
+  //     stopBeeps();
+  //     stopTimer();
+  //   } else if (state == AppLifecycleState.detached) {
+  //     timerAttacks?.cancel();
+  //     stopBeeps();
+  //     stopTimer();
+  //   }
+  // }
 
   @override
   void initState() {
@@ -286,10 +287,15 @@ class _CountdownTimerState extends State<CountdownTimer>
       rounds = maxRounds;
       started = false;
       if (isInitialRun) {
+        initialCountdownMax = 3;
         initialCountdown = initialCountdownMax;
       } else {
         initialCountdown = restTimeMax;
       }
+      print('coundtown max : $initialCountdownMax');
+      print('rest max : $restTimeMax');
+      print('real countdown max : $initialCountdown');
+
       secs = maxSeconds;
     });
     stopTimer();
@@ -314,6 +320,7 @@ class _CountdownTimerState extends State<CountdownTimer>
   }
 
   void stopTimer({bool reset = false, resetAndStart = false}) {
+    _stop();
     setState(() {
       isRunning = false;
     });
@@ -393,7 +400,8 @@ class _CountdownTimerState extends State<CountdownTimer>
         if (secs < maxSeconds &&
             futureTimerHasEnded == true &&
             (previousScreen == 'fromQuickCombos' ||
-                previousScreen == 'fromMakeYourComboScreen')) {
+                previousScreen == 'fromMakeYourComboScreen') &&
+            secs >= 5) {
           startSpeakTimer();
         }
         setState(() => secs = secs - 1);
@@ -404,48 +412,35 @@ class _CountdownTimerState extends State<CountdownTimer>
           setState(() => currentRound++);
           stopTimer(resetAndStart: true);
         } else {
+          _stop();
           var totalPts;
-          if (trainingLevel == 'Beginner' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds >= 60) {
-            totalPts = 1 + rounds;
-          } else if (trainingLevel == 'Beginner' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds < 60) {
-            totalPts = 1;
-          } else if (trainingLevel == 'Intermediate' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds >= 60) {
-            totalPts = 2 + rounds;
-          } else if (trainingLevel == 'Intermediate' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds < 60) {
-            totalPts = 2;
-          } else if (trainingLevel == 'Advanced' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds >= 60) {
-            totalPts = 3 + rounds;
-          } else if (trainingLevel == 'Advanced' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds < 60) {
-            totalPts = 3;
-          } else if (trainingLevel == 'Nightmare' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds >= 60) {
-            totalPts = 5 + rounds;
-          } else if (trainingLevel == 'Nightmare' &&
-              previousScreen == 'fromQuickCombos' &&
-              maxSeconds < 60) {
-            totalPts = 5;
+          if (previousScreen == 'fromQuickCombos') {
+            if (trainingLevel == 'Beginner' && maxSeconds >= 60) {
+              totalPts = 1 + rounds;
+            } else if (trainingLevel == 'Beginner' && maxSeconds < 60) {
+              totalPts = 1;
+            } else if (trainingLevel == 'Intermediate' && maxSeconds >= 60) {
+              totalPts = 2 + rounds;
+            } else if (trainingLevel == 'Intermediate' && maxSeconds < 60) {
+              totalPts = 2;
+            } else if (trainingLevel == 'Advanced' && maxSeconds >= 60) {
+              totalPts = 3 + rounds;
+            } else if (trainingLevel == 'Advanced' && maxSeconds < 60) {
+              totalPts = 3;
+            } else if (trainingLevel == 'Nightmare' && maxSeconds >= 60) {
+              totalPts = 5 + rounds;
+            } else if (trainingLevel == 'Nightmare' && maxSeconds < 60) {
+              totalPts = 5;
+            }
+            pointsEarnedText = '+$totalPts WomboCombo Points';
+            setUserPoints(currentPoints + totalPts);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(pointsEarnedText),
+              ),
+            );
           }
-          pointsEarnedText = '+$totalPts WomboCombo Points';
-          setUserPoints(currentPoints + totalPts);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(pointsEarnedText),
-            ),
-          );
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(
           //     content: Text(pointsEarnedText),
@@ -479,6 +474,7 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   Future _speak() async {
     await flutterTts.speak(currentTerm);
+    timerAttacks?.cancel();
   }
 
   Future _stop() async {
@@ -549,31 +545,40 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: GradientWidget(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Round $currentRound',
-                  style: TextStyle(fontSize: 30, color: Colors.white),
-                ),
-                SizedBox(height: 40),
-                buildTimer(previousScreen, started, secs, maxSeconds,
-                    initialCountdown, currentTerm, initialCountdownMax),
-                const SizedBox(height: 80),
-                buildButtons(
-                    timer,
-                    secs,
-                    maxSeconds,
-                    timerAttacks,
-                    stopTimer,
-                    startTimer,
-                    previousScreen,
-                    startSpeakTimer,
-                    isRunning,
-                    resetTimer),
-              ],
+        body: WillPopScope(
+          onWillPop: () async {
+            stopBeeps();
+            stopTimer();
+            _stop();
+            Navigator.of(context).pop();
+            return false;
+          },
+          child: GradientWidget(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Round $currentRound',
+                    style: TextStyle(fontSize: 30, color: Colors.white),
+                  ),
+                  SizedBox(height: 40),
+                  buildTimer(previousScreen, started, secs, maxSeconds,
+                      initialCountdown, currentTerm, initialCountdownMax),
+                  const SizedBox(height: 80),
+                  buildButtons(
+                      timer,
+                      secs,
+                      maxSeconds,
+                      timerAttacks,
+                      stopTimer,
+                      startTimer,
+                      previousScreen,
+                      startSpeakTimer,
+                      isRunning,
+                      resetTimer),
+                ],
+              ),
             ),
           ),
         ),
