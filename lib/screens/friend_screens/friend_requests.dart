@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wombocombo/screens/friend_screens/friend_list.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
 
@@ -76,71 +77,105 @@ class _FriendRequestsState extends State<FriendRequests> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('aaa'),
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.of(context).pushReplacementNamed(FriendList.routeName);
+        return Future.value(false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('aaa'),
+        ),
+        body: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    reverse: false,
+                    itemCount: friendRequestData?.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).pushNamed(
+                          ProfileScreen.routeName,
+                        ),
+                        child: Card(
+                          elevation: 5,
+                          margin: EdgeInsets.symmetric(
+                            vertical: 2,
+                            horizontal: 2,
+                          ),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              radius: 30,
+                              child: Padding(
+                                padding: EdgeInsets.all(2),
+                              ),
+                            ),
+                            title: Text(
+                              friendRequestData[index]['username'],
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            subtitle: Text(friendRequestData[index]
+                                    ['userPoints']
+                                .toString()),
+                            trailing: SizedBox(
+                              width: 130,
+                              child: Row(
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      acceptFriendRequest(
+                                          friendRequestUser[index]['id']);
+                                      setState(() {
+                                        friendRequestData.removeAt(index);
+                                      });
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('Friend request accepted'),
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.check_outlined,
+                                        color: Colors.green),
+                                    label: Text(''),
+                                  ),
+                                  TextButton.icon(
+                                    onPressed: () {
+                                      declineFriendRequest(
+                                          friendRequestUser[index]['id']);
+
+                                      setState(() {
+                                        friendRequestData.removeAt(index);
+                                      });
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              Text('Friend request removed'),
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.close_outlined,
+                                        color: Colors.red),
+                                    label: Text(''),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ),
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  reverse: false,
-                  itemCount: friendRequestData?.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).pushNamed(
-                        ProfileScreen.routeName,
-                      ),
-                      child: Card(
-                        elevation: 5,
-                        margin: EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 2,
-                        ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            child: Padding(
-                              padding: EdgeInsets.all(2),
-                            ),
-                          ),
-                          title: Text(
-                            friendRequestData[index]['username'],
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          subtitle: Text(friendRequestData[index]['userPoints']
-                              .toString()),
-                          trailing: SizedBox(
-                            width: 200,
-                            child: Row(
-                              children: [
-                                TextButton.icon(
-                                  onPressed: () {
-                                    acceptFriendRequest(
-                                        friendRequestUser[index]['id']);
-                                  },
-                                  icon: Icon(Icons.check_outlined,
-                                      color: Colors.green),
-                                  label: Text(''),
-                                ),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    acceptFriendRequest(
-                                        friendRequestUser[index]['id']);
-                                  },
-                                  icon: Icon(Icons.close_outlined,
-                                      color: Colors.red),
-                                  label: Text(''),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-            ),
     );
   }
 }

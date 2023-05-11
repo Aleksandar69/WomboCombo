@@ -24,7 +24,7 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
         .collection('users')
         .where('username', isEqualTo: term)
         .orderBy('userPoints', descending: true)
-        .limit(4)
+        .limit(50)
         .snapshots();
   }
 
@@ -78,7 +78,7 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                   ? FirebaseFirestore.instance
                       .collection('users')
                       .orderBy('userPoints', descending: true)
-                      .limit(4)
+                      .limit(50)
                       .snapshots()
                   : fireStoreFetch = FirebaseFirestore.instance
                       .collection('users')
@@ -96,7 +96,7 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                     ? Center(
                         child: Text('No results found'),
                       )
-                    : SingleChildScrollView(
+                    : Expanded(
                         child: ListView.builder(
                             shrinkWrap: true,
                             reverse: false,

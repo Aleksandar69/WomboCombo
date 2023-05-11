@@ -19,6 +19,26 @@ class _NewMessageState extends State<NewMessage> {
   var _enteredMessage = '';
   final _controller = new TextEditingController();
 
+  // void _sendMessage() async {
+  //   FocusScope.of(context).unfocus();
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   final userData = await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(user?.uid)
+  //       .get();
+  //   FirebaseFirestore.instance.collection('chat').add({
+  //     'text': _enteredMessage,
+  //     'createdAt': Timestamp.now(),
+  //     'senderId': user?.uid,
+  //     'senderUsername': userData['username'],
+  //     'senderImage': userData['image_url'],
+  //     'receiverId': widget.receiverId,
+  //     'receiverUsername': widget.receiverUsername,
+  //     'receiverImg': widget.receiverImg,
+  //   });
+  //   _controller.clear();
+  // }
+  var groupChatId;
   void _sendMessage() async {
     FocusScope.of(context).unfocus();
     final user = FirebaseAuth.instance.currentUser;
@@ -26,15 +46,35 @@ class _NewMessageState extends State<NewMessage> {
         .collection('users')
         .doc(user?.uid)
         .get();
-    FirebaseFirestore.instance.collection('chat').add({
-      'text': _enteredMessage,
-      'createdAt': Timestamp.now(),
-      'senderId': user?.uid,
-      'senderUsername': userData['username'],
-      'senderImage': userData['image_url'],
-      'receiverId': widget.receiverId,
-      'receiverUsername': widget.receiverUsername,
-      'receiverImg': widget.receiverImg,
+    var currentUserId = user!.uid;
+    var receiverId = widget.receiverId;
+    if (user!.uid.hashCode <= widget.receiverId.hashCode) {
+      groupChatId = '$currentUserId-$receiverId';
+    } else {
+      groupChatId = '$receiverId-$currentUserId';
+    }
+
+    var documentReference = FirebaseFirestore.instance
+        .collection('messages')
+        .doc(groupChatId)
+        .collection(groupChatId)
+        .doc(DateTime.now().millisecondsSinceEpoch.toString());
+
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      await transaction.set(
+        documentReference,
+        {
+          'text': _enteredMessage,
+          'senderId': user?.uid,
+          'senderUsername': userData['username'],
+          'senderImage': userData['image_url'],
+          'receiverId': widget.receiverId,
+          'receiverUsername': widget.receiverUsername,
+          'receiverImg': widget.receiverImg,
+          'createdAt': Timestamp.now(),
+        },
+      );
+      _enteredMessage = '';
     });
     _controller.clear();
   }
@@ -60,9 +100,17 @@ class _NewMessageState extends State<NewMessage> {
             ),
           ),
           IconButton(
-            onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
+            onPressed: _enteredMessage.trim().isEmpty || _enteredMessage == ''
+                ? null
+                : () {
+                    _enteredMessage.trim().isEmpty || _enteredMessage == ''
+                        ? null
+                        : _sendMessage();
+                  },
             icon: Icon(Icons.send),
-            color: Theme.of(context).primaryColor,
+            color: _enteredMessage.trim().isEmpty || _enteredMessage == ''
+                ? Colors.grey
+                : Theme.of(context).primaryColor,
           )
         ],
       ),

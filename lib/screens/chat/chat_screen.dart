@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,10 +19,23 @@ class _ChatScreenState extends State<ChatScreen> {
   var receiverId;
   var receiverUsername;
   var recieverImage;
+  var userData;
+  var user;
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  getCurrentUser() async {
+    user = FirebaseAuth.instance.currentUser;
+
+    userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .get();
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    getCurrentUser();
     var args = ModalRoute.of(context)!.settings.arguments as List;
     receiverUsername = args[0];
     recieverImage = args[1];
@@ -38,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Expanded(
-              child: Messages(receiverId),
+              child: Messages(receiverId, user!.uid),
             ),
             NewMessage(receiverId, receiverUsername, recieverImage),
           ],

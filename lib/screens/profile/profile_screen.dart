@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/profile/edit_profile_screen.dart';
 import 'package:wombocombo/screens/profile/videos/saved_videos.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -70,6 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var user1CurrentUser;
   var user2CurrentUser;
   bool isAlreadyFriendRequested = false;
+  bool isAlreadyFriend = false;
 
   void checkIfUserIsAddedAsFriend() async {
     await FirebaseFirestore.instance
@@ -96,12 +98,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == userId) {
         isAlreadyFriendRequested = true;
+        if (user['status'] == 1) {
+          isAlreadyFriend = true;
+        }
       }
     }
 
     for (var user in user2CurrentUser!.docs) {
       if (user['user1'] == userId) {
         isAlreadyFriendRequested = true;
+        if (user['status'] == 1) {
+          isAlreadyFriend = true;
+        }
       }
     }
 
@@ -120,132 +128,171 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: isLoading
             ? CircularProgressIndicator()
             : Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    CircleAvatar(
-                      radius: 50,
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      user['username'],
-                      style:
-                          TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
-                    ),
-                    if (isCurrentUser)
-                      TextButton.icon(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => Navigator.of(context)
-                            .pushNamed(EditProfileScreen.routeName),
-                        label: Text('Edit Profile'),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 50,
                       ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          children: [
-                            Text(
-                              'Earned Points',
-                              style: TextStyle(
-                                fontSize: 27,
+                      SizedBox(height: 10),
+                      Text(
+                        user['username'],
+                        style: TextStyle(
+                            fontSize: 27, fontWeight: FontWeight.bold),
+                      ),
+                      if (isCurrentUser)
+                        TextButton.icon(
+                          icon: Icon(Icons.edit),
+                          onPressed: () => Navigator.of(context)
+                              .pushNamed(EditProfileScreen.routeName),
+                          label: Text('Edit Profile'),
+                        ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Column(
+                            children: [
+                              Text(
+                                'Earned Points',
+                                style: TextStyle(
+                                  fontSize: 27,
+                                ),
                               ),
-                            ),
-                            Text(user['userPoints'].toString(),
-                                style: TextStyle(
-                                  fontSize: 27,
-                                )),
-                          ],
-                        ),
-                        SizedBox(width: 20),
-                        Column(
-                          children: [
-                            Text('Highest streak',
-                                style: TextStyle(fontSize: 27)),
-                            Text('23',
-                                style: TextStyle(
-                                  fontSize: 27,
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 100,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 70,
-                      child: Card(
-                        child: Text(
-                          'Combos',
-                          style: TextStyle(fontSize: 35),
-                          textAlign: TextAlign.center,
-                        ),
+                              Text(user['userPoints'].toString(),
+                                  style: TextStyle(
+                                    fontSize: 27,
+                                  )),
+                            ],
+                          ),
+                          SizedBox(width: 20),
+                          Column(
+                            children: [
+                              Text('Highest streak',
+                                  style: TextStyle(fontSize: 27)),
+                              Text('23',
+                                  style: TextStyle(
+                                    fontSize: 27,
+                                  )),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      child: Container(
-                        height: 80,
-                        width: double.infinity,
-                        child: Card(
-                          child: Text(
-                            'Videos',
-                            style: TextStyle(fontSize: 35),
-                            textAlign: TextAlign.center,
+                      SizedBox(
+                        height: 100,
+                      ),
+                      // Container(
+                      //   width: double.infinity,
+                      //   height: 70,
+                      //   child: Card(
+                      //     child: Text(
+                      //       'Combos',
+                      //       style: TextStyle(fontSize: 35),
+                      //       textAlign: TextAlign.center,
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      GestureDetector(
+                        child: Container(
+                          height: 80,
+                          width: double.infinity,
+                          child: Card(
+                            child: Text(
+                              'Videos',
+                              style: TextStyle(fontSize: 35),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
+                        onTap: () => Navigator.of(context).pushNamed(
+                            SavedVideos.routeName,
+                            arguments: [userId]),
                       ),
-                      onTap: () => Navigator.of(context).pushNamed(
-                          SavedVideos.routeName,
-                          arguments: [userId]),
-                    ),
-                    if (!isCurrentUser)
-                      SizedBox(
-                        height: 30,
-                      ),
-                    !isAlreadyFriendRequested
-                        ? GestureDetector(
-                            child: Container(
-                              height: 80,
-                              width: double.infinity,
-                              child: Card(
-                                child: Text(
-                                  'Add Friend',
-                                  style: TextStyle(fontSize: 35),
-                                  textAlign: TextAlign.center,
+                      if (!isCurrentUser)
+                        SizedBox(
+                          height: 30,
+                        ),
+                      if (userId != null)
+                        !isAlreadyFriendRequested
+                            ? GestureDetector(
+                                child: Container(
+                                  height: 80,
+                                  width: double.infinity,
+                                  child: Card(
+                                    child: Text(
+                                      'Add Friend',
+                                      style: TextStyle(fontSize: 35),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
                                 ),
+                                onTap: () {
+                                  FirebaseFirestore.instance
+                                      .collection('friendList')
+                                      .add({
+                                    'user1': currentUser.uid,
+                                    'user2': userId,
+                                    'status': 0
+                                  });
+
+                                  setState(() {
+                                    isAlreadyFriendRequested = true;
+                                  });
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Friend request sent'),
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                                  );
+                                })
+                            : GestureDetector(
+                                child: Container(
+                                  height: 80,
+                                  width: double.infinity,
+                                  child: Card(
+                                    child: Text(
+                                      'Add Friend',
+                                      style: TextStyle(
+                                          fontSize: 35, color: Colors.grey),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                onTap: () {}),
+                      if (isAlreadyFriend)
+                        GestureDetector(
+                          child: Container(
+                            height: 80,
+                            width: double.infinity,
+                            child: Card(
+                              child: Text(
+                                'Send Message',
+                                style: TextStyle(fontSize: 35),
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                            onTap: () {
-                              FirebaseFirestore.instance
-                                  .collection('friendList')
-                                  .add({
-                                'user1': currentUser.uid,
-                                'user2': userId,
-                                'status': 0
-                              });
-                            })
-                        : GestureDetector(
-                            child: Container(
-                              height: 80,
-                              width: double.infinity,
-                              child: Card(
-                                child: Text(
-                                  'Add Friend',
-                                  style: TextStyle(
-                                      fontSize: 35, color: Colors.grey),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                            onTap: () {}),
-                  ],
+                          ),
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              ChatScreen.routeName,
+                              arguments: [
+                                username,
+                                imgUrl,
+                                userId,
+                              ],
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
               ),
       ),

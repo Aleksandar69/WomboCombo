@@ -178,10 +178,37 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 height: 100,
                 child: Card(
-                  child: Center(
-                    child: Text(
-                      'Friend List ${friendRequests.length}',
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text(
+                          'Friend List ',
+                        ),
+
+                        //     Text.rich(TextSpan(//apply style to all
+                        //         children: [
+                        //   TextSpan(
+                        //     text: 'Friend Requests ',
+                        //   ),
+                        //   TextSpan(
+                        //       text: '${friendRequests.length}',
+                        //       style: TextStyle(
+                        //           fontSize: 12, backgroundColor: Colors.red))
+                        // ]))
+                      ),
+                      if (friendRequests.length != 0)
+                        Center(
+                            child: ClipOval(
+                          child: Container(
+                            color: Colors.red,
+                            padding: EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              "${friendRequests.length}",
+                            ),
+                          ),
+                        ))
+                    ],
                   ),
                 ),
               ),

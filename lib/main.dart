@@ -26,13 +26,16 @@ import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wombocombo/widgets/chat/new_message.dart';
 import 'screens/auth/auth_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  var firebaseMessaging = FirebaseMessaging.instance;
+  final fcmToken = await firebaseMessaging.getToken();
+  print(fcmToken);
 
   runApp(MyApp());
 }
