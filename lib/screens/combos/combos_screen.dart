@@ -19,11 +19,6 @@ class _CombosScreenState extends State<CombosScreen> {
   late String currentVideo;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final countdownTimerStuff =

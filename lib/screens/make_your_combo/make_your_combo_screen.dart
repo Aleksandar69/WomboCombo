@@ -94,9 +94,12 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           ModalRoute.of(context)!.settings.arguments as CustomCombo;
 
       savedComboList = savedCustomCombo.getAttacks.split('|');
+      var savedComboListLength = savedComboList.length;
 
-      if (savedComboList.length > 0) {
-        if (savedComboList.asMap()[0] != null) {
+      if (savedComboListLength > 0) {
+        if (savedComboListLength >= 1 &&
+            savedComboList.asMap()[0] != null &&
+            savedComboList.asMap()[0].toString().isNotEmpty) {
           var attacksList = savedComboList.asMap()[0].split(' ');
           var attacksLength = attacksList.length;
 
@@ -116,7 +119,9 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
 
-        if (savedComboList.asMap()[1] != null) {
+        if (savedComboListLength >= 2 &&
+            savedComboList.asMap()[1] != null &&
+            savedComboList.asMap()[1].toString().isNotEmpty) {
           secondRowActivated = true;
 
           var attacksList = savedComboList.asMap()[1].split(' ');
@@ -133,7 +138,9 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
 
-        if (savedComboList.asMap()[2] != null) {
+        if (savedComboListLength >= 3 &&
+            savedComboList.asMap()[2] != null &&
+            savedComboList.asMap()[2].toString().isNotEmpty) {
           thirdRowActivated = true;
 
           var attacksList = savedComboList.asMap()[2].split(' ');
@@ -155,7 +162,9 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
 
-        if (savedComboList.asMap()[3] != null) {
+        if (savedComboListLength >= 4 &&
+            savedComboList.asMap()[3] != null &&
+            savedComboList.asMap()[3].toString().isNotEmpty) {
           fourthRowActivated = true;
 
           var attacksList = savedComboList.asMap()[3].split(' ');
@@ -175,7 +184,9 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           dropdownValueFourFive =
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
-        if (savedComboList.asMap()[4] != null) {
+        if (savedComboListLength >= 5 &&
+            savedComboList.asMap()[4] != null &&
+            savedComboList.asMap()[4].toString().isNotEmpty) {
           fifthRowActivated = true;
 
           var attacksList = savedComboList.asMap()[4].split(' ');
@@ -196,7 +207,9 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
 
-        if (savedComboList.asMap()[5] != null) {
+        if (savedComboListLength >= 6 &&
+            savedComboList.asMap()[5] != null &&
+            savedComboList.asMap()[5].toString().isNotEmpty) {
           sixsthRowActivated = true;
 
           var attacksList = savedComboList.asMap()[5].split(' ');
@@ -353,12 +366,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 if (sixsthRowActivated) {
                   combosCombined.add(combos6Str);
                 }
-
-                var splitCombos = combosCombined.join('|');
-                if (isChecked) {
-                  customComboProvider
-                      .addCombo(CustomCombo(comboName, splitCombos));
-                }
                 Navigator.of(context).pushNamed(SetTimeScreen.routeName,
                     arguments: ['fromMakeYourComboScreen', combosCombined]);
               },
@@ -373,8 +380,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
         ),
         body: Column(
           children: [
-            Container(
-                margin: EdgeInsets.only(top: 10), child: Text('Combo 1:')),
+            Container(margin: EdgeInsets.only(top: 10), child: Text('Combos:')),
             Row(
               children: [
                 attackDropdownItem(dropdownValueOneOne, '1-1'),
@@ -473,16 +479,106 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    label: Center(
-                      child: Text('Workout Name'),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 300,
+                      child: TextFormField(
+                        decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          label: Center(
+                            child: Text('Workout Name'),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          comboName = value;
+                        },
+                      ),
                     ),
-                  ),
-                  onChanged: (value) {
-                    comboName = value;
-                  },
+                    ElevatedButton(
+                      onPressed: () {
+                        combos1.clear();
+                        combos1.add(dropdownValueOneOne);
+                        combos1.add(dropdownValueOneTwo);
+                        combos1.add(dropdownValueOneThree);
+                        combos1.add(dropdownValueOneFour);
+                        combos1.add(dropdownValueOneFive);
+                        combos1Str = combos1.join(' ').trim();
+
+                        combos2.clear();
+                        combos2.add(dropdownValueTwoOne);
+                        combos2.add(dropdownValueTwoTwo);
+                        combos2.add(dropdownValueTwoThree);
+                        combos2.add(dropdownValueTwoFour);
+                        combos2.add(dropdownValueTwoFive);
+                        combos2Str = combos2.join(' ').trim();
+
+                        combos3.clear();
+                        combos3.add(dropdownValueThreeOne);
+                        combos3.add(dropdownValueThreeTwo);
+                        combos3.add(dropdownValueThreeThree);
+                        combos3.add(dropdownValueThreeFour);
+                        combos3.add(dropdownValueThreeFive);
+                        combos3Str = combos3.join(' ').trim();
+
+                        combos4.clear();
+                        combos4.add(dropdownValueFourOne);
+                        combos4.add(dropdownValueFourTwo);
+                        combos4.add(dropdownValueFourThree);
+                        combos4.add(dropdownValueFourFour);
+                        combos4.add(dropdownValueFourFive);
+                        combos4Str = combos4.join(' ').trim();
+
+                        combos5.clear();
+                        combos5.add(dropdownValueFiveOne);
+                        combos5.add(dropdownValueFiveTwo);
+                        combos5.add(dropdownValueFiveThree);
+                        combos5.add(dropdownValueFiveFour);
+                        combos5.add(dropdownValueFiveFive);
+                        combos5Str = combos5.join(' ').trim();
+
+                        combos6.clear();
+                        combos6.add(dropdownValueSixOne);
+                        combos6.add(dropdownValueSixTwo);
+                        combos6.add(dropdownValueSixThree);
+                        combos6.add(dropdownValueSixFour);
+                        combos6.add(dropdownValueSixFive);
+                        combos6Str = combos6.join(' ').trim();
+
+                        combosCombined.clear();
+                        combosCombined.add(combos1Str);
+                        if (secondRowActivated) {
+                          combosCombined.add(combos2Str);
+                        }
+                        if (thirdRowActivated) {
+                          combosCombined.add(combos3Str);
+                        }
+                        if (fourthRowActivated) {
+                          combosCombined.add(combos4Str);
+                        }
+                        if (fifthRowActivated) {
+                          combosCombined.add(combos5Str);
+                        }
+                        if (sixsthRowActivated) {
+                          combosCombined.add(combos6Str);
+                        }
+
+                        var splitCombos = combosCombined.join('|');
+                        if (isChecked) {
+                          customComboProvider
+                              .addCombo(CustomCombo(comboName, splitCombos));
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Combo Saved'),
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                        );
+                      },
+                      child: Text('Save'),
+                    ),
+                  ],
                 ),
               ),
           ],

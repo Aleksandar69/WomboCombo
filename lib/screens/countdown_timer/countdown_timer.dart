@@ -474,11 +474,11 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   Future _speak() async {
     await flutterTts.speak(currentTerm);
-    timerAttacks?.cancel();
   }
 
   Future _stop() async {
     await flutterTts.stop();
+    timerAttacks?.cancel();
   }
 
   Timer? timerAttacks;

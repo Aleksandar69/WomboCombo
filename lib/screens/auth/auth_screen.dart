@@ -58,6 +58,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'email': email,
           'image_url': url,
           'userPoints': 0,
+          'chattingWith': null,
         });
       }
     } on PlatformException catch (e) {

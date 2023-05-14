@@ -20,16 +20,30 @@ class _ChatScreenState extends State<ChatScreen> {
   var receiverUsername;
   var recieverImage;
   var userData;
-  var user;
+  var currentUser;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   getCurrentUser() async {
-    user = FirebaseAuth.instance.currentUser;
+    currentUser = FirebaseAuth.instance.currentUser;
 
     userData = await FirebaseFirestore.instance
         .collection('users')
-        .doc(user?.uid)
+        .doc(currentUser?.uid)
         .get();
+  }
+
+  var groupChatId;
+  void readLocal() {
+    FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
+      'chattingWith': receiverId,
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final fbm = FirebaseMessaging.instance;
+    fbm.subscribeToTopic('messages');
   }
 
   @override
@@ -40,22 +54,37 @@ class _ChatScreenState extends State<ChatScreen> {
     receiverUsername = args[0];
     recieverImage = args[1];
     receiverId = args[2];
+
+    readLocal();
+  }
+
+  Future<bool> onBackPress() {
+    FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
+      'chattingWith': null,
+    });
+
+    Navigator.pop(context);
+
+    return Future.value(false);
   }
 
   Widget build(BuildContext context) {
     Firebase.initializeApp();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('FlutterChat'),
-      ),
-      body: Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: Messages(receiverId, user!.uid),
-            ),
-            NewMessage(receiverId, receiverUsername, recieverImage),
-          ],
+    return WillPopScope(
+      onWillPop: onBackPress,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('FlutterChat'),
+        ),
+        body: Container(
+          child: Column(
+            children: [
+              Expanded(
+                child: Messages(receiverId, currentUser!.uid),
+              ),
+              NewMessage(receiverId, receiverUsername, recieverImage),
+            ],
+          ),
         ),
       ),
     );

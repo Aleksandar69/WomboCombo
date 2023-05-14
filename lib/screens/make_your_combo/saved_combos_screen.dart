@@ -10,8 +10,9 @@ class SavedCombos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<CustomComboProvider>(context, listen: false).fetchAttacks();
     var customComboProvider =
-        Provider.of<CustomComboProvider>(context, listen: false);
+        Provider.of<CustomComboProvider>(context, listen: true);
     List combos = customComboProvider.combos;
 
     return Scaffold(

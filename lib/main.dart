@@ -35,8 +35,7 @@ void main() async {
   await Firebase.initializeApp();
   var firebaseMessaging = FirebaseMessaging.instance;
   final fcmToken = await firebaseMessaging.getToken();
-  print(fcmToken);
-
+  print('token $fcmToken');
   runApp(MyApp());
 }
 
