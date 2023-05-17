@@ -199,25 +199,6 @@ class _CountdownTimerState extends State<CountdownTimer>
     super.dispose();
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) async {
-  //   super.didChangeAppLifecycleState(state);
-  //   if (state == AppLifecycleState.inactive) {
-  //     timerAttacks?.cancel();
-  //     stopBeeps();
-  //     stopTimer();
-  //   } else if (state == AppLifecycleState.resumed) {
-  //   } else if (state == AppLifecycleState.paused) {
-  //     timerAttacks?.cancel();
-  //     stopBeeps();
-  //     stopTimer();
-  //   } else if (state == AppLifecycleState.detached) {
-  //     timerAttacks?.cancel();
-  //     stopBeeps();
-  //     stopTimer();
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();

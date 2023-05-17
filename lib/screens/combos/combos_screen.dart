@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
 import 'package:wombocombo/widgets/timer/build_timer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CombosScreen extends StatefulWidget {
   static const routeName = '/combos';
@@ -15,8 +17,12 @@ class CombosScreen extends StatefulWidget {
 }
 
 class _CombosScreenState extends State<CombosScreen> {
-  late String currentLevel;
-  late String currentVideo;
+  late int currentLevel;
+  late String combo;
+  late String videoUrl;
+  late String videoId;
+  var isLoading;
+  var currentUserId;
 
   @override
   void didChangeDependencies() {
@@ -24,8 +30,11 @@ class _CombosScreenState extends State<CombosScreen> {
     final countdownTimerStuff =
         ModalRoute.of(context)!.settings.arguments as List;
 
-    currentLevel = countdownTimerStuff[0] as String;
-    currentVideo = countdownTimerStuff[1] as String;
+    currentLevel = countdownTimerStuff[0] as int;
+    combo = countdownTimerStuff[1] as String;
+    videoUrl = countdownTimerStuff[2] as String;
+    videoId = countdownTimerStuff[3] as String;
+    currentUserId = countdownTimerStuff[4] as String;
   }
 
   @override
@@ -36,17 +45,26 @@ class _CombosScreenState extends State<CombosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: const ValueKey<String>('home_page'),
-        appBar: AppBar(
-          title: Text(currentLevel),
-          actions: <Widget>[],
-        ),
-        body: Column(
+      key: const ValueKey<String>('home_page'),
+      appBar: AppBar(
+        title: Text(currentLevel.toString()),
+        actions: <Widget>[],
+      ),
+      body: WillPopScope(
+        onWillPop: () async {
+          Navigator.pushReplacementNamed(context, TrainingLevel.routeName);
+          return false;
+        },
+        child: Column(
           children: [
-            Expanded(child: _FighterVideoRemote()),
-            Container(height: 100, width: 100, child: Text('asd')),
+            Expanded(
+              child: _FighterVideoRemote(
+                  videoUrl, combo, currentLevel, videoId, userId),
+            ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
 
@@ -61,6 +79,12 @@ class _FighterVideoLocal extends StatefulWidget {
 class _FighterVideoLocalState extends State<_FighterVideoLocal> {
   late VideoPlayerController _controller;
 
+  void playerSetSource() async {
+    await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
+    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+    await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -72,6 +96,7 @@ class _FighterVideoLocalState extends State<_FighterVideoLocal> {
     _controller.setLooping(true);
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
+    playerSetSource();
   }
 
   @override
@@ -82,7 +107,7 @@ class _FighterVideoLocalState extends State<_FighterVideoLocal> {
 
   String previousScreen = 'fromHomeScreen';
   var started = false;
-  var maxSeconds = 11;
+  var maxSeconds = 120;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -175,44 +200,72 @@ class _FighterVideoLocalState extends State<_FighterVideoLocal> {
     });
   }
 
+  void stopBeeps() async {
+    await playerBeep.stop();
+    await playerRing.stop();
+    await playerTenSecs.stop();
+    setState(() {
+      isRunning = false;
+    });
+    setState(() => timer?.cancel());
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: VideoPlayer(_controller),
+      child: WillPopScope(
+        onWillPop: () async {
+          stopBeeps();
+          return false;
+        },
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              ),
             ),
-          ),
-          Text('Jab - Cross - Lef Hook'),
-          SizedBox(height: 40),
-          buildTimer(previousScreen, started, secs, maxSeconds,
-              initialCountdown, currentTerm, initialCountdownMax),
-          SizedBox(height: 10),
-          buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
-              previousScreen, null, isRunning, resetTimer),
-        ],
+            Text('Jab - Cross - Lef Hook'),
+            SizedBox(height: 40),
+            buildTimer(previousScreen, started, secs, maxSeconds,
+                initialCountdown, currentTerm, initialCountdownMax),
+            SizedBox(height: 10),
+            buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
+                previousScreen, null, isRunning, resetTimer),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _FighterVideoRemote extends StatefulWidget {
+  String videoUrl;
+  String combo;
+  int level;
+  String videoId;
+  String userId;
+  _FighterVideoRemote(
+      this.videoUrl, this.combo, this.level, this.videoId, this.userId);
   @override
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
 
 class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
+  var isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    Timer.periodic(Duration(seconds: 3), (timer) {
+      isLoading = false;
+      timer.cancel();
+    });
     _controller = VideoPlayerController.network(
-      'https://firebasestorage.googleapis.com/v0/b/wombocomboservice.appspot.com/o/1-2-3b-3.mp4?alt=media&token=edccbe5a-d29d-45b9-98e0-db9070b5850f',
+      widget.videoUrl,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
 
@@ -222,6 +275,112 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     _controller.setLooping(true);
     _controller.play();
     _controller.initialize();
+  }
+
+  String previousScreen = 'fromHomeScreen';
+  var started = false;
+  var maxSeconds = 10;
+  late int secs = maxSeconds;
+  int initialCountdownMax = 3;
+  late int initialCountdown = initialCountdownMax;
+  String currentTerm = 'none';
+
+  Timer? timer;
+  var isRunning = false;
+
+  final playerBeep = AudioPlayer();
+  final playerRing = AudioPlayer();
+  final playerTenSecs = AudioPlayer();
+
+  void playBell() async {
+    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
+  }
+
+  void playBeep() async {
+    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
+  }
+
+  void playTenSecsSound() async {
+    return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
+        volume: 1);
+  }
+
+  void resetTimer() {
+    setState(() {
+      started = false;
+      secs = maxSeconds;
+      initialCountdown = initialCountdownMax;
+    });
+    stopTimer();
+  }
+
+  void resetAndStartTimer() {
+    setState(() {
+      started = false;
+      secs = maxSeconds;
+      initialCountdown = initialCountdownMax;
+    });
+    startTimer();
+  }
+
+  void stopBeeps() async {
+    await playerBeep.stop();
+    await playerRing.stop();
+    await playerTenSecs.stop();
+  }
+
+  void stopTimer({bool reset = false, resetAndStart = false}) {
+    stopBeeps();
+    setState(() {
+      isRunning = false;
+    });
+    setState(() => timer?.cancel());
+    if (reset) {
+      resetTimer();
+    }
+    if (resetAndStart) {
+      resetAndStartTimer();
+    }
+  }
+
+  void startTimer({bool reset = false}) {
+    setState(() {
+      Wakelock.enable();
+    });
+    setState(() {
+      isRunning = true;
+    });
+    if (reset) {
+      resetTimer();
+    }
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (!started) {
+        if (initialCountdown > 0) {
+          playBeep();
+          setState(() => initialCountdown--);
+        } else {
+          playBell();
+          setState(() {
+            started = true;
+          });
+        }
+      } else if (secs > 0 && started) {
+        if (secs == 10) {
+          playTenSecsSound();
+        } else if (secs <= 3 && secs > 0) {
+          playBeep();
+        }
+        setState(() => secs = secs - 1);
+      } else {
+        playBell();
+        setState(() => started = false);
+        stopTimer(reset: false);
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userId)
+            .update({'currentMaxLevel': widget.level + 1});
+      }
+    });
   }
 
   @override
@@ -235,23 +394,64 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     super.dispose();
   }
 
+  var comboMapping = {
+    '1': 'Jab',
+    '1b': 'Jab body',
+    '2': 'Cross',
+    '2b': 'Cross body',
+    '3': 'Left hook',
+    '3b': 'Left hook body',
+    '3j': 'Jumping left hook',
+    '4': 'Right hook',
+    '4b': 'Right hook body',
+    '5': 'Left uppercut',
+    '6': 'Right uppercut',
+  };
+
   @override
   Widget build(BuildContext context) {
+    var numbersSplit = widget.combo.split('-');
+    List wordsFromNums = [];
+    for (var i = 0; i < numbersSplit.length; i++) {
+      wordsFromNums.add(comboMapping[numbersSplit[i]]);
+    }
+    var wordsFromNumbsString;
+    wordsFromNumbsString = wordsFromNums.join('->');
     return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(
-            child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(_controller),
-                ],
+      child: WillPopScope(
+        onWillPop: () async {
+          stopTimer();
+          Navigator.pop(context);
+          return false;
+        },
+        child:
+            // isLoading
+            //     ? Container(
+            //         child: Center(
+            //             child: Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.center,
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 children: [CircularProgressIndicator()])),
+            //       )
+            //     :
+            Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
               ),
             ),
-          ),
-        ],
+            Text(wordsFromNumbsString),
+            SizedBox(height: 40),
+            buildTimer(previousScreen, started, secs, maxSeconds,
+                initialCountdown, currentTerm, initialCountdownMax),
+            SizedBox(height: 10),
+            buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
+                previousScreen, null, isRunning, resetTimer),
+          ],
+        ),
       ),
     );
   }

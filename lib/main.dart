@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wombocombo/providers/custom_combo_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
@@ -32,10 +33,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
-  var firebaseMessaging = FirebaseMessaging.instance;
-  final fcmToken = await firebaseMessaging.getToken();
-  print('token $fcmToken');
   runApp(MyApp());
 }
 

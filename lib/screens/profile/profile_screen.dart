@@ -171,9 +171,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SizedBox(width: 20),
                           Column(
                             children: [
-                              Text('Highest streak',
+                              Text('Level Reached',
                                   style: TextStyle(fontSize: 27)),
-                              Text('23',
+                              Text(user['currentMaxLevel'].toString(),
                                   style: TextStyle(
                                     fontSize: 27,
                                   )),

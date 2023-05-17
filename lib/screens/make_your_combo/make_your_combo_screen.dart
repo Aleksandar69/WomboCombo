@@ -11,7 +11,21 @@ enum currentNumberOfCombos { one, two, three, four }
 class MakeYourComboScreen extends StatefulWidget {
   static const routeName = '/combo-maker';
 
-  List<String> list = <String>[' ', '1', '2', '3', '4'];
+  List<String> list = <String>[
+    ' ',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '1b',
+    '2b',
+    '3b',
+    '4b',
+    '5b',
+    '6b'
+  ];
 
   @override
   State<MakeYourComboScreen> createState() => _MakeYourComboScreenState();
@@ -233,6 +247,125 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
     }
   }
 
+  void _startAddingCombo(BuildContext ctx) {
+    if (isChecked)
+      showModalBottomSheet(
+          context: ctx,
+          builder: (_) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  top: 8,
+                  left: 8,
+                  right: 8,
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom + 20),
+              child: Row(
+                children: [
+                  Container(
+                    width: 300,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        label: Center(
+                          child: Text('Workout Name'),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        comboName = value;
+                      },
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      combos1.clear();
+                      combos1.add(dropdownValueOneOne);
+                      combos1.add(dropdownValueOneTwo);
+                      combos1.add(dropdownValueOneThree);
+                      combos1.add(dropdownValueOneFour);
+                      combos1.add(dropdownValueOneFive);
+                      combos1Str = combos1.join(' ').trim();
+
+                      combos2.clear();
+                      combos2.add(dropdownValueTwoOne);
+                      combos2.add(dropdownValueTwoTwo);
+                      combos2.add(dropdownValueTwoThree);
+                      combos2.add(dropdownValueTwoFour);
+                      combos2.add(dropdownValueTwoFive);
+                      combos2Str = combos2.join(' ').trim();
+
+                      combos3.clear();
+                      combos3.add(dropdownValueThreeOne);
+                      combos3.add(dropdownValueThreeTwo);
+                      combos3.add(dropdownValueThreeThree);
+                      combos3.add(dropdownValueThreeFour);
+                      combos3.add(dropdownValueThreeFive);
+                      combos3Str = combos3.join(' ').trim();
+
+                      combos4.clear();
+                      combos4.add(dropdownValueFourOne);
+                      combos4.add(dropdownValueFourTwo);
+                      combos4.add(dropdownValueFourThree);
+                      combos4.add(dropdownValueFourFour);
+                      combos4.add(dropdownValueFourFive);
+                      combos4Str = combos4.join(' ').trim();
+
+                      combos5.clear();
+                      combos5.add(dropdownValueFiveOne);
+                      combos5.add(dropdownValueFiveTwo);
+                      combos5.add(dropdownValueFiveThree);
+                      combos5.add(dropdownValueFiveFour);
+                      combos5.add(dropdownValueFiveFive);
+                      combos5Str = combos5.join(' ').trim();
+
+                      combos6.clear();
+                      combos6.add(dropdownValueSixOne);
+                      combos6.add(dropdownValueSixTwo);
+                      combos6.add(dropdownValueSixThree);
+                      combos6.add(dropdownValueSixFour);
+                      combos6.add(dropdownValueSixFive);
+                      combos6Str = combos6.join(' ').trim();
+
+                      combosCombined.clear();
+                      combosCombined.add(combos1Str);
+                      if (secondRowActivated) {
+                        combosCombined.add(combos2Str);
+                      }
+                      if (thirdRowActivated) {
+                        combosCombined.add(combos3Str);
+                      }
+                      if (fourthRowActivated) {
+                        combosCombined.add(combos4Str);
+                      }
+                      if (fifthRowActivated) {
+                        combosCombined.add(combos5Str);
+                      }
+                      if (sixsthRowActivated) {
+                        combosCombined.add(combos6Str);
+                      }
+
+                      var splitCombos = combosCombined.join('|');
+                      if (isChecked) {
+                        customComboProvider
+                            .addCombo(CustomCombo(comboName, splitCombos));
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Combo Saved'),
+                          backgroundColor: Theme.of(context).primaryColor,
+                        ),
+                      );
+
+                      Navigator.pop(ctx);
+                    },
+                    child: Text('Save'),
+                  ),
+                ],
+              ),
+            );
+            return Text('error');
+          });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -285,6 +418,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
     return Form(
       key: _formKey,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -472,115 +606,10 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                   setState(() {
                     isChecked = value!;
                   });
+                  _startAddingCombo(context);
                 },
               ),
             ]),
-            if (isChecked)
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 300,
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                          border: UnderlineInputBorder(),
-                          label: Center(
-                            child: Text('Workout Name'),
-                          ),
-                        ),
-                        onChanged: (value) {
-                          comboName = value;
-                        },
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        combos1.clear();
-                        combos1.add(dropdownValueOneOne);
-                        combos1.add(dropdownValueOneTwo);
-                        combos1.add(dropdownValueOneThree);
-                        combos1.add(dropdownValueOneFour);
-                        combos1.add(dropdownValueOneFive);
-                        combos1Str = combos1.join(' ').trim();
-
-                        combos2.clear();
-                        combos2.add(dropdownValueTwoOne);
-                        combos2.add(dropdownValueTwoTwo);
-                        combos2.add(dropdownValueTwoThree);
-                        combos2.add(dropdownValueTwoFour);
-                        combos2.add(dropdownValueTwoFive);
-                        combos2Str = combos2.join(' ').trim();
-
-                        combos3.clear();
-                        combos3.add(dropdownValueThreeOne);
-                        combos3.add(dropdownValueThreeTwo);
-                        combos3.add(dropdownValueThreeThree);
-                        combos3.add(dropdownValueThreeFour);
-                        combos3.add(dropdownValueThreeFive);
-                        combos3Str = combos3.join(' ').trim();
-
-                        combos4.clear();
-                        combos4.add(dropdownValueFourOne);
-                        combos4.add(dropdownValueFourTwo);
-                        combos4.add(dropdownValueFourThree);
-                        combos4.add(dropdownValueFourFour);
-                        combos4.add(dropdownValueFourFive);
-                        combos4Str = combos4.join(' ').trim();
-
-                        combos5.clear();
-                        combos5.add(dropdownValueFiveOne);
-                        combos5.add(dropdownValueFiveTwo);
-                        combos5.add(dropdownValueFiveThree);
-                        combos5.add(dropdownValueFiveFour);
-                        combos5.add(dropdownValueFiveFive);
-                        combos5Str = combos5.join(' ').trim();
-
-                        combos6.clear();
-                        combos6.add(dropdownValueSixOne);
-                        combos6.add(dropdownValueSixTwo);
-                        combos6.add(dropdownValueSixThree);
-                        combos6.add(dropdownValueSixFour);
-                        combos6.add(dropdownValueSixFive);
-                        combos6Str = combos6.join(' ').trim();
-
-                        combosCombined.clear();
-                        combosCombined.add(combos1Str);
-                        if (secondRowActivated) {
-                          combosCombined.add(combos2Str);
-                        }
-                        if (thirdRowActivated) {
-                          combosCombined.add(combos3Str);
-                        }
-                        if (fourthRowActivated) {
-                          combosCombined.add(combos4Str);
-                        }
-                        if (fifthRowActivated) {
-                          combosCombined.add(combos5Str);
-                        }
-                        if (sixsthRowActivated) {
-                          combosCombined.add(combos6Str);
-                        }
-
-                        var splitCombos = combosCombined.join('|');
-                        if (isChecked) {
-                          customComboProvider
-                              .addCombo(CustomCombo(comboName, splitCombos));
-                        }
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Combo Saved'),
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
-                        );
-                      },
-                      child: Text('Save'),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
@@ -590,7 +619,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
   Container attackDropdownItem(
       String dropdownValue, String currentDropdownValue) {
     return Container(
-      width: 80,
+      width: MediaQuery.of(context).size.width * 0.2,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: FormField<String>(
         builder: (FormFieldState<String> state) {

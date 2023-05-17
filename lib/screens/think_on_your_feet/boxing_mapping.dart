@@ -8,6 +8,7 @@ import 'package:wombocombo/providers/boxing_attacks_list_provider.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:wombocombo/widgets/list_builders/attack_list_item.dart';
+import './training_difficulty.dart';
 
 class BoxingMapping extends StatefulWidget {
   static const routeName = '/boxing-mapping';
