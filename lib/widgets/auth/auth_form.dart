@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../video_image_widgets/user_image_picker.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 
 class AuthForm extends StatefulWidget {
   final void Function(
@@ -32,24 +34,33 @@ class _AuthFormState extends State<AuthForm> {
     _userImageFile = image;
   }
 
-  void _trySubmit() {
+  void _trySubmit() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (_userImageFile == null && !_isLogin) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please choose an image'),
-          backgroundColor: Theme.of(context).errorColor,
-        ),
-      );
-      return;
+      var file;
+      await getDefaultImage().then((value) => file = value);
+      _userImageFile = file;
     }
     if (isValid) {
       _formKey.currentState!.save();
       widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),
           _userImageFile, _isLogin);
     }
+  }
+
+  Future<File> getDefaultImage() async {
+    final byteData =
+        await rootBundle.load('assets/images/default_profile_clear.png');
+
+    final file = File(
+        '${(await getTemporaryDirectory()).path}/images/default-profile.jpg');
+    await file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+
+    return file;
   }
 
   @override

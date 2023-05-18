@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wombocombo/screens/friend_screens/friend_list.dart';
+import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
 
@@ -84,7 +84,7 @@ class _FriendRequestsState extends State<FriendRequests> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('aaa'),
+          title: Text('Friend Requests'),
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())

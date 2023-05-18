@@ -47,12 +47,13 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Set Timer')),
       body: Column(
         children: [
           Center(
             child: Text(
               'Round duration:',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
           Row(
@@ -76,7 +77,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         unSelectTextStyle: TextStyle(color: Colors.grey),
                         controller: _minutesController,
                       ),
-                      Text('Min'),
+                      Text(
+                        'Min',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -98,7 +102,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         unSelectTextStyle: TextStyle(color: Colors.grey),
                         controller: _secondsController,
                       ),
-                      Text('Sec'),
+                      Text(
+                        'Sec',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -108,7 +115,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
           Center(
             child: Text(
               'Rest duration:',
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
             ),
           ),
           Row(
@@ -132,7 +139,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         unSelectTextStyle: TextStyle(color: Colors.grey),
                         controller: _restControllerMin,
                       ),
-                      Text('Min'),
+                      Text(
+                        'Min',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -154,7 +164,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         unSelectTextStyle: TextStyle(color: Colors.grey),
                         controller: _restControllerSec,
                       ),
-                      Text('Sec'),
+                      Text(
+                        'Sec',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -178,7 +191,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     unSelectTextStyle: TextStyle(color: Colors.grey),
                     controller: _roundsController,
                   ),
-                  Text('Rounds'),
+                  Text(
+                    'Rounds',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),

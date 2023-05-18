@@ -1,12 +1,73 @@
 import 'package:flutter/material.dart';
-import 'package:wombocombo/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../widgets/profile/profile_list_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class LeaderboardItem extends StatelessWidget {
-  var userName;
+class LeaderboardItem extends StatefulWidget {
+  String userName;
   int userPoints;
   var imgUrl;
+  String userId;
 
-  LeaderboardItem(this.userName, this.userPoints, this.imgUrl);
+  LeaderboardItem(this.userName, this.userPoints, this.imgUrl, this.userId);
+
+  @override
+  State<LeaderboardItem> createState() => _LeaderboardItemState();
+}
+
+class _LeaderboardItemState extends State<LeaderboardItem> {
+  var user1CurrentUser;
+  var user2CurrentUser;
+  bool isAlreadyFriendRequested = false;
+  bool isAlreadyFriend = false;
+  var currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfUserIsAddedAsFriend();
+  }
+
+  void checkIfUserIsAddedAsFriend() async {
+    currentUser = FirebaseAuth.instance.currentUser;
+
+    await FirebaseFirestore.instance
+        .collection('friendList')
+        .where('user1', isEqualTo: currentUser.uid)
+        .get()
+        .then((value) {
+      user1CurrentUser = value;
+    });
+    await FirebaseFirestore.instance
+        .collection('friendList')
+        .where('user2', isEqualTo: currentUser.uid)
+        .get()
+        .then((value) {
+      user2CurrentUser = value;
+    });
+
+    for (var user in user1CurrentUser!.docs) {
+      if (user['user2'] == widget.userId) {
+        setState(() {
+          isAlreadyFriendRequested = true;
+        });
+        if (user['status'] == 1) {
+          isAlreadyFriend = true;
+        }
+      }
+    }
+
+    for (var user in user2CurrentUser!.docs) {
+      if (user['user1'] == widget.userId) {
+        setState(() {
+          isAlreadyFriendRequested = true;
+        });
+        if (user['status'] == 1) {
+          isAlreadyFriend = true;
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,21 +85,51 @@ class LeaderboardItem extends StatelessWidget {
           ),
         ),
         title: Text(
-          userName,
+          widget.userName,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        subtitle: Text(userPoints.toString()),
-        // trailing: MediaQuery.of(context).size.width > 360
-        //     ? TextButton.icon(
-        //         label: Text('Add Friend'),
-        //         onPressed: () {},
-        //         icon: Icon(Icons.add),
-        //       )
-        //     : IconButton(
-        //         icon: Icon(Icons.add),
-        //         color: Theme.of(context).errorColor,
-        //         onPressed: () {},
-        //       ),
+        subtitle: Text(widget.userPoints.toString()),
+        trailing: !isAlreadyFriendRequested
+            ? TextButton.icon(
+                label: Text('Add Friend'),
+                onPressed: () {
+                  FirebaseFirestore.instance.collection('friendList').add({
+                    'user1': currentUser.uid,
+                    'user2': widget.userId,
+                    'status': 0
+                  });
+
+                  setState(() {
+                    isAlreadyFriendRequested = true;
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Friend request sent'),
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.add),
+              )
+            : TextButton.icon(
+                style: ButtonStyle(
+                    iconColor: MaterialStateColor.resolveWith(
+                        (states) => Colors.grey.shade500)),
+                label: Text(
+                  'Add Friend',
+                  style: TextStyle(color: Colors.grey.shade500),
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Friend request already sent'),
+                      backgroundColor: Colors.red.shade900,
+                    ),
+                  );
+                },
+                icon: Icon(Icons.add),
+              ),
       ),
     );
   }

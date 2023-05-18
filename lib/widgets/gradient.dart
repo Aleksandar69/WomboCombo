@@ -14,8 +14,8 @@ class GradientWidget extends StatelessWidget {
           gradient: LinearGradient(
             colors: [
               Color(0xFF000000),
-              Color(0xFFD50000),
-              Color(0xFFB71C1c),
+              Color(0xff453658),
+              Color(0xFF382c47),
               Color(0xFF000000),
               Color(0xFF000000),
             ],
@@ -25,6 +25,4 @@ class GradientWidget extends StatelessWidget {
         ),
         child: child,
       );
-
-      
 }

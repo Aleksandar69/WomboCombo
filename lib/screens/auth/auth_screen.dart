@@ -59,6 +59,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'image_url': url,
           'userPoints': 0,
           'chattingWith': null,
+          'currentMaxLevel': 1,
         });
       }
     } on PlatformException catch (e) {

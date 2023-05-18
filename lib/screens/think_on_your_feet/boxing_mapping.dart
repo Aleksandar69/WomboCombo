@@ -32,17 +32,12 @@ class _BoxingMappingState extends State<BoxingMapping> {
     BoxingAttack(
         'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
     BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '9b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '8b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '7b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '11b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '12b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '13b'),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Punches mapping')),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.black,

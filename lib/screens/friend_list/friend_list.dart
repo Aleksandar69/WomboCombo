@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart.';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
-import 'package:wombocombo/screens/friend_screens/friend_requests.dart';
+import 'package:wombocombo/screens/friend_list/friend_requests_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
+import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/widgets/chat/new_message.dart';
 import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
@@ -104,7 +105,7 @@ class _FriendListState extends State<FriendList> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('text'),
+          title: Text('Friend List'),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,12 +126,19 @@ class _FriendListState extends State<FriendList> {
                                     ? '${friendRequests.length} Friend request'
                                     : '${friendRequests.length} Friend requests',
                               ),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pushNamed(FriendRequests.routeName);
-                                  },
-                                  child: Text('View'))
+                              friendRequests.length > 0
+                                  ? TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamed(
+                                            FriendRequests.routeName);
+                                      },
+                                      child: Text('View'))
+                                  : TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pushNamed(
+                                            LeaderboardScreen.routeName);
+                                      },
+                                      child: Text('Go to Leaderboard')),
                             ],
                           ),
                           Center(
@@ -209,10 +217,12 @@ class _FriendListState extends State<FriendList> {
                                                       friendData[index].id,
                                                     ],
                                                   ),
-                                                  icon: Icon(Icons.message),
+                                                  icon: Icon(
+                                                      Icons.messenger_outline),
                                                 )
                                               : IconButton(
-                                                  icon: Icon(Icons.message),
+                                                  icon: Icon(
+                                                      Icons.messenger_outline),
                                                   color: Theme.of(context)
                                                       .errorColor,
                                                   onPressed: () =>

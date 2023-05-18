@@ -31,7 +31,6 @@ class _CountdownTimerState extends State<CountdownTimer>
   String? engine = 'com.google.android.tts';
   double volume = 0.5;
   double pitch = 1.0;
-  double rate = 0.5;
 
   static var maxSeconds = 60;
   late int secs = maxSeconds;
@@ -215,7 +214,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     flutterTts = FlutterTts();
     await flutterTts.setLanguage(language!);
     await flutterTts.setEngine(engine!);
-    await flutterTts.setSpeechRate(0.7);
+    await flutterTts.setSpeechRate(0.3);
 
     _setAwaitOptions();
 

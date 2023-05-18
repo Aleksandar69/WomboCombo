@@ -9,6 +9,7 @@ class TrainingDiff extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Difficulty')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,6 +21,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
+                decoration: BoxDecoration(color: Colors.amber.shade100),
                 height: 100,
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -37,6 +39,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
+                decoration: BoxDecoration(color: Colors.amber.shade600),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,
@@ -54,6 +57,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
+                decoration: BoxDecoration(color: Colors.amber.shade900),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,
@@ -71,6 +75,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
+                decoration: BoxDecoration(color: Colors.red.shade900),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,

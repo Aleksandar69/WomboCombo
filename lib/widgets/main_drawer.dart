@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class MainDrawer extends StatelessWidget {
   final _auth = FirebaseAuth.instance;
+  final String currentUserId;
+  MainDrawer(this.currentUserId);
 
   void logOut() async {
     await _auth.signOut();
@@ -46,7 +48,8 @@ class MainDrawer extends StatelessWidget {
           }),
           Divider(),
           buildListTile('Profile', Icons.person, () {
-            Navigator.of(context).pushNamed(ProfileScreen.routeName);
+            Navigator.of(context)
+                .pushNamed(ProfileScreen.routeName, arguments: [currentUserId]);
           }),
           Divider(),
           buildListTile('Log Out', Icons.logout, () {

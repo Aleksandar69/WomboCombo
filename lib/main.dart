@@ -6,8 +6,9 @@ import 'package:wombocombo/providers/custom_combo_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/screens/countdown_timer/countdown_timer.dart';
-import 'package:wombocombo/screens/friend_screens/friend_list.dart';
-import 'package:wombocombo/screens/friend_screens/friend_requests.dart';
+import 'package:wombocombo/screens/faq/faq_screen.dart';
+import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
+import 'package:wombocombo/screens/friend_list/friend_requests_screen.dart';
 import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/saved_combos_screen.dart';
 import 'package:wombocombo/screens/profile/edit_profile_screen.dart';
@@ -22,7 +23,6 @@ import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/boxing_mapping.dart';
 import 'package:wombocombo/screens/think_on_your_feet/kickboxing_mapping.dart';
 import 'package:wombocombo/screens/think_on_your_feet/muay_thai_mapping.dart';
-import 'package:wombocombo/screens/think_on_your_feet/quick_combos_screen.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,10 +51,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Flutter Chat',
           theme: ThemeData(
-            primarySwatch: Colors.pink,
-            backgroundColor: Colors.pink,
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.pink)
-                .copyWith(secondary: Colors.purple),
+            primarySwatch: Colors.purple,
+            colorScheme: ColorScheme.fromSwatch(
+                brightness: Brightness.light,
+                primarySwatch: Colors.purple,
+                accentColor: Colors.purpleAccent,
+                backgroundColor: Colors.purple),
             buttonTheme: ButtonTheme.of(context).copyWith(
               buttonColor: Colors.pink,
               textTheme: ButtonTextTheme.primary,
@@ -73,7 +75,6 @@ class MyApp extends StatelessWidget {
             stream: FirebaseAuth.instance.authStateChanges(),
           ),
           routes: {
-            QuickCombosScreen.routeName: (context) => QuickCombosScreen(),
             SetTimeScreen.routeName: (context) => SetTimeScreen(),
             CombosScreen.routeName: (context) => CombosScreen(),
             MakeYourComboScreen.routeName: (context) => MakeYourComboScreen(),
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
             FriendList.routeName: (context) => FriendList(),
             FriendRequests.routeName: (context) => FriendRequests(),
             ChatScreen.routeName: (context) => ChatScreen(),
+            FAQScreen.routeName: (context) => FAQScreen(),
           }),
     );
   }

@@ -16,6 +16,7 @@ class SavedVideos extends StatefulWidget {
 class _SavedVideosState extends State<SavedVideos> {
   bool isLoading = false;
   var userId;
+  var currentUser;
   @override
   void initState() {
     super.initState();
@@ -25,7 +26,7 @@ class _SavedVideosState extends State<SavedVideos> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    var currentUser = FirebaseAuth.instance.currentUser;
+    currentUser = FirebaseAuth.instance.currentUser;
     userId = currentUser!.uid;
 
     if (ModalRoute.of(context)!.settings.arguments != null) {
@@ -71,11 +72,31 @@ class _SavedVideosState extends State<SavedVideos> {
                       color: Colors.grey[200],
                     ),
                     child: GestureDetector(
-                      child: Image.network(
-                        //videoDocs[index]['thumbnail'],
-                        'https://image.cnbcfm.com/api/v1/image/107208951-16788775881678877586-28590333731-1080pnbcnews.jpg?v=1678882770&w=750&h=422&vtcrop=y',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Container(
+                          child: LayoutBuilder(builder: (ctx, constraints) {
+                        return Stack(fit: StackFit.expand, children: [
+                          Image.network(
+                            videoDocs[index]['thumbnail'],
+                            fit: BoxFit.cover,
+                          ),
+                          if (currentUser.uid == videoDocs[index]['userId'])
+                            Positioned(
+                              top: constraints.maxHeight * 0.65,
+                              left: constraints.maxWidth * 0.65,
+                              child: IconButton(
+                                  onPressed: () {
+                                    _deleteVideo(videoDocs[index].id);
+                                    setState(() {
+                                      videoDocs.removeAt(index);
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red.shade700,
+                                  )),
+                            ),
+                        ]);
+                      })),
                       onTap: () {
                         Navigator.of(context)
                             .pushNamed(SavedVideo.routeName, arguments: [
@@ -93,5 +114,9 @@ class _SavedVideosState extends State<SavedVideos> {
         },
       ),
     );
+  }
+
+  void _deleteVideo(String id) {
+    FirebaseFirestore.instance.collection('videos').doc(id).delete();
   }
 }

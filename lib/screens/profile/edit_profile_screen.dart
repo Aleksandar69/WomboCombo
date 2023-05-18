@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:wombocombo/screens/profile/profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static const routeName = "/edit-profile";
@@ -113,27 +114,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Container(
                       height: 150,
                       width: 150,
-                      child: GestureDetector(
-                        onTap: () => _pickImage(),
-                        child: Stack(children: [
-                          Align(
-                            child: CircleAvatar(
-                              radius: 70,
-                              backgroundImage: NetworkImage(user['image_url']),
-                            ),
-                            alignment: Alignment.center,
-                          ),
-                          Positioned(
-                            child: Icon(
-                              Icons.mode_edit_outline_rounded,
-                              color: Colors.white,
-                              size: 50,
-                            ),
-                            left: 80,
-                            bottom: 15,
-                          ),
-                        ]),
+                      child: Align(
+                        child: CircleAvatar(
+                          radius: 70,
+                          backgroundImage: _convertedImage == null
+                              ? NetworkImage(user['image_url'])
+                              : FileImage(_convertedImage!) as ImageProvider,
+                        ),
+                        alignment: Alignment.center,
                       ),
+                    ),
+                    TextButton.icon(
+                      icon: Icon(Icons.edit_outlined),
+                      label: Text('Edit Image'),
+                      onPressed: () {
+                        _pickImage();
+                      },
                     ),
                     SizedBox(height: 20),
                     Padding(
@@ -159,12 +155,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextButton(
                       child: Text('Submit'),
                       style: TextButton.styleFrom(
-                        textStyle:
-                            TextStyle(color: Theme.of(context).primaryColor),
+                        textStyle: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 20,
+                        ),
                       ),
                       onPressed: () {
                         submitUserData();
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pushReplacementNamed(
+                            ProfileScreen.routeName,
+                            arguments: [null, _convertedImage]);
                       },
                     ),
                   ],

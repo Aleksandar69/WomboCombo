@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
-import 'package:wombocombo/screens/friend_screens/friend_list.dart';
+import 'package:wombocombo/screens/faq/faq_screen.dart';
+import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
 import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
@@ -10,7 +11,8 @@ import '../presentation/custom_icons_icons.dart';
 
 class GridDashboard extends StatelessWidget {
   var userId;
-  GridDashboard(this.userId);
+  List friendRequests;
+  GridDashboard(this.userId, this.friendRequests);
 
   Items item1 = new Items(
     title: "Combos",
@@ -34,7 +36,7 @@ class GridDashboard extends StatelessWidget {
   );
   Items item5 = new Items(
     title: "Record Your Session",
-    subtitle: "Film yourself and let your friends rate your skills",
+    subtitle: "Let your friends rate your skills",
     img: Icons.camera,
   );
   Items item6 = new Items(
@@ -47,10 +49,23 @@ class GridDashboard extends StatelessWidget {
     subtitle: "See your friends and chat",
     img: CustomIcons.double_team,
   );
-
+  Items item8 = new Items(
+    title: "FAQ",
+    subtitle: "Questions and Answers",
+    img: Icons.question_mark_outlined,
+  );
   @override
   Widget build(BuildContext context) {
-    List<Items> myMenuItems = [item1, item2, item3, item4, item5, item6, item7];
+    List<Items> myMenuItems = [
+      item1,
+      item2,
+      item3,
+      item4,
+      item5,
+      item6,
+      item7,
+      item8
+    ];
     var color = 0xff453658;
     return Flexible(
       child: GridView.count(
@@ -63,8 +78,8 @@ class GridDashboard extends StatelessWidget {
             return GestureDetector(
               onTap: () {
                 if (data.title == 'Combos') {
-                  // Navigator.of(context).pushNamed(TrainingLevel.routeName,
-                  //     arguments: currentUser.uid);
+                  Navigator.of(context)
+                      .pushNamed(TrainingLevel.routeName, arguments: userId);
                 } else if (data.title == 'Think Quick') {
                   Navigator.of(context).pushNamed(BoxingMapping.routeName);
                 } else if (data.title == "Customize Combos") {
@@ -78,7 +93,12 @@ class GridDashboard extends StatelessWidget {
                 } else if (data.title == "Leaderboard") {
                   Navigator.of(context).pushNamed(LeaderboardScreen.routeName);
                 } else if (data.title == "Friend List") {
-                  Navigator.of(context).pushNamed(FriendList.routeName);
+                  Navigator.of(context).pushNamed(FriendList.routeName,
+                      arguments: [friendRequests.length]);
+                } else if (data.title == "FAQ") {
+                  Navigator.of(context).pushNamed(
+                    FAQScreen.routeName,
+                  );
                 }
               },
               child: Container(
@@ -111,6 +131,21 @@ class GridDashboard extends StatelessWidget {
                             color: Colors.white38,
                             fontSize: 10,
                             fontWeight: FontWeight.w600)),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    if (friendRequests.length != 0 &&
+                        data.title == "Friend List")
+                      Center(
+                          child: ClipOval(
+                        child: Container(
+                          color: Colors.red,
+                          padding: EdgeInsets.symmetric(horizontal: 6),
+                          child: Text(
+                            "${friendRequests.length}",
+                          ),
+                        ),
+                      ))
                   ],
                 ),
               ),

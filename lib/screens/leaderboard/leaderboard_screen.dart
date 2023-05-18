@@ -32,13 +32,13 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('text'),
+        title: Text('Leaderboard'),
       ),
       body: Column(
         children: [
           Form(
             child: Container(
-              width: 250,
+              width: MediaQuery.of(context).size.width * 0.8,
               child: TextFormField(
                 controller: _search,
                 onFieldSubmitted: (value) {
@@ -56,7 +56,7 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                     Icons.person_outline_rounded,
                     color: Colors.grey,
                   ),
-                  errorText: "Error",
+                  //errorText: "Error",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -108,10 +108,10 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                                   arguments: [userDocs[index].id],
                                 ),
                                 child: LeaderboardItem(
-                                  userDocs[index]['username'],
-                                  userDocs[index]['userPoints'],
-                                  userDocs[index]['image_url'],
-                                ),
+                                    userDocs[index]['username'],
+                                    userDocs[index]['userPoints'],
+                                    userDocs[index]['image_url'],
+                                    userDocs[index].id),
                               );
                             }),
                       );

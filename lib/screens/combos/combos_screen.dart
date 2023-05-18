@@ -47,7 +47,7 @@ class _CombosScreenState extends State<CombosScreen> {
     return Scaffold(
       key: const ValueKey<String>('home_page'),
       appBar: AppBar(
-        title: Text(currentLevel.toString()),
+        title: Text(' Level ${currentLevel.toString()}'),
         actions: <Widget>[],
       ),
       body: WillPopScope(

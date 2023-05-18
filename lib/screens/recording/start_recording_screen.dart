@@ -109,9 +109,8 @@ class _StartRecordingState extends State<StartRecording> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Activities"),
+        title: Text("Session Recording"),
       ),
-      drawer: MainDrawer(),
       body: Center(
         child: _convertedVideo == null
             ? Container(
@@ -119,9 +118,9 @@ class _StartRecordingState extends State<StartRecording> {
                 width: 300,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(200, 200),
-                    shape: const CircleBorder(),
-                  ),
+                      fixedSize: const Size(200, 200),
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.red.shade900),
                   child: Text(
                     'Start Recording',
                     style: TextStyle(fontSize: 20),

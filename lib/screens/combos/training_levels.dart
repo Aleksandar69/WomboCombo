@@ -59,6 +59,9 @@ class _TrainingLevelState extends State<TrainingLevel> {
         return false;
       },
       child: Scaffold(
+        appBar: AppBar(
+          title: Text('Levels'),
+        ),
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('combos')
