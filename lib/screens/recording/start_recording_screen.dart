@@ -159,6 +159,7 @@ class _StartRecordingState extends State<StartRecording> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('Success'),
+                                    backgroundColor: Colors.green,
                                   ),
                                 );
                                 Navigator.of(context).pop();

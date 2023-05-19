@@ -3,7 +3,7 @@ import '../../widgets/timer/build_time.dart';
 import 'dart:math';
 
 Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
-    currentTerm, initialCountdownMax) {
+    currentTerm, initialCountdownMax, color1, color2, color3) {
   if (previousScreen == 'fromHomeScreen') {
     return SizedBox(
       width: 200,
@@ -14,25 +14,25 @@ Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
             ? [
                 CircularProgressIndicator(
                   value: secs / (maxSeconds), // 1 - seconds / maxSeconds
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  valueColor: AlwaysStoppedAnimation(color1),
                   strokeWidth: 12,
-                  backgroundColor: Colors.green,
+                  backgroundColor: color2,
                 ),
                 Center(
                     child: buildTime(secs, previousScreen, started,
-                        initialCountdown, currentTerm)),
+                        initialCountdown, currentTerm, color3)),
               ]
             : [
                 CircularProgressIndicator(
                   value: initialCountdown /
                       initialCountdownMax, // 1 - seconds / maxSeconds
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                  valueColor: AlwaysStoppedAnimation(color1),
                   strokeWidth: 12,
-                  backgroundColor: Colors.green,
+                  backgroundColor: color2,
                 ),
                 Center(
                     child: buildTime(secs, previousScreen, started,
-                        initialCountdown, currentTerm)),
+                        initialCountdown, currentTerm, color3)),
               ],
       ),
     );
@@ -42,14 +42,14 @@ Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
             children: [
               Center(
                   child: buildTime(secs, previousScreen, started,
-                      initialCountdown, currentTerm)),
+                      initialCountdown, currentTerm, color3)),
               Transform.rotate(
                 angle: pi / 180 * 180,
                 alignment: Alignment.center,
                 child: LinearProgressIndicator(
                   value: secs / (maxSeconds), // 1 - seconds / maxSeconds
-                  valueColor: AlwaysStoppedAnimation(Colors.white),
-                  backgroundColor: Colors.green,
+                  valueColor: AlwaysStoppedAnimation(color1),
+                  backgroundColor: color2,
                 ),
               ),
             ],
@@ -57,15 +57,15 @@ Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
         : Column(children: [
             Center(
                 child: buildTime(secs, previousScreen, started,
-                    initialCountdown, currentTerm)),
+                    initialCountdown, currentTerm, color3)),
             Transform.rotate(
               angle: pi / 180 * 180,
               alignment: Alignment.center,
               child: LinearProgressIndicator(
                 value: initialCountdown /
                     initialCountdownMax, // 1 - seconds / maxSeconds
-                valueColor: AlwaysStoppedAnimation(Colors.white),
-                backgroundColor: Colors.green,
+                valueColor: AlwaysStoppedAnimation(color1),
+                backgroundColor: color2,
               ),
             ),
           ]);

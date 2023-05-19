@@ -52,7 +52,7 @@ class _SavedVideoState extends State<SavedVideo> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Success'),
-        backgroundColor: Theme.of(context).errorColor,
+        backgroundColor: Colors.green,
       ),
     );
   }

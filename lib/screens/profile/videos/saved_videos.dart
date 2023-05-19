@@ -39,7 +39,7 @@ class _SavedVideosState extends State<SavedVideos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('asd'),
+        title: Text('Saved Videos'),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance

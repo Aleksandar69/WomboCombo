@@ -17,7 +17,7 @@ class SavedCombos extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('text'),
+        title: Text('Saved Combos'),
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {

@@ -23,6 +23,7 @@ class _CombosScreenState extends State<CombosScreen> {
   late String videoId;
   var isLoading;
   var currentUserId;
+  var currentUserMaxLvl;
 
   @override
   void didChangeDependencies() {
@@ -35,6 +36,7 @@ class _CombosScreenState extends State<CombosScreen> {
     videoUrl = countdownTimerStuff[2] as String;
     videoId = countdownTimerStuff[3] as String;
     currentUserId = countdownTimerStuff[4] as String;
+    currentUserMaxLvl = countdownTimerStuff[5] as int;
   }
 
   @override
@@ -58,8 +60,8 @@ class _CombosScreenState extends State<CombosScreen> {
         child: Column(
           children: [
             Expanded(
-              child: _FighterVideoRemote(
-                  videoUrl, combo, currentLevel, videoId, userId),
+              child: _FighterVideoRemote(videoUrl, combo, currentLevel, videoId,
+                  userId, currentUserMaxLvl),
             ),
           ],
         ),
@@ -107,7 +109,7 @@ class _FighterVideoLocalState extends State<_FighterVideoLocal> {
 
   String previousScreen = 'fromHomeScreen';
   var started = false;
-  var maxSeconds = 120;
+  var maxSeconds = 180;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -229,8 +231,17 @@ class _FighterVideoLocalState extends State<_FighterVideoLocal> {
             ),
             Text('Jab - Cross - Lef Hook'),
             SizedBox(height: 40),
-            buildTimer(previousScreen, started, secs, maxSeconds,
-                initialCountdown, currentTerm, initialCountdownMax),
+            buildTimer(
+                previousScreen,
+                started,
+                secs,
+                maxSeconds,
+                initialCountdown,
+                currentTerm,
+                initialCountdownMax,
+                Colors.purple.shade100,
+                Colors.purple.shade900,
+                Colors.purple.shade900),
             SizedBox(height: 10),
             buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
                 previousScreen, null, isRunning, resetTimer),
@@ -247,8 +258,9 @@ class _FighterVideoRemote extends StatefulWidget {
   int level;
   String videoId;
   String userId;
-  _FighterVideoRemote(
-      this.videoUrl, this.combo, this.level, this.videoId, this.userId);
+  int currentUserMaxLvl;
+  _FighterVideoRemote(this.videoUrl, this.combo, this.level, this.videoId,
+      this.userId, this.currentUserMaxLvl);
   @override
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
@@ -279,7 +291,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   String previousScreen = 'fromHomeScreen';
   var started = false;
-  var maxSeconds = 10;
+  var maxSeconds = 180;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -375,10 +387,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
         playBell();
         setState(() => started = false);
         stopTimer(reset: false);
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userId)
-            .update({'currentMaxLevel': widget.level + 1});
+        if (widget.level == widget.currentUserMaxLvl) {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.userId)
+              .update({'currentMaxLevel': widget.level + 1});
+        }
       }
     });
   }
@@ -445,8 +459,17 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
             ),
             Text(wordsFromNumbsString),
             SizedBox(height: 40),
-            buildTimer(previousScreen, started, secs, maxSeconds,
-                initialCountdown, currentTerm, initialCountdownMax),
+            buildTimer(
+                previousScreen,
+                started,
+                secs,
+                maxSeconds,
+                initialCountdown,
+                currentTerm,
+                initialCountdownMax,
+                Colors.purple.shade100,
+                Colors.purple.shade900,
+                Colors.purple.shade900),
             SizedBox(height: 10),
             buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
                 previousScreen, null, isRunning, resetTimer),

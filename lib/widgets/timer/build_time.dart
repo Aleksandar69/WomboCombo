@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm) {
+Widget buildTime(
+    secs, previousScreen, started, initialCountdown, currentTerm, color) {
   if (previousScreen == 'fromHomeScreen') {
     if (secs == 0) {
       return Icon(Icons.done, color: Colors.green, size: 112);
@@ -10,7 +11,7 @@ Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm) {
               '${secs}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: color,
                 fontSize: 80,
               ),
             )
@@ -18,7 +19,7 @@ Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm) {
               '${initialCountdown}',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: color,
                 fontSize: 80,
               ),
             );
@@ -31,7 +32,7 @@ Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm) {
         currentTerm,
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: color,
           fontSize: 80,
         ),
       );

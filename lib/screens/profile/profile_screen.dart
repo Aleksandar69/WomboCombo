@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
+import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/profile/edit_profile_screen.dart';
 import 'package:wombocombo/screens/profile/videos/saved_videos.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wombocombo/widgets/main_drawer.dart';
 import '../../widgets/profile/profile_list_item.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -131,7 +133,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+        isCurrentUser
+            ? Navigator.of(context).pushReplacementNamed(HomeScreen.routeName)
+            : Navigator.of(context)
+                .pushReplacementNamed(LeaderboardScreen.routeName);
         return false;
       },
       child: Scaffold(

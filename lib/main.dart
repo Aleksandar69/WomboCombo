@@ -97,6 +97,7 @@ class MyApp extends StatelessWidget {
             FriendRequests.routeName: (context) => FriendRequests(),
             ChatScreen.routeName: (context) => ChatScreen(),
             FAQScreen.routeName: (context) => FAQScreen(),
+            AuthScreen.routeName: (context) => AuthScreen(),
           }),
     );
   }

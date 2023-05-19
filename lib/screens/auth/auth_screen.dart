@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:wombocombo/screens/home_screen.dart';
+
 import '../../widgets/auth/auth_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class AuthScreen extends StatefulWidget {
+  static const routeName = '/auth';
   @override
   State<AuthScreen> createState() => _AuthScreenState();
 }
@@ -35,6 +38,7 @@ class _AuthScreenState extends State<AuthScreen> {
           email: email,
           password: password,
         );
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
       } else {
         authResult = await _auth.createUserWithEmailAndPassword(
           email: email,
@@ -61,6 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'chattingWith': null,
           'currentMaxLevel': 1,
         });
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
       }
     } on PlatformException catch (e) {
       var message = 'An error occured, please check your credentials!';
@@ -101,9 +106,15 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(_submitAuthForm, _isLoading),
+    return WillPopScope(
+      onWillPop: () async {
+        SystemNavigator.pop();
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: AuthForm(_submitAuthForm, _isLoading),
+      ),
     );
   }
 }
