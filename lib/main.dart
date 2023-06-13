@@ -2,7 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/combos_provider.dart';
+import 'package:wombocombo/providers/comments_provider.dart';
 import 'package:wombocombo/providers/custom_combo_provider.dart';
+import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/messages_provider.dart';
+import 'package:wombocombo/providers/storage_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
+import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/screens/countdown_timer/countdown_timer.dart';
@@ -46,6 +54,30 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => CustomComboProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => FriendsProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CombosProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => StorageProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => VideosProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MessagesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => CommentsProvider(),
         ),
       ],
       child: MaterialApp(

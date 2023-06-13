@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
-import 'package:wombocombo/screens/auth/auth_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
-import 'package:wombocombo/screens/profile/profile_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class MainDrawer extends StatelessWidget {
-  final _auth = FirebaseAuth.instance;
   final String currentUserId;
   MainDrawer(this.currentUserId);
-
-  void logOut() async {
-    await _auth.signOut();
-  }
-
   Widget buildListTile(String title, IconData icon, VoidCallback tapHandler) {
     return ListTile(
       leading: Icon(
@@ -37,11 +27,13 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late final AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     return Drawer(
       child: Column(
         children: <Widget>[
           AppBar(
-            title: Text('Hello Friend!'),
+            title: Text('WomboCombo'),
             automaticallyImplyLeading: false,
           ),
           Divider(),
@@ -55,8 +47,8 @@ class MainDrawer extends StatelessWidget {
           }),
           Divider(),
           buildListTile('Log Out', Icons.logout, () {
-            logOut();
-            Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+            authProvider.logOut();
+            //Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
           }),
           Divider(),
         ],

@@ -2,20 +2,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
-import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
-import 'package:wombocombo/screens/recording/start_recording_screen.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/main_drawer.dart';
-import 'combos/training_levels.dart';
-import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
-import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
-import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
-import './think_on_your_feet/boxing_mapping.dart';
-import '../presentation/custom_icons_icons.dart';
 import '../widgets/grid_dashboard.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,33 +21,23 @@ class _HomeScreenState extends State<HomeScreen> {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  var currentUser;
-
-  // var menuItems = [
-  //   'Think on your feet',
-  //   'Make your own workout',
-  //   'Get your combos up',
-  //   'Timer',
-  //   'Instructions'
-  // ];
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final FriendsProvider friendsProvider =
+      Provider.of<FriendsProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+  var currentUserId;
   var user2CurrentUser;
   var isLoading = true;
   List friendRequests = [];
   var currentUserData;
 
   getFriendNotif() async {
-    currentUser = FirebaseAuth.instance.currentUser;
+    currentUserId = authProvider.userId;
 
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user2', isEqualTo: currentUser!.uid)
-        .get()
-        .then((value) {
-      user2CurrentUser = value;
-      setState(() {
-        isLoading = true;
-      });
-    });
+    var user2CurrentUser =
+        await friendsProvider.getFriendFilterIsEqualTo('user2', currentUserId);
 
     for (var user in user2CurrentUser!.docs) {
       if (user['status'] == 0) {
@@ -92,10 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     firebaseMessaging.getToken().then((token) {
       if (token != null) {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .update({'pushToken': token});
+        userProvider.updateUserInfo(currentUserId, {'pushToken': token});
       }
     }).catchError((err) {
       Fluttertoast.showToast(msg: err.toString());
@@ -150,10 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("Activities"),
       ),
-      drawer: MainDrawer(currentUser.uid),
+      drawer: MainDrawer(currentUserId),
       body: Column(
         children: [
-          GridDashboard(currentUser.uid, friendRequests),
+          GridDashboard(currentUserId, friendRequests),
         ],
       ),
     );

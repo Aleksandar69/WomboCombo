@@ -19,13 +19,6 @@ class BoxingAttacksListProvider with ChangeNotifier {
     BoxingAttack(
         'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
     BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '9b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '8b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '7b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '11b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '12b'),
-    BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '13b'),
   ];
 
   List<BoxingAttack> get attacks {

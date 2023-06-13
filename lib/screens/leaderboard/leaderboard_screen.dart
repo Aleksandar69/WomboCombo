@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart.';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:wombocombo/models/user.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
@@ -16,6 +16,8 @@ class LeaderboardScreen extends StatefulWidget {
 class LeaderboardScreenState extends State<LeaderboardScreen> {
   var users;
   TextEditingController _search = TextEditingController();
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
 
   var isSearchTerm = false;
 
@@ -68,15 +70,10 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
             ),
             StreamBuilder<QuerySnapshot>(
                 stream: !isSearchTerm
-                    ? FirebaseFirestore.instance
-                        .collection('users')
-                        .orderBy('userPoints', descending: true)
-                        .limit(50)
-                        .snapshots()
-                    : FirebaseFirestore.instance
-                        .collection('users')
-                        .where('username', isEqualTo: _search.text)
-                        .snapshots(),
+                    ? userProvider.getAllUsersWithOrderAndLimit(
+                        'userPoints', true, 50)
+                    : userProvider.getUserFilterIsEqualTo(
+                        'username', _search.text),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(

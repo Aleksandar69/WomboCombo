@@ -1,8 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import '../../widgets/chat/messages.dart';
 import '../../widgets/chat/new_message.dart';
 
@@ -16,27 +17,18 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+  late final UserProvider userProvider = Provider.of<UserProvider>(context);
+
   var receiverId;
   var receiverUsername;
   var recieverImage;
-  var userData;
-  var currentUser;
+  late final currentUserId = authProvider.userId;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-  getCurrentUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
-
-    userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser?.uid)
-        .get();
-  }
 
   var groupChatId;
   void readLocal() {
-    FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
-      'chattingWith': receiverId,
-    });
+    userProvider.updateUserInfo(currentUserId!, {'chattingWith': receiverId});
   }
 
   @override
@@ -49,7 +41,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    getCurrentUser();
     var args = ModalRoute.of(context)!.settings.arguments as List;
     receiverUsername = args[0];
     recieverImage = args[1];
@@ -59,12 +50,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<bool> onBackPress() {
-    FirebaseFirestore.instance.collection('users').doc(currentUser.uid).update({
-      'chattingWith': null,
-    });
-
+    userProvider.updateUserInfo(currentUserId!, {'chattingWith': null});
     Navigator.pop(context);
-
     return Future.value(false);
   }
 
@@ -80,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Column(
             children: [
               Expanded(
-                child: Messages(receiverId, currentUser!.uid),
+                child: Messages(receiverId, currentUserId!),
               ),
               NewMessage(receiverId, receiverUsername, recieverImage),
             ],

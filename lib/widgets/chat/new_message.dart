@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/models/message.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/messages_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 
 class NewMessage extends StatefulWidget {
   static const routeName = '/new-message';
@@ -16,66 +18,36 @@ class NewMessage extends StatefulWidget {
 }
 
 class _NewMessageState extends State<NewMessage> {
+  late final MessagesProvider messagesProvider =
+      Provider.of<MessagesProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
   var _enteredMessage = '';
   final _controller = new TextEditingController();
-
-  // void _sendMessage() async {
-  //   FocusScope.of(context).unfocus();
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   final userData = await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(user?.uid)
-  //       .get();
-  //   FirebaseFirestore.instance.collection('chat').add({
-  //     'text': _enteredMessage,
-  //     'createdAt': Timestamp.now(),
-  //     'senderId': user?.uid,
-  //     'senderUsername': userData['username'],
-  //     'senderImage': userData['image_url'],
-  //     'receiverId': widget.receiverId,
-  //     'receiverUsername': widget.receiverUsername,
-  //     'receiverImg': widget.receiverImg,
-  //   });
-  //   _controller.clear();
-  // }
   var groupChatId;
   void _sendMessage() async {
     FocusScope.of(context).unfocus();
-    final user = FirebaseAuth.instance.currentUser;
-    final userData = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid)
-        .get();
-    var currentUserId = user!.uid;
+    final currentUserId = authProvider.userId;
+    final userData = await userProvider.getUser(currentUserId);
     var receiverId = widget.receiverId;
-    if (user!.uid.hashCode <= widget.receiverId.hashCode) {
+    if (currentUserId.hashCode <= widget.receiverId.hashCode) {
       groupChatId = '$currentUserId-$receiverId';
     } else {
       groupChatId = '$receiverId-$currentUserId';
     }
-
-    var documentReference = FirebaseFirestore.instance
-        .collection('messages')
-        .doc(groupChatId)
-        .collection(groupChatId)
-        .doc(DateTime.now().millisecondsSinceEpoch.toString());
-
-    FirebaseFirestore.instance.runTransaction((transaction) async {
-      await transaction.set(
-        documentReference,
-        {
-          'text': _enteredMessage,
-          'senderId': user?.uid,
-          'senderUsername': userData['username'],
-          'senderImage': userData['image_url'],
-          'receiverId': widget.receiverId,
-          'receiverUsername': widget.receiverUsername,
-          'receiverImg': widget.receiverImg,
-          'createdAt': Timestamp.now(),
-        },
-      );
-      _enteredMessage = '';
-    });
+    messagesProvider.addMessage(Message(
+      groupChatId,
+      _enteredMessage,
+      currentUserId,
+      userData['username'],
+      userData['image_url'],
+      widget.receiverId,
+      widget.receiverImg,
+      widget.receiverUsername,
+    ));
+    _enteredMessage = '';
     _controller.clear();
   }
 

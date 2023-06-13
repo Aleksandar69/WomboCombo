@@ -1,15 +1,18 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:wombocombo/widgets/main_drawer.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:wombocombo/models/video.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/storage_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
+import 'package:wombocombo/providers/videos_provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dart:math';
 import '../../widgets/video_image_widgets/video_player.dart';
+import '../../models/video.dart' as V;
 
 class StartRecording extends StatefulWidget {
   static const routeName = '/recording';
@@ -19,11 +22,18 @@ class StartRecording extends StatefulWidget {
 }
 
 class _StartRecordingState extends State<StartRecording> {
-  // const StartRecording({Key? key}) : super(key: key);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final VideosProvider videosProvider =
+      Provider.of<VideosProvider>(context, listen: false);
+  late final StorageProvider storageProvider =
+      Provider.of<StorageProvider>(context, listen: false);
   XFile? _pickedVideo;
   File? _convertedVideo;
   var videoUrl;
-  var currentUser;
+  var currentUserId;
   var user;
   var maxNumberGenerated = 100000;
   Random random = Random();
@@ -31,6 +41,12 @@ class _StartRecordingState extends State<StartRecording> {
   TextEditingController _videoTitleController = TextEditingController();
   var videoThumbnail;
   var imgUrl;
+
+  @override
+  void dispose() {
+    _videoTitleController.dispose();
+    super.dispose();
+  }
 
   void getVideoThumbnail(videoUrl) async {
     final uint8list = await VideoThumbnail.thumbnailFile(
@@ -57,50 +73,39 @@ class _StartRecordingState extends State<StartRecording> {
     var randomNum = random.nextInt(maxNumberGenerated);
     var currentDate = DateTime.now();
 
-    final refvid = FirebaseStorage.instance
-        .ref()
-        .child('user_videos')
-        .child(currentUser!.uid)
-        .child(randomNum.toString() + currentDate.toString() + '.mp4');
+    var fileName = randomNum.toString() + currentDate.toString();
+    final refvid = storageProvider.addFileTwoLevels(
+        'user_videos', currentUserId, fileName, 'mp4');
 
-    final refimg = FirebaseStorage.instance
-        .ref()
-        .child('user_videos')
-        .child(currentUser!.uid)
-        .child(randomNum.toString() + currentDate.toString() + '.jpg');
+    final refimg = storageProvider.addFileTwoLevels(
+        'user_videos', currentUserId, fileName, '.jpg');
 
     await refvid.putFile(File(_convertedVideo!.path));
     await refimg.putFile(File(videoThumbnail!.path));
 
     videoUrl = await refvid.getDownloadURL();
     imgUrl = await refimg.getDownloadURL();
+    await videosProvider.addVideo(Video(videoUrl, currentUserId,
+        Timestamp.now(), _videoTitleController.text, imgUrl));
 
-    FirebaseFirestore.instance.collection('videos').doc().set({
-      'videoUrl': videoUrl,
-      'userId': currentUser!.uid,
-      'createdAt': Timestamp.now(),
-      'videoTitle': _videoTitleController.text,
-      'thumbnail': imgUrl,
-    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Success'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   @override
   void initState() {
     super.initState();
-
     getUser();
   }
 
   void getUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .get(GetOptions(source: Source.server))
-        .then((value) {
-      user = value;
-    });
+    currentUserId = authProvider.userId;
+    user = await userProvider.getUser(currentUserId);
 
     username = user['username'];
   }
@@ -156,13 +161,6 @@ class _StartRecordingState extends State<StartRecording> {
                               child: Text('Save'),
                               onPressed: () {
                                 confirmFileForUpload();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('Success'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                                Navigator.of(context).pop();
                               },
                             ),
                           ],

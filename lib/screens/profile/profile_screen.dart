@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/models/friend_status.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
-import 'package:wombocombo/screens/home_screen.dart';
-import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/profile/edit_profile_screen.dart';
 import 'package:wombocombo/screens/profile/videos/saved_videos.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wombocombo/widgets/main_drawer.dart';
 import '../../widgets/profile/profile_list_item.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -21,13 +21,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late final UserProvider userProvider = Provider.of<UserProvider>(context);
+  late final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+  late final FriendsProvider friendProvider =
+      Provider.of<FriendsProvider>(context, listen: false);
   var userId;
   var isCurrentUser = true;
   var imgUrl;
   var user;
   var username;
   var userPoints;
-  var currentUser;
+  var currentUserId;
   var isLoading = true;
   File? newImage;
   @override
@@ -42,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     getUser();
     checkIfUserIsAddedAsFriend();
-    userId == currentUser.uid ? isCurrentUser = true : isCurrentUser = false;
+    userId == currentUserId ? isCurrentUser = true : isCurrentUser = false;
   }
 
   var currentUserUsername;
@@ -50,29 +54,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var currentUser2;
 
   void getUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
+    currentUserId = authProvider.userId;
+    setState(() {
+      isLoading = true;
+    });
 
     userId == null
-        ? await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser!.uid)
-            .get()
-            .then((value) {
-            user = value;
-            setState(() {
-              isLoading = true;
-            });
-          })
-        : await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .get()
-            .then((value) {
-            user = value;
-            setState(() {
-              isLoading = true;
-            });
-          });
+        ? user = await userProvider.getUser(currentUserId)
+        : user = await userProvider.getUser(userId);
 
     setState(() {
       isLoading = false;
@@ -85,26 +74,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isAlreadyFriend = false;
 
   void checkIfUserIsAddedAsFriend() async {
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user1', isEqualTo: currentUser.uid)
-        .get()
-        .then((value) {
-      user1CurrentUser = value;
-      setState(() {
-        isLoading = true;
-      });
+    setState(() {
+      isLoading = true;
     });
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user2', isEqualTo: currentUser.uid)
-        .get()
-        .then((value) {
-      user2CurrentUser = value;
-      setState(() {
-        isLoading = true;
-      });
-    });
+    user1CurrentUser =
+        await friendProvider.getFriendFilterIsEqualTo('user1', currentUserId);
+    user2CurrentUser =
+        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
 
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == userId) {
@@ -133,10 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        isCurrentUser
-            ? Navigator.of(context).pushReplacementNamed(HomeScreen.routeName)
-            : Navigator.of(context)
-                .pushReplacementNamed(LeaderboardScreen.routeName);
+        Navigator.pop(context);
         return false;
       },
       child: Scaffold(
@@ -223,14 +196,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     text: 'Add Friend',
                                   ),
                                   onTap: () {
-                                    FirebaseFirestore.instance
-                                        .collection('friendList')
-                                        .add({
-                                      'user1': currentUser.uid,
-                                      'user2': userId,
-                                      'status': 0
-                                    });
-
+                                    friendProvider.addFriend(
+                                        FriendStatus(currentUserId, userId, 0));
                                     setState(() {
                                       isAlreadyFriendRequested = true;
                                     });

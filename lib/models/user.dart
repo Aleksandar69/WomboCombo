@@ -1,8 +1,27 @@
-class User {
-  late final String id;
-  final String? username;
-  final String? email;
-  final String? image;
+import 'dart:io';
 
-  User(this.username, this.email, this.image);
+class User {
+  String? id;
+  String? username;
+  String? email;
+  File? profileImage;
+  String? password;
+
+  User(this.username, this.email, this.profileImage, this.password);
+
+  set currentusername(String currentUsername) {
+    username = currentUsername;
+  }
+
+  set userPassword(String currentPassword) {
+    password = currentPassword;
+  }
+
+  set userEmail(String currentEmail) {
+    email = currentEmail;
+  }
+
+  set image(File? currentimage) {
+    profileImage = currentimage;
+  }
 }

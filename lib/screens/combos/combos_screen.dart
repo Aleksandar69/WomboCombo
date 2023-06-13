@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
 import 'package:wombocombo/widgets/timer/build_timer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CombosScreen extends StatefulWidget {
   static const routeName = '/combos';
@@ -61,7 +61,7 @@ class _CombosScreenState extends State<CombosScreen> {
           children: [
             Expanded(
               child: _FighterVideoRemote(videoUrl, combo, currentLevel, videoId,
-                  userId, currentUserMaxLvl),
+                  currentUserId, currentUserMaxLvl),
             ),
           ],
         ),
@@ -267,6 +267,7 @@ class _FighterVideoRemote extends StatefulWidget {
 
 class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
+  late final UserProvider userProvider = Provider.of<UserProvider>(context);
   var isLoading = true;
 
   @override
@@ -388,10 +389,8 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
         setState(() => started = false);
         stopTimer(reset: false);
         if (widget.level == widget.currentUserMaxLvl) {
-          FirebaseFirestore.instance
-              .collection('users')
-              .doc(widget.userId)
-              .update({'currentMaxLevel': widget.level + 1});
+          userProvider.updateUserInfo(
+              widget.userId, {'currentMaxLevel': widget.level + 1});
         }
       }
     });

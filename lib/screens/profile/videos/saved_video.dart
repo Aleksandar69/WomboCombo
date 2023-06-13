@@ -1,10 +1,12 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:wombocombo/models/comment.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/comments_provider.dart';
 import '../../../widgets/video_image_widgets/video_player.dart';
 import 'package:intl/intl.dart';
+import 'package:wombocombo/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class SavedVideo extends StatefulWidget {
   static const routeName = '/saved-video';
@@ -14,39 +16,38 @@ class SavedVideo extends StatefulWidget {
 }
 
 class _SavedVideoState extends State<SavedVideo> {
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final CommentsProvider commentsProvider =
+      Provider.of<CommentsProvider>(context, listen: false);
   var videoUrl;
   TextEditingController commentController = TextEditingController();
-  var currentUser;
+  var currentUserId;
   var videoId;
   var username;
   var userImage;
   var user;
 
   void getUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
+    currentUserId = authProvider.userId;
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .get(GetOptions(source: Source.server))
-        .then((value) {
-      user = value;
-    });
+    user = await userProvider.getUser(currentUserId);
 
     username = user['username'];
     userImage = user['image_url'];
   }
 
-  void saveComment() {
-    FirebaseFirestore.instance.collection('comments').doc().set({
-      'comment': commentController.text,
-      'userId': currentUser.uid,
-      'videoId': videoId,
-      'date': Timestamp.now(),
-      'userName': username,
-      'userImage': userImage,
-    });
-
+  void submitComment() {
+    commentsProvider.saveComment(Comment(
+      commentController.text,
+      currentUserId,
+      username,
+      userImage,
+      videoId,
+      Timestamp.now(),
+    ));
     commentController.clear();
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -106,7 +107,7 @@ class _SavedVideoState extends State<SavedVideo> {
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () => saveComment(),
+                    onPressed: () => submitComment(),
                     icon: Icon(Icons.forward),
                     label: Text(''),
                   )
@@ -114,10 +115,7 @@ class _SavedVideoState extends State<SavedVideo> {
               ),
             ),
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('comments')
-                  .where('videoId', isEqualTo: videoId)
-                  .snapshots(),
+              stream: commentsProvider.getCommentForVideo(videoId),
               builder: (context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(

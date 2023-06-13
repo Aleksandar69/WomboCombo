@@ -3,9 +3,9 @@ import 'dart:math';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -24,7 +24,11 @@ enum TtsState { playing, stopped, paused, continued }
 class _CountdownTimerState extends State<CountdownTimer>
     with WidgetsBindingObserver {
   var currentAttacks = [];
-  var currentUser;
+  var currentUserId;
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
 
   late FlutterTts flutterTts;
   String? language = 'en_US';
@@ -93,24 +97,13 @@ class _CountdownTimerState extends State<CountdownTimer>
   }
 
   void setUserPoints(userPoints) {
-    currentUser = FirebaseAuth.instance.currentUser;
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .update({'userPoints': userPoints});
+    userProvider.updateUserInfo(currentUserId, {'userPoints': userPoints});
   }
 
   void getUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
+    currentUserId = authProvider.userId;
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .get()
-        .then((value) {
-      user = value;
-    });
+    user = await userProvider.getUser(currentUserId);
 
     currentPoints = user['userPoints'];
   }

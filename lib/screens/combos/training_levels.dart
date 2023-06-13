@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/combos_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 
 class TrainingLevel extends StatefulWidget {
@@ -19,11 +21,15 @@ var userId;
 var isLoading = true;
 
 class _TrainingLevelState extends State<TrainingLevel> {
+  late final UserProvider userProvider = Provider.of<UserProvider>(context);
+  late final CombosProvider combosProvider =
+      Provider.of<CombosProvider>(context);
+  late final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     getCurrentUserLevel();
-
     setState(() {
       isLoading = false;
     });
@@ -32,26 +38,16 @@ class _TrainingLevelState extends State<TrainingLevel> {
   @override
   void initState() {
     super.initState();
-
-    getCurrentUserLevel();
-
     setState(() {
       isLoading = false;
     });
   }
 
-  var currentUserData;
+  late final currentUserData;
   var currentMaxLevel;
-  getCurrentUserLevel() async {
-    userId = FirebaseAuth.instance.currentUser!.uid;
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get()
-        .then((value) {
-      currentUserData = value;
-    });
+  getCurrentUserLevel() async {
+    currentUserData = await userProvider.getUser(authProvider.userId);
     setState(() {
       currentMaxLevel = currentUserData['currentMaxLevel'];
     });
@@ -71,10 +67,7 @@ class _TrainingLevelState extends State<TrainingLevel> {
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('combos')
-                    .orderBy('level')
-                    .snapshots(),
+                stream: combosProvider.getCombosStream(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(

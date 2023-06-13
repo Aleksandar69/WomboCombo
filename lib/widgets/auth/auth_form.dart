@@ -1,16 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:wombocombo/models/user.dart';
 import '../video_image_widgets/user_image_picker.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 class AuthForm extends StatefulWidget {
   final void Function(
-    String email,
-    String password,
-    String userName,
-    File? image,
+    User user,
     bool isLogin,
   ) submitFn;
 
@@ -25,28 +23,24 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
-  var _userEmail = '';
-  var _userName = '';
-  var _userPassword = '';
-  File? _userImageFile;
+  User user = User(null, null, null, null);
 
   void _pickedImage(File? image) {
-    _userImageFile = image;
+    user.profileImage = image;
   }
 
   void _trySubmit() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
-    if (_userImageFile == null && !_isLogin) {
+    if (user.profileImage == null && !_isLogin) {
       var file;
       await getDefaultImage().then((value) => file = value);
-      _userImageFile = file;
+      user.profileImage = file;
     }
     if (isValid) {
       _formKey.currentState!.save();
-      widget.submitFn(_userEmail.trim(), _userPassword.trim(), _userName.trim(),
-          _userImageFile, _isLogin);
+      widget.submitFn(user, _isLogin);
     }
   }
 
@@ -78,7 +72,7 @@ class _AuthFormState extends State<AuthForm> {
               TextFormField(
                 key: ValueKey('email'),
                 onSaved: (value) {
-                  _userEmail = value!;
+                  user.email = value!;
                 },
                 validator: (value) {
                   if (value!.isEmpty || !value.contains('@')) {
@@ -95,7 +89,7 @@ class _AuthFormState extends State<AuthForm> {
                 TextFormField(
                   key: ValueKey('username'),
                   onSaved: (value) {
-                    _userName = value!;
+                    user.username = value!;
                   },
                   validator: (value) {
                     if (value!.isEmpty || value.length < 4) {
@@ -108,7 +102,7 @@ class _AuthFormState extends State<AuthForm> {
               TextFormField(
                 key: ValueKey('password'),
                 onSaved: (value) {
-                  _userPassword = value!;
+                  user.password = value!;
                 },
                 validator: (value) {
                   if (value!.isEmpty || value.length < 7) {

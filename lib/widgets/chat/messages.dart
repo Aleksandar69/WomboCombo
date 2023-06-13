@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/messages_provider.dart';
 import './message_bubble.dart';
 
 class Messages extends StatelessWidget {
@@ -11,29 +10,16 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MessagesProvider messagesProvider =
+        Provider.of<MessagesProvider>(context, listen: false);
     var groupChatId;
     if (currentUserId.hashCode <= receiverId.hashCode) {
       groupChatId = '$currentUserId-$receiverId';
     } else {
       groupChatId = '$receiverId-$currentUserId';
     }
-
-    Firebase.initializeApp();
-    var currentUser = FirebaseAuth.instance.currentUser;
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('messages')
-          .doc(groupChatId)
-          .collection(groupChatId)
-          .limit(20)
-          .orderBy('createdAt', descending: true)
-          .snapshots(),
-
-      // FirebaseFirestore.instance
-      //     .collection('chat')
-      //     .where('receiverId', isEqualTo: receiverId)
-      //     .orderBy('createdAt', descending: true)
-      //     .snapshots(),
+      stream: messagesProvider.getMessages(groupChatId),
       builder: (context, AsyncSnapshot snapshot) {
         print('state: ${snapshot.connectionState} ');
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -47,7 +33,7 @@ class Messages extends StatelessWidget {
           reverse: true,
           itemCount: chatDocs?.length,
           itemBuilder: (context, index) {
-            if (chatDocs?[index]['senderId'] == currentUser?.uid)
+            if (chatDocs?[index]['senderId'] == currentUserId)
               return MessageBubble(
                 chatDocs?[index]['text'],
                 true,
@@ -63,7 +49,6 @@ class Messages extends StatelessWidget {
                 chatDocs?[index]['senderImage'],
                 key: ValueKey(chatDocs?[index].id),
               );
-            //return chatDocs?[index]['text'] != null ? Text(chatDocs?[index]['text']) : Text('');
           },
         );
       },

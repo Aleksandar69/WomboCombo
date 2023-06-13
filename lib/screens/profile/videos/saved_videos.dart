@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/profile/videos/saved_video.dart';
 
 class SavedVideos extends StatefulWidget {
@@ -14,9 +14,12 @@ class SavedVideos extends StatefulWidget {
 }
 
 class _SavedVideosState extends State<SavedVideos> {
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final VideosProvider videosProvider =
+      Provider.of<VideosProvider>(context, listen: false);
   bool isLoading = false;
   var userId;
-  var currentUser;
   @override
   void initState() {
     super.initState();
@@ -26,8 +29,7 @@ class _SavedVideosState extends State<SavedVideos> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    currentUser = FirebaseAuth.instance.currentUser;
-    userId = currentUser!.uid;
+    userId = authProvider.userId;
 
     if (ModalRoute.of(context)!.settings.arguments != null) {
       final args = ModalRoute.of(context)!.settings.arguments as List;
@@ -42,10 +44,7 @@ class _SavedVideosState extends State<SavedVideos> {
         title: Text('Saved Videos'),
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('videos')
-            .where('userId', isEqualTo: userId)
-            .snapshots(),
+        stream: videosProvider.getVideoForUser(userId),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -79,13 +78,14 @@ class _SavedVideosState extends State<SavedVideos> {
                             videoDocs[index]['thumbnail'],
                             fit: BoxFit.cover,
                           ),
-                          if (currentUser.uid == videoDocs[index]['userId'])
+                          if (userId == videoDocs[index]['userId'])
                             Positioned(
                               top: constraints.maxHeight * 0.65,
                               left: constraints.maxWidth * 0.65,
                               child: IconButton(
                                   onPressed: () {
-                                    _deleteVideo(videoDocs[index].id);
+                                    videosProvider
+                                        .deleteVideo(videoDocs[index].id);
                                     setState(() {
                                       videoDocs.removeAt(index);
                                     });
@@ -114,9 +114,5 @@ class _SavedVideosState extends State<SavedVideos> {
         },
       ),
     );
-  }
-
-  void _deleteVideo(String id) {
-    FirebaseFirestore.instance.collection('videos').doc(id).delete();
   }
 }

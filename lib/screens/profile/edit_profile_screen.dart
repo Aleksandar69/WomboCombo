@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/storage_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -14,6 +15,13 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+  late final StorageProvider storageProvider =
+      Provider.of<StorageProvider>(context, listen: false);
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
@@ -38,21 +46,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   var user;
   var username;
   var email;
-  var currentUser;
+  var currentUserId;
 
   void getUser() async {
-    currentUser = FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .get(GetOptions(source: Source.server))
-        .then((value) {
-      user = value;
-      setState(() {
-        isLoading = true;
-      });
+    currentUserId = authProvider.userId;
+    setState(() {
+      isLoading = true;
     });
+    user = await userProvider.getUser(currentUserId);
 
     username = user['username'];
     email = user['email'];
@@ -66,22 +67,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void submitUserData() async {
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('user_image')
-        .child(currentUser!.uid + '.jpg');
+    if (_convertedImage != null) {
+      final ref =
+          storageProvider.addFileOneLevel('user_image', currentUserId, 'jpg');
+      await ref.putFile(File(_convertedImage!.path));
 
-    await ref.putFile(File(_convertedImage!.path));
-
-    imgUrl = await ref.getDownloadURL();
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser!.uid)
-        .update({
-      'username': _usernameController.text,
-      'email': _emailController.text,
-      'image_url': imgUrl
-    });
+      imgUrl = await ref.getDownloadURL();
+      userProvider.updateUserInfo(currentUserId, {
+        'username': _usernameController.text,
+        'email': _emailController.text,
+        'image_url': imgUrl
+      });
+    } else {
+      userProvider.updateUserInfo(currentUserId, {
+        'username': _usernameController.text,
+        'email': _emailController.text,
+      });
+    }
   }
 
   @override
@@ -164,7 +166,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         submitUserData();
                         Navigator.of(context).pushReplacementNamed(
                             ProfileScreen.routeName,
-                            arguments: [null, _convertedImage]);
+                            arguments: [currentUserId, _convertedImage]);
                       },
                     ),
                   ],

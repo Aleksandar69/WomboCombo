@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
-import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 
 class FriendRequests extends StatefulWidget {
   static const routeName = '/friend-req';
@@ -14,35 +16,32 @@ class FriendRequests extends StatefulWidget {
 }
 
 class _FriendRequestsState extends State<FriendRequests> {
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final FriendsProvider friendProvider =
+      Provider.of<FriendsProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
   var isLoading = true;
   var user2CurrentUser;
   List friendRequestUser = [];
   List friendRequestData = [];
 
   void declineFriendRequest(id) {
-    FirebaseFirestore.instance.collection('friendList').doc(id).delete();
+    friendProvider.deleteFriend(id);
   }
 
   void acceptFriendRequest(id) {
-    FirebaseFirestore.instance
-        .collection('friendList')
-        .doc(id)
-        .update({'status': 1});
+    friendProvider.updateFriend(id, {'status': 1});
   }
 
   void getFriendRequests() async {
-    var currentUser = FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user2', isEqualTo: currentUser!.uid)
-        .get()
-        .then((value) {
-      user2CurrentUser = value;
-      setState(() {
-        isLoading = true;
-      });
+    var currentUserId = authProvider.userId;
+    setState(() {
+      isLoading = true;
     });
+    user2CurrentUser =
+        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
 
     for (var user in user2CurrentUser!.docs) {
       if (user['status'] == 0) {
@@ -55,13 +54,8 @@ class _FriendRequestsState extends State<FriendRequests> {
     //getAllFriendData();
 
     for (var friend in friendRequestUser) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(friend['user'])
-          .get()
-          .then((value) {
-        friendRequestData.add(value);
-      });
+      var currentFriend = await userProvider.getUser(friend['user']);
+      friendRequestData.add(currentFriend);
     }
 
     setState(() {

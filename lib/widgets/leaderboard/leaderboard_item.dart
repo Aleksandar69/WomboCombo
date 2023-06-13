@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/models/friend_status.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/friends_providers.dart';
 import '../../widgets/profile/profile_list_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -16,11 +20,16 @@ class LeaderboardItem extends StatefulWidget {
 }
 
 class _LeaderboardItemState extends State<LeaderboardItem> {
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final FriendsProvider friendProvider =
+      Provider.of<FriendsProvider>(context, listen: false);
+
   var user1CurrentUser;
   var user2CurrentUser;
   bool isAlreadyFriendRequested = false;
   bool isAlreadyFriend = false;
-  var currentUser;
+  var currentUserId;
 
   @override
   void initState() {
@@ -29,22 +38,11 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
   }
 
   void checkIfUserIsAddedAsFriend() async {
-    currentUser = FirebaseAuth.instance.currentUser;
-
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user1', isEqualTo: currentUser.uid)
-        .get()
-        .then((value) {
-      user1CurrentUser = value;
-    });
-    await FirebaseFirestore.instance
-        .collection('friendList')
-        .where('user2', isEqualTo: currentUser.uid)
-        .get()
-        .then((value) {
-      user2CurrentUser = value;
-    });
+    currentUserId = authProvider.userId;
+    user1CurrentUser =
+        await friendProvider.getFriendFilterIsEqualTo('user1', currentUserId);
+    user2CurrentUser =
+        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
 
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == widget.userId) {
@@ -93,12 +91,8 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
             ? TextButton.icon(
                 label: Text('Add Friend'),
                 onPressed: () {
-                  FirebaseFirestore.instance.collection('friendList').add({
-                    'user1': currentUser.uid,
-                    'user2': widget.userId,
-                    'status': 0
-                  });
-
+                  friendProvider
+                      .addFriend(FriendStatus(currentUserId, widget.userId, 0));
                   setState(() {
                     isAlreadyFriendRequested = true;
                   });

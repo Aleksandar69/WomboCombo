@@ -1,15 +1,10 @@
-import 'dart:io';
-
-import 'package:wombocombo/screens/home_screen.dart';
-
+import 'package:wombocombo/providers/auth_provider.dart';
 import '../../widgets/auth/auth_form.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
+import '../../models/user.dart' as U;
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/auth';
@@ -18,54 +13,26 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final _auth = FirebaseAuth.instance;
+  late U.User user;
   var _isLoading = false;
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
 
   void _submitAuthForm(
-    String email,
-    String password,
-    String username,
-    File? image,
+    U.User user,
     bool isLogin,
   ) async {
-    UserCredential authResult;
     try {
       setState(() {
         _isLoading = true;
       });
       if (isLogin) {
-        authResult = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        Navigator.of(context).pushNamed(HomeScreen.routeName);
+        authProvider.handleLogin(user);
+        //Navigator.of(context).pushNamed(HomeScreen.routeName);
       } else {
-        authResult = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        authProvider.handleRegister(user);
 
-        final ref = FirebaseStorage.instance
-            .ref()
-            .child('user_image')
-            .child(authResult.user!.uid + '.jpg');
-
-        await ref.putFile(File(image!.path));
-
-        final url = await ref.getDownloadURL();
-
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(authResult.user!.uid)
-            .set({
-          'username': username,
-          'email': email,
-          'image_url': url,
-          'userPoints': 0,
-          'chattingWith': null,
-          'currentMaxLevel': 1,
-        });
-        Navigator.of(context).pushNamed(HomeScreen.routeName);
+        //Navigator.of(context).pushNamed(HomeScreen.routeName);
       }
     } on PlatformException catch (e) {
       var message = 'An error occured, please check your credentials!';
