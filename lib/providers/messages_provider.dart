@@ -1,34 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wombocombo/models/message.dart';
+import '../repositories/messages_repository.dart';
 
 class MessagesProvider with ChangeNotifier {
+  MessageRepository messageRepository = MessageRepository();
+
   getMessages(groupChatId) {
-    return FirebaseFirestore.instance
-        .collection('messages')
-        .doc(groupChatId)
-        .collection(groupChatId)
-        .orderBy('createdAt', descending: true)
-        .snapshots();
+    return messageRepository.getMessages(groupChatId);
   }
 
   addMessage(Message message) {
-    FirebaseFirestore.instance
-        .collection('messages')
-        .doc(message.groupChatId)
-        .collection(message.groupChatId!)
-        .doc(DateTime.now().millisecondsSinceEpoch.toString())
-        .set(
-      {
-        'text': message.messageText,
-        'senderId': message.senderId,
-        'senderUsername': message.senderUsername,
-        'senderImage': message.senderImg,
-        'receiverId': message.receiverId,
-        'receiverUsername': message.receiverUsername,
-        'receiverImg': message.receiverImg,
-        'createdAt': Timestamp.now(),
-      },
-    );
+    messageRepository.addMessage(message);
   }
 }

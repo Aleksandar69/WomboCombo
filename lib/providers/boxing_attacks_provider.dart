@@ -1,51 +1,22 @@
 import 'package:flutter/material.dart.';
+import '../repositories/boxing_attacks_repository.dart';
 
 class BoxingAttacksProvider with ChangeNotifier {
-  var _attacksBeginner = [
-    '2 4 3',
-    '1 2 3',
-    '1 1 5',
-    '1 1 2',
-    '1 6 4',
-  ];
-
-  var _attacksIntermediate = [
-    '2 4 3',
-    '1 2 3 4',
-    '1 1 5 6',
-    '1 1 2',
-    '1 6 4 3',
-  ];
-
-  var _attacksAdvanced = [
-    '2 4 3 3',
-    '1 2 3 4 1',
-    '1 1 5 6 2 ',
-    '1 1 2 3',
-    '1 6 4 3 3'
-  ];
-
-  var _attacksNightmare = [
-    '2 4 3 3 3',
-    '1 2 3 4 1 2',
-    '1 1 5 6 2 2',
-    '1 1 2 3 1',
-    '1 6 4 3 3 4'
-  ];
+  BoxingAttacksRepo boxingAttacksRepo = BoxingAttacksRepo();
 
   List<String> get begginerAttacks {
-    return [..._attacksBeginner];
+    return boxingAttacksRepo.begginerAttacks;
   }
 
   List<String> get intermediateAttacks {
-    return [..._attacksIntermediate];
+    return boxingAttacksRepo.intermediateAttacks;
   }
 
   List<String> get advancedAttacks {
-    return [..._attacksAdvanced];
+    return boxingAttacksRepo.advancedAttacks;
   }
 
   List<String> get nightmareAttacks {
-    return [..._attacksNightmare];
+    return boxingAttacksRepo.nightmareAttacks;
   }
 }

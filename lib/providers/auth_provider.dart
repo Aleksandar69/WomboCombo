@@ -5,18 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart' as U;
+import '../repositories/auth_repository.dart';
 
 class AuthProvider with ChangeNotifier {
   String? _userId;
   String? _email;
   String? _username;
   final _auth = FirebaseAuth.instance;
+  AuthRepository authRepo = AuthRepository();
 
   handleLogin(U.User user) async {
-    UserCredential authResult = await _auth.signInWithEmailAndPassword(
-      email: user.email!,
-      password: user.password!,
-    );
+    UserCredential authResult = await authRepo.loginUser(user);
     notifyListeners();
     _userId = _auth.currentUser?.uid;
     _username = user.username;
@@ -25,31 +24,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   handleRegister(U.User user) async {
-    UserCredential authResult = await _auth.createUserWithEmailAndPassword(
-      email: user.email!,
-      password: user.password!,
-    );
-
-    final ref = FirebaseStorage.instance
-        .ref()
-        .child('user_image')
-        .child(authResult.user!.uid + '.jpg');
-
-    await ref.putFile(File(user.profileImage!.path));
-
-    final url = await ref.getDownloadURL();
-
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(authResult.user!.uid)
-        .set({
-      'username': user.username,
-      'email': user.email,
-      'image_url': url,
-      'userPoints': 0,
-      'chattingWith': null,
-      'currentMaxLevel': 1,
-    });
+    UserCredential authResult = await authRepo.registerUser(user);
     _userId = _auth.currentUser?.uid;
     _username = user.username;
     _email = user.email;
@@ -58,7 +33,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   void logOut() async {
-    await _auth.signOut();
+    await authRepo.logOutUser();
     notifyListeners();
   }
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wombocombo/models/video.dart';
+import '../repositories/videos_repository.dart';
 
 class VideosProvider with ChangeNotifier {
+  VideosRepository videosRepository = VideosRepository();
+
   getVideoForUser(userid) {
     return FirebaseFirestore.instance
         .collection('videos')
@@ -10,17 +13,15 @@ class VideosProvider with ChangeNotifier {
         .snapshots();
   }
 
+  getVideo(userId) {
+    videosRepository.getVideoForUser(userId);
+  }
+
   void deleteVideo(String id) {
-    FirebaseFirestore.instance.collection('videos').doc(id).delete();
+    videosRepository.deleteVideoForUser(id);
   }
 
   addVideo(Video video) {
-    FirebaseFirestore.instance.collection('videos').doc().set({
-      'videoUrl': video.videoUrl,
-      'userId': video.userId,
-      'createdAt': video.createdAt,
-      'videoTitle': video.videoTitle,
-      'thumbnail': video.thumbnailImgUrl,
-    });
+    videosRepository.addVideoForUser(video);
   }
 }

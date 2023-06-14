@@ -1,50 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wombocombo/models/user.dart';
+import '../repositories/user_repository.dart';
 
 class UserProvider with ChangeNotifier {
+  UserRepository userRespository = UserRepository();
+
   updateUserInfo(String userId, updateData) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update(updateData);
+    return userRespository.updateUserInfo(userId, updateData);
   }
 
   getUser(userId) async {
-    var fetchedUser;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get()
-        .then((value) {
-      fetchedUser = value;
-    });
-    return fetchedUser;
+    return userRespository.getUser(userId);
   }
 
   addUser(User user, imgUrl) {
-    return FirebaseFirestore.instance.collection('users').doc(user.id).set({
-      'username': user.username,
-      'email': user.email,
-      'image_url': imgUrl,
-      'userPoints': 0,
-      'chattingWith': null,
-      'currentMaxLevel': 1,
-    });
+    return userRespository.addUser(user, imgUrl);
   }
 
   getUserFilterIsEqualTo(arg1, arg2) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .where(arg1, isEqualTo: arg2)
-        .snapshots();
+    return userRespository.getUserFilterIsEqualTo(arg1, arg2);
   }
 
   getAllUsersWithOrderAndLimit(orderBy, isDescending, limit) {
-    return FirebaseFirestore.instance
-        .collection('users')
-        .orderBy(orderBy, descending: isDescending)
-        .limit(50)
-        .snapshots();
+    return userRespository.getAllUsersWithOrderAndLimit(
+        orderBy, isDescending, limit);
   }
 }
