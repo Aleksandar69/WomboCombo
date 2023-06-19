@@ -49,16 +49,15 @@ class _StartRecordingState extends State<StartRecording> {
   }
 
   void getVideoThumbnail(videoUrl) async {
-    final uint8list = await VideoThumbnail.thumbnailFile(
+    await VideoThumbnail.thumbnailFile(
       video: videoUrl,
       imageFormat: ImageFormat.JPEG,
-      maxWidth:
-          128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+      maxWidth: 128,
       quality: 25,
     ).then((value) => videoThumbnail = File(value!));
   }
 
-  void _pickVideo() async {
+  void _recordVideo() async {
     final pickedVideoFile =
         await ImagePicker().pickVideo(source: ImageSource.camera);
 
@@ -131,7 +130,7 @@ class _StartRecordingState extends State<StartRecording> {
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    _pickVideo();
+                    _recordVideo();
                   },
                 ),
               )

@@ -510,7 +510,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           ],
         ),
         appBar: AppBar(
-          title: Text('text'),
+          title: Text('Custom Combo'),
         ),
         body: Column(
           children: [

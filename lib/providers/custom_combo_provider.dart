@@ -5,9 +5,9 @@ import '../repositories/custom_combo_repository.dart';
 
 class CustomComboProvider with ChangeNotifier {
   CustomComboRepository comboRepository = CustomComboRepository();
-  List<CustomCombo> _combos = [];
+  List _combos = [];
 
-  List<CustomCombo> get combos {
+  List get combos {
     return [..._combos];
   }
 

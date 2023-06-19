@@ -21,7 +21,6 @@ class Messages extends StatelessWidget {
     return StreamBuilder(
       stream: messagesProvider.getMessages(groupChatId),
       builder: (context, AsyncSnapshot snapshot) {
-        print('state: ${snapshot.connectionState} ');
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),

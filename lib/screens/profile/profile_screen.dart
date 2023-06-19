@@ -77,10 +77,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       isLoading = true;
     });
-    user1CurrentUser =
-        await friendProvider.getFriendFilterIsEqualTo('user1', currentUserId);
-    user2CurrentUser =
-        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
+    user1CurrentUser = await friendProvider.getFriendFilterTwoEquals(
+        'user1', currentUserId, 'status', 1);
+    user2CurrentUser = await friendProvider.getFriendFilterTwoEquals(
+        'user2', currentUserId, 'status', 1);
 
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == userId) {

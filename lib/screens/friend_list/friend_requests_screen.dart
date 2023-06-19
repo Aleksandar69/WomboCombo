@@ -40,19 +40,15 @@ class _FriendRequestsState extends State<FriendRequests> {
     setState(() {
       isLoading = true;
     });
-    user2CurrentUser =
-        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
+    user2CurrentUser = await friendProvider.getFriendFilterTwoEquals(
+        'user2', currentUserId, 'status', 0);
 
     for (var user in user2CurrentUser!.docs) {
-      if (user['status'] == 0) {
-        friendRequestUser.add({
-          "user": user['user1'],
-          "id": user.id,
-        });
-      }
+      friendRequestUser.add({
+        "user": user['user1'],
+        "id": user.id,
+      });
     }
-    //getAllFriendData();
-
     for (var friend in friendRequestUser) {
       var currentFriend = await userProvider.getUser(friend['user']);
       friendRequestData.add(currentFriend);

@@ -46,12 +46,10 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                   },
                   decoration: InputDecoration(
                     focusColor: Colors.white,
-                    //add prefix icon
                     prefixIcon: Icon(
                       Icons.person_outline_rounded,
                       color: Colors.grey,
                     ),
-                    //errorText: "Error",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -61,7 +59,6 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     fillColor: Colors.grey,
-
                     hintText: "Search",
                   ),
                   textInputAction: TextInputAction.search,

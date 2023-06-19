@@ -36,8 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
   getFriendNotif() async {
     currentUserId = authProvider.userId;
 
-    var user2CurrentUser =
-        await friendsProvider.getFriendFilterIsEqualTo('user2', currentUserId);
+    var user2CurrentUser = await friendsProvider.getFriendFilterTwoEquals(
+        'user2', currentUserId, 'status', 0);
+
+    friendRequests = user2CurrentUser!.docs as List;
 
     for (var user in user2CurrentUser!.docs) {
       if (user['status'] == 0) {

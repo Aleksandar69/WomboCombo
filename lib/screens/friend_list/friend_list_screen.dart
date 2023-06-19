@@ -31,8 +31,11 @@ class _FriendListState extends State<FriendList> {
   var user2CurrentUser;
   var isLoading = true;
   List friendsMerged = [];
+  List friendListUser1 = [];
+  List friendListUser2 = [];
   List friendData = [];
   List friendRequests = [];
+  var fetchedFriendsRequests;
 
   getFriendList() async {
     currentUserId = authProvider.userId;
@@ -40,26 +43,27 @@ class _FriendListState extends State<FriendList> {
       isLoading = true;
     });
 
-    user1CurrentUser =
-        await friendProvider.getFriendFilterIsEqualTo('user1', currentUserId);
-    user2CurrentUser =
-        await friendProvider.getFriendFilterIsEqualTo('user2', currentUserId);
+    user1CurrentUser = await friendProvider.getFriendFilterTwoEquals(
+        'user1', currentUserId, 'status', 1);
+    user2CurrentUser = await friendProvider.getFriendFilterTwoEquals(
+        'user2', currentUserId, 'status', 1);
 
-    for (var user in user1CurrentUser!.docs) {
-      if (user['status'] == 1 && user['user2'] != currentUserId) {
-        friendsMerged.add(user['user2']);
-      }
-    }
-    for (var user in user2CurrentUser!.docs) {
-      if (user['status'] == 1 && user['user1'] != currentUserId) {
-        friendsMerged.add(user['user1']);
-      }
+    friendListUser1 = user1CurrentUser.docs as List;
+    friendListUser2 = user2CurrentUser.docs as List;
+
+    fetchedFriendsRequests = await friendProvider.getFriendFilterTwoEquals(
+        'user2', currentUserId, 'status', 0);
+
+    for (var friend in friendListUser1) {
+      friendsMerged.add(friend['user2']);
     }
 
-    for (var user in user2CurrentUser!.docs) {
-      if (user['status'] == 0) {
-        friendRequests.add(user['user1']);
-      }
+    for (var friend in friendListUser2) {
+      friendsMerged.add(friend['user1']);
+    }
+
+    for (var user in fetchedFriendsRequests!.docs) {
+      friendRequests.add(user['user1']);
     }
 
     for (var friend in friendsMerged) {
@@ -80,8 +84,6 @@ class _FriendListState extends State<FriendList> {
 
   @override
   Widget build(BuildContext context) {
-    var fireStoreFetch;
-
     return WillPopScope(
       onWillPop: () {
         Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);

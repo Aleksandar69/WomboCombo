@@ -154,6 +154,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _emailController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
                     TextButton(
                       child: Text('Submit'),
                       style: TextButton.styleFrom(
