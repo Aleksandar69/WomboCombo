@@ -18,7 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
   late final AuthProvider authProvider =
       Provider.of<AuthProvider>(context, listen: false);
 
-  void _submitAuthForm(
+  _submitAuthForm(
     U.User user,
     bool isLogin,
   ) async {
@@ -27,10 +27,12 @@ class _AuthScreenState extends State<AuthScreen> {
         _isLoading = true;
       });
       if (isLogin) {
-        authProvider.handleLogin(user);
+        await authProvider.handleLogin(
+          user,
+        );
         //Navigator.of(context).pushNamed(HomeScreen.routeName);
       } else {
-        authProvider.handleRegister(user);
+        await authProvider.handleRegister(user);
 
         //Navigator.of(context).pushNamed(HomeScreen.routeName);
       }
@@ -69,6 +71,9 @@ class _AuthScreenState extends State<AuthScreen> {
         _isLoading = false;
       });
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override

@@ -27,7 +27,8 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    late final AuthProvider authProvider =
+        Provider.of<AuthProvider>(context, listen: false);
     return Drawer(
       child: Column(
         children: <Widget>[

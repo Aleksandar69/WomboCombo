@@ -70,188 +70,6 @@ class _CombosScreenState extends State<CombosScreen> {
   }
 }
 
-class _FighterVideoLocal extends StatefulWidget {
-  @override
-  _FighterVideoLocalState createState() => _FighterVideoLocalState();
-
-  String videolocation;
-  _FighterVideoLocal(this.videolocation);
-}
-
-class _FighterVideoLocalState extends State<_FighterVideoLocal> {
-  late VideoPlayerController _controller;
-
-  void playerSetSource() async {
-    await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
-    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
-    await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset(widget.videolocation);
-
-    _controller.addListener(() {
-      setState(() {});
-    });
-    _controller.setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
-    playerSetSource();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  String previousScreen = 'fromHomeScreen';
-  var started = false;
-  var maxSeconds = 180;
-  late int secs = maxSeconds;
-  int initialCountdownMax = 3;
-  late int initialCountdown = initialCountdownMax;
-  String currentTerm = 'none';
-
-  Timer? timer;
-  var isRunning = false;
-
-  final playerBeep = AudioPlayer();
-  final playerRing = AudioPlayer();
-  final playerTenSecs = AudioPlayer();
-
-  void playBell() async {
-    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
-  }
-
-  void playBeep() async {
-    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
-  }
-
-  void playTenSecsSound() async {
-    return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
-        volume: 1);
-  }
-
-  void resetTimer() {
-    setState(() {
-      started = false;
-      secs = maxSeconds;
-      initialCountdown = initialCountdownMax;
-    });
-    stopTimer();
-  }
-
-  void resetAndStartTimer() {
-    setState(() {
-      started = false;
-      secs = maxSeconds;
-      initialCountdown = initialCountdownMax;
-    });
-    startTimer();
-  }
-
-  void stopTimer({bool reset = false, resetAndStart = false}) {
-    setState(() {
-      isRunning = false;
-    });
-    setState(() => timer?.cancel());
-    if (reset) {
-      resetTimer();
-    }
-    if (resetAndStart) {
-      resetAndStartTimer();
-    }
-  }
-
-  void startTimer({bool reset = false}) {
-    setState(() {
-      Wakelock.enable();
-    });
-    setState(() {
-      isRunning = true;
-    });
-    if (reset) {
-      resetTimer();
-    }
-    timer = Timer.periodic(Duration(seconds: 1), (_) {
-      if (!started) {
-        if (initialCountdown > 0) {
-          playBeep();
-          setState(() => initialCountdown--);
-        } else {
-          playBell();
-          setState(() {
-            started = true;
-          });
-        }
-      } else if (secs > 0 && started) {
-        if (secs == 10) {
-          playTenSecsSound();
-        } else if (secs <= 3 && secs > 0) {
-          playBeep();
-        }
-        setState(() => secs = secs - 1);
-      } else {
-        playBell();
-        setState(() => started = false);
-        stopTimer(reset: false);
-      }
-    });
-  }
-
-  void stopBeeps() async {
-    await playerBeep.stop();
-    await playerRing.stop();
-    await playerTenSecs.stop();
-    setState(() {
-      isRunning = false;
-    });
-    setState(() => timer?.cancel());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: WillPopScope(
-        onWillPop: () async {
-          stopBeeps();
-          return false;
-        },
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-            ),
-            Text('Jab - Cross - Lef Hook'),
-            SizedBox(height: 40),
-            buildTimer(
-                previousScreen,
-                started,
-                secs,
-                maxSeconds,
-                initialCountdown,
-                currentTerm,
-                initialCountdownMax,
-                Colors.purple.shade100,
-                Colors.purple.shade900,
-                Colors.purple.shade900),
-            SizedBox(height: 10),
-            buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
-                previousScreen, null, isRunning, resetTimer),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _FighterVideoRemote extends StatefulWidget {
   String videoUrl;
   String combo;
@@ -268,13 +86,17 @@ class _FighterVideoRemote extends StatefulWidget {
 class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
   late final UserProvider userProvider = Provider.of<UserProvider>(context);
+
   var isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    playerSetSource();
     Timer.periodic(Duration(seconds: 3), (timer) {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
       timer.cancel();
     });
     _controller = VideoPlayerController.network(
@@ -304,6 +126,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   final playerBeep = AudioPlayer();
   final playerRing = AudioPlayer();
   final playerTenSecs = AudioPlayer();
+
+  void playerSetSource() async {
+    await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
+    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+    await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
+  }
 
   void playBell() async {
     return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
@@ -437,43 +265,49 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
           Navigator.pop(context);
           return false;
         },
-        child:
-            // isLoading
-            //     ? Container(
-            //         child: Center(
-            //             child: Column(
-            //                 crossAxisAlignment: CrossAxisAlignment.center,
-            //                 mainAxisAlignment: MainAxisAlignment.center,
-            //                 children: [CircularProgressIndicator()])),
-            //       )
-            //     :
-            Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
+        child: isLoading
+            ? SizedBox(
+                height: MediaQuery.of(context).size.height / 1.3,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text("Please wait while the animation loads"),
+                    ],
+                  ),
+                ),
+              )
+            : Column(
+                children: <Widget>[
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
+                  Text(wordsFromNumbsString),
+                  SizedBox(height: 40),
+                  buildTimer(
+                      previousScreen,
+                      started,
+                      secs,
+                      maxSeconds,
+                      initialCountdown,
+                      currentTerm,
+                      initialCountdownMax,
+                      Colors.purple.shade100,
+                      Colors.purple.shade900,
+                      Colors.purple.shade900),
+                  SizedBox(height: 10),
+                  buildButtons(timer, secs, maxSeconds, null, stopTimer,
+                      startTimer, previousScreen, null, isRunning, resetTimer),
+                ],
               ),
-            ),
-            Text(wordsFromNumbsString),
-            SizedBox(height: 40),
-            buildTimer(
-                previousScreen,
-                started,
-                secs,
-                maxSeconds,
-                initialCountdown,
-                currentTerm,
-                initialCountdownMax,
-                Colors.purple.shade100,
-                Colors.purple.shade900,
-                Colors.purple.shade900),
-            SizedBox(height: 10),
-            buildButtons(timer, secs, maxSeconds, null, stopTimer, startTimer,
-                previousScreen, null, isRunning, resetTimer),
-          ],
-        ),
       ),
     );
   }

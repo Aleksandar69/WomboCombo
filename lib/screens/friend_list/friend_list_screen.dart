@@ -76,6 +76,32 @@ class _FriendListState extends State<FriendList> {
     });
   }
 
+  void _delete(BuildContext context, String id) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: const Text('Please Confirm'),
+            content: const Text('Remove user from friend list?'),
+            actions: [
+              // The "Yes" button
+              TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Yes')),
+              TextButton(
+                  onPressed: () {
+                    friendProvider.deleteFriend(id);
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('No'))
+            ],
+          );
+        });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -171,6 +197,8 @@ class _FriendListState extends State<FriendList> {
                                         ),
                                         child: ListTile(
                                           leading: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                                friendData[index]["image_url"]),
                                             radius: 30,
                                             child: Padding(
                                               padding: EdgeInsets.all(2),
@@ -185,45 +213,42 @@ class _FriendListState extends State<FriendList> {
                                           subtitle: Text(friendData[index]
                                                   ['userPoints']
                                               .toString()),
-                                          trailing: MediaQuery.of(context)
-                                                      .size
-                                                      .width >
-                                                  360
-                                              ? TextButton.icon(
-                                                  label: Text('Send Message'),
-                                                  onPressed: () =>
-                                                      Navigator.of(context)
-                                                          .pushNamed(
-                                                    ChatScreen.routeName,
-                                                    arguments: [
-                                                      friendData[index]
-                                                          ['username'],
-                                                      friendData[index]
-                                                          ['image_url'],
-                                                      friendData[index].id,
-                                                    ],
-                                                  ),
-                                                  icon: Icon(
-                                                      Icons.messenger_outline),
-                                                )
-                                              : IconButton(
-                                                  icon: Icon(
-                                                      Icons.messenger_outline),
-                                                  color: Theme.of(context)
-                                                      .errorColor,
-                                                  onPressed: () =>
-                                                      Navigator.of(context)
-                                                          .pushNamed(
-                                                    ChatScreen.routeName,
-                                                    arguments: [
-                                                      friendData[index]
-                                                          ['username'],
-                                                      friendData[index]
-                                                          ['image_url'],
-                                                      friendData[index].id,
-                                                    ],
-                                                  ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.messenger_outline,
+                                                  color: Colors.blue,
                                                 ),
+                                                color: Theme.of(context)
+                                                    .errorColor,
+                                                onPressed: () =>
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                  ChatScreen.routeName,
+                                                  arguments: [
+                                                    friendData[index]
+                                                        ['username'],
+                                                    friendData[index]
+                                                        ['image_url'],
+                                                    friendData[index].id,
+                                                  ],
+                                                ),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {
+                                                    _delete(context,
+                                                        friendData[index].id);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.red,
+                                                  )),
+                                            ],
+                                          ),
                                         ),
                                       ));
                                 }),

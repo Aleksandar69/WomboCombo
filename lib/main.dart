@@ -35,6 +35,7 @@ import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wombocombo/widgets/recording/video_recorder.dart';
 import 'screens/auth/auth_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -130,6 +131,7 @@ class MyApp extends StatelessWidget {
             ChatScreen.routeName: (context) => ChatScreen(),
             FAQScreen.routeName: (context) => FAQScreen(),
             AuthScreen.routeName: (context) => AuthScreen(),
+            VideoRecorder.routeName: (context) => VideoRecorder(),
           }),
     );
   }

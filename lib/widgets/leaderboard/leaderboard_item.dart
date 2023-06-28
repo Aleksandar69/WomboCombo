@@ -77,6 +77,7 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
       ),
       child: ListTile(
         leading: CircleAvatar(
+          backgroundImage: NetworkImage(widget.imgUrl),
           radius: 30,
           child: Padding(
             padding: EdgeInsets.all(2),

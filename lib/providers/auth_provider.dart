@@ -13,12 +13,16 @@ class AuthProvider with ChangeNotifier {
   AuthRepository authRepo = AuthRepository();
 
   handleLogin(U.User user) async {
-    UserCredential authResult = await authRepo.loginUser(user);
-    notifyListeners();
-    _userId = _auth.currentUser?.uid;
-    _username = user.username;
-    _email = user.email;
-    return authResult;
+    try {
+      UserCredential authResult = await authRepo.loginUser(user);
+      notifyListeners();
+      _userId = _auth.currentUser?.uid;
+      _username = user.username;
+      _email = user.email;
+      return authResult;
+    } catch (e) {
+      throw e;
+    }
   }
 
   handleRegister(U.User user) async {

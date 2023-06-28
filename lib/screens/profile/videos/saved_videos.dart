@@ -73,29 +73,38 @@ class _SavedVideosState extends State<SavedVideos> {
                     child: GestureDetector(
                       child: Container(
                           child: LayoutBuilder(builder: (ctx, constraints) {
-                        return Stack(fit: StackFit.expand, children: [
-                          Image.network(
-                            videoDocs[index]['thumbnail'],
-                            fit: BoxFit.cover,
-                          ),
-                          if (userId == videoDocs[index]['userId'])
-                            Positioned(
-                              top: constraints.maxHeight * 0.65,
-                              left: constraints.maxWidth * 0.65,
-                              child: IconButton(
-                                  onPressed: () {
-                                    videosProvider
-                                        .deleteVideo(videoDocs[index].id);
-                                    setState(() {
-                                      videoDocs.removeAt(index);
-                                    });
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red.shade700,
-                                  )),
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: Stack(fit: StackFit.expand, children: [
+                                Image.network(
+                                  videoDocs[index]['thumbnail'],
+                                  fit: BoxFit.cover,
+                                ),
+                                if (userId == videoDocs[index]['userId'])
+                                  Positioned(
+                                    top: constraints.maxHeight * 0.65,
+                                    left: constraints.maxWidth * 0.65,
+                                    child: IconButton(
+                                        onPressed: () {
+                                          videosProvider
+                                              .deleteVideo(videoDocs[index].id);
+                                          setState(() {
+                                            videoDocs.removeAt(index);
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red.shade700,
+                                        )),
+                                  ),
+                              ]),
                             ),
-                        ]);
+                            Expanded(
+                                child: Text(videoDocs[index]["videoTitle"])),
+                          ],
+                        );
                       })),
                       onTap: () {
                         Navigator.of(context)

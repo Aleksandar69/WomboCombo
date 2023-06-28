@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter_tts/flutter_tts.dart';
@@ -207,7 +208,15 @@ class _CountdownTimerState extends State<CountdownTimer>
     flutterTts = FlutterTts();
     await flutterTts.setLanguage(language!);
     await flutterTts.setEngine(engine!);
-    await flutterTts.setSpeechRate(0.3);
+    await flutterTts.setSpeechRate(0.7);
+
+    List<dynamic> voices = await flutterTts.getVoices;
+
+    for (var voice in voices) {
+      if (voice["name"] == "en-gb-x-gbb-network") {
+        flutterTts.setVoice({"name": "en-gb-x-gbb-network", "locale": "en-GB"});
+      }
+    }
 
     _setAwaitOptions();
 

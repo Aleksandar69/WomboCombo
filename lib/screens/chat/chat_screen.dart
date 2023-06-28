@@ -61,7 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
       onWillPop: onBackPress,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('FlutterChat'),
+          title: Text(receiverUsername),
         ),
         body: Container(
           child: Column(

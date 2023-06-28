@@ -10,11 +10,15 @@ class AuthRepository {
   final _auth = FirebaseAuth.instance;
 
   loginUser(U.User user) async {
-    UserCredential authResult = await _auth.signInWithEmailAndPassword(
-      email: user.email!,
-      password: user.password!,
-    );
-    return authResult;
+    try {
+      UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: user.email!,
+        password: user.password!,
+      );
+      return authResult;
+    } catch (e) {
+      throw e;
+    }
   }
 
   registerUser(U.User user) async {
