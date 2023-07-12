@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 /// Camera example home widget.
 class VideoRecorder extends StatefulWidget {
@@ -66,6 +67,19 @@ class _VideoRecorderState extends State<VideoRecorder>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
 
+  static const countdownDuration = Duration(seconds: 15);
+  Duration duration = Duration();
+  Timer? timer;
+  bool countDown = true;
+  Duration startCountdownDuration = Duration(seconds: 15);
+  Duration startDuration = Duration();
+  Timer? initialTimer;
+  var isInitialCountdownVisible = true;
+  var isStarted = false;
+
+  final playerBeep = AudioPlayer();
+  final playerRing = AudioPlayer();
+
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
 
@@ -97,6 +111,93 @@ class _VideoRecorderState extends State<VideoRecorder>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
+    playerSetSource();
+    reset();
+  }
+
+  void playBell() async {
+    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
+  }
+
+  void playBeep() async {
+    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
+  }
+
+  void playerSetSource() async {
+    await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
+    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+  }
+
+  void reset() {
+    if (countDown) {
+      setState(() {
+        duration = countdownDuration;
+        startDuration = startCountdownDuration;
+      });
+    } else {
+      setState(() => duration = Duration());
+    }
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) => addTime());
+  }
+
+  startInitDurationTimer() {
+    setState(() {
+      isStarted = true;
+    });
+    initialTimer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {
+          var seconds = startDuration.inSeconds - 1;
+          if (seconds <= 3 && seconds > 0) {
+            playBeep();
+          } else if (seconds == 0) {
+            playBell();
+          } else if (seconds < 0) {
+            setState(() {
+              isInitialCountdownVisible = false;
+            });
+            startTimer();
+            startVideoRecording().then((_) {
+              if (mounted) {
+                setState(() {});
+              }
+            });
+            initialTimer?.cancel();
+          }
+          if (seconds > -1) {
+            startDuration = Duration(seconds: seconds);
+          }
+        });
+      }
+    });
+  }
+
+  void addTime() {
+    final addSeconds = countDown ? -1 : 1;
+    setState(() {
+      final seconds = duration.inSeconds + addSeconds;
+      if (seconds <= 3 && seconds > 0) {
+        playBeep();
+      } else if (seconds == 0) {
+        playBell();
+      } else if (seconds < 0) {
+        onStopButtonPressed();
+        timer?.cancel();
+      }
+      if (seconds > -1) {
+        duration = Duration(seconds: seconds);
+      }
+    });
+  }
+
+  void stopTimer({bool resets = true}) {
+    if (resets) {
+      reset();
+    }
+    setState(() => timer?.cancel());
   }
 
   @override
@@ -154,9 +255,25 @@ class _VideoRecorderState extends State<VideoRecorder>
               ),
               child: Padding(
                 padding: const EdgeInsets.all(1.0),
-                child: Center(
-                  child: _cameraPreviewWidget(),
-                ),
+                child: Stack(children: [
+                  Center(
+                    child: _cameraPreviewWidget(),
+                  ),
+                  if (isInitialCountdownVisible && isStarted)
+                    Center(
+                      child: Text(
+                        startDuration.inSeconds.toString(),
+                        style: TextStyle(
+                            fontSize: 80,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: buildTime(),
+                  ),
+                ]),
               ),
             ),
           ),
@@ -175,6 +292,38 @@ class _VideoRecorderState extends State<VideoRecorder>
       ),
     );
   }
+
+  Widget buildTime() {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = twoDigits(duration.inHours);
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return Row(children: [
+      buildTimeCard(time: minutes),
+      SizedBox(
+        width: 4,
+      ),
+      buildTimeCard(time: seconds),
+    ]);
+  }
+
+  Widget buildTimeCard({required String time}) => Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(20)),
+            child: Text(
+              time,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 50),
+            ),
+          ),
+        ],
+      );
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
@@ -640,14 +789,11 @@ class _VideoRecorderState extends State<VideoRecorder>
   }
 
   void onVideoRecordButtonPressed() {
-    startVideoRecording().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    startInitDurationTimer();
   }
 
   void onStopButtonPressed() {
+    stopTimer();
     stopVideoRecording().then((XFile? file) {
       if (mounted) {
         setState(() {});
@@ -656,7 +802,6 @@ class _VideoRecorderState extends State<VideoRecorder>
         videoFile = file;
         Navigator.of(context).pushReplacementNamed(StartRecording.routeName,
             arguments: videoFile);
-        _startVideoPlayer();
       }
     });
   }
@@ -681,6 +826,7 @@ class _VideoRecorderState extends State<VideoRecorder>
   }
 
   void onPauseButtonPressed() {
+    stopTimer(resets: false);
     pauseVideoRecording().then((_) {
       if (mounted) {
         setState(() {});
@@ -690,6 +836,7 @@ class _VideoRecorderState extends State<VideoRecorder>
   }
 
   void onResumeButtonPressed() {
+    startTimer();
     resumeVideoRecording().then((_) {
       if (mounted) {
         setState(() {});

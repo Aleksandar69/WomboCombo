@@ -21,6 +21,22 @@ class AuthRepository {
     }
   }
 
+  changePassowrd(newPassword) async {
+    try {
+      await _auth.currentUser!.updatePassword(newPassword);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  changeEmail(newEmail) async {
+    try {
+      await _auth.currentUser!.updateEmail(newEmail);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   registerUser(U.User user) async {
     UserCredential authResult = await _auth.createUserWithEmailAndPassword(
       email: user.email!,

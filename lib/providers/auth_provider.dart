@@ -25,6 +25,22 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  changePassword(newPassword) async {
+    try {
+      await authRepo.changePassowrd(newPassword);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  changeEmail(newEmail) async {
+    try {
+      await authRepo.changeEmail(newEmail);
+    } catch (e) {
+      throw e;
+    }
+  }
+
   handleRegister(U.User user) async {
     UserCredential authResult = await authRepo.registerUser(user);
     _userId = _auth.currentUser?.uid;

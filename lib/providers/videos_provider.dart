@@ -8,10 +8,7 @@ class VideosProvider with ChangeNotifier {
   VideosRepository videosRepository = VideosRepository();
 
   getVideoForUser(userid) {
-    return FirebaseFirestore.instance
-        .collection('videos')
-        .where('userId', isEqualTo: userid)
-        .snapshots();
+    return videosRepository.getVideoForUser(userid);
   }
 
   getVideo(userId) {

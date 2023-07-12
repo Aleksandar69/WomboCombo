@@ -78,93 +78,100 @@ class _FriendRequestsState extends State<FriendRequests> {
         ),
         body: isLoading
             ? Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    reverse: false,
-                    itemCount: friendRequestData?.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () => Navigator.of(context).pushNamed(
-                          ProfileScreen.routeName,
-                        ),
-                        child: Card(
-                          elevation: 5,
-                          margin: EdgeInsets.symmetric(
-                            vertical: 2,
-                            horizontal: 2,
-                          ),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              radius: 30,
-                              child: Padding(
-                                padding: EdgeInsets.all(2),
+            : friendRequestData.length > 0
+                ? SingleChildScrollView(
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        reverse: false,
+                        itemCount: friendRequestData?.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () => Navigator.of(context).pushNamed(
+                              ProfileScreen.routeName,
+                            ),
+                            child: Card(
+                              elevation: 5,
+                              margin: EdgeInsets.symmetric(
+                                vertical: 2,
+                                horizontal: 2,
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 30,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(2),
+                                  ),
+                                ),
+                                title: Text(
+                                  friendRequestData[index]['username'],
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                subtitle: Text(friendRequestData[index]
+                                        ['userPoints']
+                                    .toString()),
+                                trailing: SizedBox(
+                                  width: 130,
+                                  child: Row(
+                                    children: [
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          acceptFriendRequest(
+                                              friendRequestUser[index]['id']);
+                                          setState(() {
+                                            friendRequestData.removeAt(index);
+                                          });
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Friend request accepted'),
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.check_outlined,
+                                            color: Colors.green),
+                                        label: Text(''),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: () {
+                                          declineFriendRequest(
+                                              friendRequestUser[index]['id']);
+
+                                          setState(() {
+                                            friendRequestData.removeAt(index);
+                                          });
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Friend request removed'),
+                                              backgroundColor: Theme.of(context)
+                                                  .primaryColor,
+                                            ),
+                                          );
+                                        },
+                                        icon: Icon(Icons.close_outlined,
+                                            color: Colors.red),
+                                        label: Text(''),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                            title: Text(
-                              friendRequestData[index]['username'],
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            subtitle: Text(friendRequestData[index]
-                                    ['userPoints']
-                                .toString()),
-                            trailing: SizedBox(
-                              width: 130,
-                              child: Row(
-                                children: [
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      acceptFriendRequest(
-                                          friendRequestUser[index]['id']);
-                                      setState(() {
-                                        friendRequestData.removeAt(index);
-                                      });
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('Friend request accepted'),
-                                          backgroundColor:
-                                              Theme.of(context).primaryColor,
-                                        ),
-                                      );
-                                    },
-                                    icon: Icon(Icons.check_outlined,
-                                        color: Colors.green),
-                                    label: Text(''),
-                                  ),
-                                  TextButton.icon(
-                                    onPressed: () {
-                                      declineFriendRequest(
-                                          friendRequestUser[index]['id']);
-
-                                      setState(() {
-                                        friendRequestData.removeAt(index);
-                                      });
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text('Friend request removed'),
-                                          backgroundColor:
-                                              Theme.of(context).primaryColor,
-                                        ),
-                                      );
-                                    },
-                                    icon: Icon(Icons.close_outlined,
-                                        color: Colors.red),
-                                    label: Text(''),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-              ),
+                          );
+                        }),
+                  )
+                : Center(
+                    child: Text(
+                    'No new friend requests',
+                    style: TextStyle(fontSize: 20),
+                  )),
       ),
     );
   }

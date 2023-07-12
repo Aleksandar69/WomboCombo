@@ -1,20 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wombocombo/models/user.dart';
 import '../video_image_widgets/user_image_picker.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 class AuthForm extends StatefulWidget {
-  final void Function(
-    User user,
-    bool isLogin,
-  ) submitFn;
+  final void Function(User user, bool isLogin) submitFn;
+  final Future<void> Function() googleSignIn;
 
   final bool isLoading;
 
-  const AuthForm(this.submitFn, this.isLoading);
+  const AuthForm(this.submitFn, this.isLoading, this.googleSignIn);
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -136,6 +135,11 @@ class _AuthFormState extends State<AuthForm> {
                       ? 'Create new account'
                       : 'I already have an account'),
                 ),
+              // TextButton(
+              //     onPressed: () {
+              //       widget.googleSignIn();
+              //     },
+              //     child: Text('Sign in with google account')),
             ]),
           ),
         )),

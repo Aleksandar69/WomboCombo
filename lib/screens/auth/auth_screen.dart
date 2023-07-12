@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart' as U;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = '/auth';
@@ -17,6 +18,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _isLoading = false;
   late final AuthProvider authProvider =
       Provider.of<AuthProvider>(context, listen: false);
+  late GoogleSignIn _googleSignIn;
 
   _submitAuthForm(
     U.User user,
@@ -76,6 +78,25 @@ class _AuthScreenState extends State<AuthScreen> {
     });
   }
 
+  Future<void> _handleGoogleSignin() async {
+    try {
+      await _googleSignIn.signIn();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -85,7 +106,7 @@ class _AuthScreenState extends State<AuthScreen> {
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
-        body: AuthForm(_submitAuthForm, _isLoading),
+        body: AuthForm(_submitAuthForm, _isLoading, _handleGoogleSignin),
       ),
     );
   }

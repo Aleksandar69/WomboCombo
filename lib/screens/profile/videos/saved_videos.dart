@@ -37,6 +37,13 @@ class _SavedVideosState extends State<SavedVideos> {
     }
   }
 
+  var userVideos;
+  getVideosForUser() {
+    return videosProvider.getVideoForUser(userId);
+  }
+
+  removeVideo(String id, int index) {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +51,7 @@ class _SavedVideosState extends State<SavedVideos> {
         title: Text('Saved Videos'),
       ),
       body: StreamBuilder(
-        stream: videosProvider.getVideoForUser(userId),
+        stream: getVideosForUser(),
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -84,15 +91,44 @@ class _SavedVideosState extends State<SavedVideos> {
                                 ),
                                 if (userId == videoDocs[index]['userId'])
                                   Positioned(
-                                    top: constraints.maxHeight * 0.65,
+                                    top: constraints.maxHeight * 0.01,
                                     left: constraints.maxWidth * 0.65,
                                     child: IconButton(
                                         onPressed: () {
-                                          videosProvider
-                                              .deleteVideo(videoDocs[index].id);
-                                          setState(() {
-                                            videoDocs.removeAt(index);
-                                          });
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext ctx) {
+                                                return AlertDialog(
+                                                  title: const Text(
+                                                      'Please Confirm'),
+                                                  content: const Text(
+                                                      'Remove user from friend list?'),
+                                                  actions: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          videosProvider
+                                                              .deleteVideo(
+                                                                  videoDocs[
+                                                                          index]
+                                                                      .id);
+                                                          setState(() {
+                                                            videoDocs.removeAt(
+                                                                index);
+                                                          });
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child:
+                                                            const Text('Yes')),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: const Text('No'))
+                                                  ],
+                                                );
+                                              });
                                         },
                                         icon: Icon(
                                           Icons.delete,
@@ -101,8 +137,9 @@ class _SavedVideosState extends State<SavedVideos> {
                                   ),
                               ]),
                             ),
-                            Expanded(
-                                child: Text(videoDocs[index]["videoTitle"])),
+                            Container(
+                              child: Text(videoDocs[index]["videoTitle"]),
+                            ),
                           ],
                         );
                       })),

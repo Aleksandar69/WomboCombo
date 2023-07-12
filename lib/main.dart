@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-          title: 'Flutter Chat',
+          title: 'WomboCombo',
           theme: ThemeData(
             primarySwatch: Colors.purple,
             colorScheme: ColorScheme.fromSwatch(

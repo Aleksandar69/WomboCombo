@@ -19,12 +19,12 @@ class MakeYourComboScreen extends StatefulWidget {
     '4',
     '5',
     '6',
-    '1b',
-    '2b',
-    '3b',
-    '4b',
-    '5b',
-    '6b'
+    'b1',
+    'b2',
+    'b3',
+    'b4',
+    'b5',
+    'b6'
   ];
 
   @override

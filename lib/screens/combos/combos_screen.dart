@@ -237,14 +237,14 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   var comboMapping = {
     '1': 'Jab',
-    '1b': 'Jab body',
+    'b21': 'Jab body',
     '2': 'Cross',
-    '2b': 'Cross body',
+    'b2': 'Cross body',
     '3': 'Left hook',
-    '3b': 'Left hook body',
+    'b3': 'Left hook body',
     '3j': 'Jumping left hook',
     '4': 'Right hook',
-    '4b': 'Right hook body',
+    'b4': 'Right hook body',
     '5': 'Left uppercut',
     '6': 'Right uppercut',
   };

@@ -3,7 +3,7 @@ import 'package:wombocombo/models/message.dart';
 
 class MessageRepository {
   getMessages(groupChatId) {
-    return FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('messages')
         .doc(groupChatId)
         .collection(groupChatId)

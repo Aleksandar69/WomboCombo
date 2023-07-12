@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -24,10 +25,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   XFile? _pickedImage;
   File? _convertedImage;
   bool isLoading = true;
+  bool hasError = false;
 
   late String imgUrl;
 
@@ -44,9 +47,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   var user;
-  var username;
-  var email;
+  late String username;
+  late String email;
   var currentUserId;
+  String password = "џџџџџ";
 
   void getUser() async {
     currentUserId = authProvider.userId;
@@ -64,6 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     _usernameController.text = username;
     _emailController.text = email;
+    _passwordController.text = password;
   }
 
   void submitUserData() async {
@@ -84,6 +89,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'email': _emailController.text,
       });
     }
+    try {
+      var hasChar = password.indexOf('џ', 0);
+      if (hasChar == -1 && _passwordController.text.isNotEmpty) {
+        await authProvider.changePassword(password);
+      }
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message!),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      );
+      hasError = true;
+    } catch (e) {
+      var message = 'An error occured, please try again';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
+      );
+      hasError = true;
+    }
+    try {
+      await authProvider.changeEmail(email);
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message!),
+          backgroundColor: Colors.red,
+        ),
+      );
+      hasError = true;
+    } catch (e) {
+      var message = 'An error occured, please try again';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
+      hasError = true;
+    }
+
+    if (!hasError)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Success'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    Navigator.of(context).pushReplacementNamed(ProfileScreen.routeName,
+        arguments: [currentUserId, _convertedImage]);
   }
 
   @override
@@ -137,33 +195,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          labelText: "Userame",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                          controller: _usernameController,
+                          decoration: InputDecoration(
+                            labelText: "Userame",
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              username = value;
+                            });
+                          }),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: "Email",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                          controller: _emailController,
+                          decoration: InputDecoration(
+                            labelText: "Email",
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              email = value;
+                            });
+                          }),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                        controller: _emailController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: "Password",
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          }),
                     ),
                     TextButton(
                       child: Text('Submit'),
@@ -173,12 +243,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           fontSize: 20,
                         ),
                       ),
-                      onPressed: () {
-                        submitUserData();
-                        Navigator.of(context).pushReplacementNamed(
-                            ProfileScreen.routeName,
-                            arguments: [currentUserId, _convertedImage]);
-                      },
+                      onPressed: username.isNotEmpty &&
+                              password.isNotEmpty &&
+                              email.isNotEmpty
+                          ? () {
+                              submitUserData();
+                            }
+                          : null,
                     ),
                   ],
                 ),

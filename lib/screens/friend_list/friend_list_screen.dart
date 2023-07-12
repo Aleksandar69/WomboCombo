@@ -55,19 +55,19 @@ class _FriendListState extends State<FriendList> {
         'user2', currentUserId, 'status', 0);
 
     for (var friend in friendListUser1) {
-      friendsMerged.add(friend['user2']);
+      friendsMerged.add({'friend': friend['user2'], 'friendListId': friend.id});
     }
 
     for (var friend in friendListUser2) {
-      friendsMerged.add(friend['user1']);
+      friendsMerged.add({'friend': friend['user1'], 'friendListId': friend.id});
     }
 
     for (var user in fetchedFriendsRequests!.docs) {
       friendRequests.add(user['user1']);
     }
 
-    for (var friend in friendsMerged) {
-      var currentFriend = await userProvider.getUser(friend);
+    for (var friendEntry in friendsMerged) {
+      var currentFriend = await userProvider.getUser(friendEntry['friend']);
       friendData.add(currentFriend);
     }
 
@@ -76,7 +76,7 @@ class _FriendListState extends State<FriendList> {
     });
   }
 
-  void _delete(BuildContext context, String id) {
+  void _delete(String id, int index) {
     showDialog(
         context: context,
         builder: (BuildContext ctx) {
@@ -84,16 +84,17 @@ class _FriendListState extends State<FriendList> {
             title: const Text('Please Confirm'),
             content: const Text('Remove user from friend list?'),
             actions: [
-              // The "Yes" button
               TextButton(
                   onPressed: () {
-                    // Close the dialog
+                    friendProvider.deleteFriend(id);
                     Navigator.of(context).pop();
+                    setState(() {
+                      friendData.removeAt(index);
+                    });
                   },
                   child: const Text('Yes')),
               TextButton(
                   onPressed: () {
-                    friendProvider.deleteFriend(id);
                     Navigator.of(context).pop();
                   },
                   child: const Text('No'))
@@ -240,8 +241,10 @@ class _FriendListState extends State<FriendList> {
                                               ),
                                               IconButton(
                                                   onPressed: () {
-                                                    _delete(context,
-                                                        friendData[index].id);
+                                                    _delete(
+                                                        friendsMerged[index]
+                                                            ['friendListId'],
+                                                        index);
                                                   },
                                                   icon: Icon(
                                                     Icons.delete,

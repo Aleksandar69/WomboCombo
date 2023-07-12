@@ -12,8 +12,10 @@ class LeaderboardItem extends StatefulWidget {
   int userPoints;
   var imgUrl;
   String userId;
+  bool isCurrentUser;
 
-  LeaderboardItem(this.userName, this.userPoints, this.imgUrl, this.userId);
+  LeaderboardItem(this.userName, this.userPoints, this.imgUrl, this.userId,
+      this.isCurrentUser);
 
   @override
   State<LeaderboardItem> createState() => _LeaderboardItemState();
@@ -76,56 +78,57 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
         horizontal: 2,
       ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(widget.imgUrl),
-          radius: 30,
-          child: Padding(
-            padding: EdgeInsets.all(2),
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(widget.imgUrl),
+            radius: 30,
+            child: Padding(
+              padding: EdgeInsets.all(2),
+            ),
           ),
-        ),
-        title: Text(
-          widget.userName,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        subtitle: Text(widget.userPoints.toString()),
-        trailing: !isAlreadyFriendRequested
-            ? TextButton.icon(
-                label: Text('Add Friend'),
-                onPressed: () {
-                  friendProvider
-                      .addFriend(FriendStatus(currentUserId, widget.userId, 0));
-                  setState(() {
-                    isAlreadyFriendRequested = true;
-                  });
+          title: Text(
+            widget.userName,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          subtitle: Text(widget.userPoints.toString()),
+          trailing: !widget.isCurrentUser
+              ? !isAlreadyFriendRequested
+                  ? TextButton.icon(
+                      label: Text('Add Friend'),
+                      onPressed: () {
+                        friendProvider.addFriend(
+                            FriendStatus(currentUserId, widget.userId, 0));
+                        setState(() {
+                          isAlreadyFriendRequested = true;
+                        });
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Friend request sent'),
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                  );
-                },
-                icon: Icon(Icons.add),
-              )
-            : TextButton.icon(
-                style: ButtonStyle(
-                    iconColor: MaterialStateColor.resolveWith(
-                        (states) => Colors.grey.shade500)),
-                label: Text(
-                  'Add Friend',
-                  style: TextStyle(color: Colors.grey.shade500),
-                ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Friend request already sent'),
-                      backgroundColor: Colors.red.shade900,
-                    ),
-                  );
-                },
-                icon: Icon(Icons.add),
-              ),
-      ),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Friend request sent'),
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add),
+                    )
+                  : TextButton.icon(
+                      style: ButtonStyle(
+                          iconColor: MaterialStateColor.resolveWith(
+                              (states) => Colors.grey.shade500)),
+                      label: Text(
+                        'Add Friend',
+                        style: TextStyle(color: Colors.grey.shade500),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Friend request already sent'),
+                            backgroundColor: Colors.red.shade900,
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add),
+                    )
+              : null),
     );
   }
 }

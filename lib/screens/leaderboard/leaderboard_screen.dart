@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart.';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
@@ -18,6 +19,8 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
   TextEditingController _search = TextEditingController();
   late final UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
 
   var isSearchTerm = false;
 
@@ -98,7 +101,9 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                                       userDocs[index]['username'],
                                       userDocs[index]['userPoints'],
                                       userDocs[index]['image_url'],
-                                      userDocs[index].id),
+                                      userDocs[index].id,
+                                      userDocs[index].id ==
+                                          authProvider.userId),
                                 );
                               }),
                         );
