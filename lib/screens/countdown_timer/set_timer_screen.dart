@@ -240,8 +240,11 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               Icons.play_arrow,
               size: 35.0,
             ),
-            padding: EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(10.0),
             shape: CircleBorder(),
+          ),
+          SizedBox(
+            height: 8,
           )
         ],
       ),

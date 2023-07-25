@@ -128,6 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xffFBDF8D),
       appBar: AppBar(
         title: Text("Activities"),
       ),

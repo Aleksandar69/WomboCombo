@@ -84,14 +84,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'WomboCombo',
           theme: ThemeData(
-            primarySwatch: Colors.purple,
-            colorScheme: ColorScheme.fromSwatch(
-                brightness: Brightness.light,
-                primarySwatch: Colors.purple,
-                accentColor: Colors.purpleAccent,
-                backgroundColor: Colors.purple),
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: Color(0xff03045E),
+              secondary: Color(0xff023E8A),
+            ),
+            primaryColor: Color(0xff023E8A),
             buttonTheme: ButtonTheme.of(context).copyWith(
-              buttonColor: Colors.pink,
+              buttonColor: Colors.yellow,
               textTheme: ButtonTextTheme.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),

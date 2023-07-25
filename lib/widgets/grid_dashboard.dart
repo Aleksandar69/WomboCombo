@@ -66,14 +66,13 @@ class GridDashboard extends StatelessWidget {
       item7,
       item8
     ];
-    var color = 0xff453658;
     return Flexible(
       child: GridView.count(
           childAspectRatio: 1.0,
-          padding: EdgeInsets.only(left: 16, right: 16),
+          padding: EdgeInsets.only(top: 2, left: 16, right: 16, bottom: 2),
           crossAxisCount: 2,
-          crossAxisSpacing: 18,
-          mainAxisSpacing: 18,
+          crossAxisSpacing: 9,
+          mainAxisSpacing: 9,
           children: myMenuItems.map((data) {
             return GestureDetector(
               onTap: () {
@@ -103,7 +102,7 @@ class GridDashboard extends StatelessWidget {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: Color(color),
+                    color: Color(0xff023E8A),
                     borderRadius: BorderRadius.circular(10)),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +118,7 @@ class GridDashboard extends StatelessWidget {
                     Text(
                       data.title,
                       style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.yellow.shade200,
                           fontSize: 16,
                           fontWeight: FontWeight.w600),
                     ),
@@ -128,7 +127,7 @@ class GridDashboard extends StatelessWidget {
                     ),
                     Text(data.subtitle,
                         style: TextStyle(
-                            color: Colors.white38,
+                            color: Colors.yellow.shade100,
                             fontSize: 10,
                             fontWeight: FontWeight.w600)),
                     SizedBox(

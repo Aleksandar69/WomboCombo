@@ -21,7 +21,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
-                decoration: BoxDecoration(color: Colors.amber.shade100),
+                decoration: BoxDecoration(color: Color(0xff90E0EF)),
                 height: 100,
                 width: double.infinity,
                 alignment: Alignment.center,
@@ -39,7 +39,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
-                decoration: BoxDecoration(color: Colors.amber.shade600),
+                decoration: BoxDecoration(color: Color(0xff00B4D8)),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,
@@ -57,7 +57,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
-                decoration: BoxDecoration(color: Colors.amber.shade900),
+                decoration: BoxDecoration(color: Color(0xff0077B6)),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,
@@ -75,7 +75,7 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
-                decoration: BoxDecoration(color: Colors.red.shade900),
+                decoration: BoxDecoration(color: Color(0xff023E8A)),
                 alignment: Alignment.center,
                 height: 100,
                 width: double.infinity,
