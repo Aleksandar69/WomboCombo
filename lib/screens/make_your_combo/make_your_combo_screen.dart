@@ -2,6 +2,7 @@ import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/custom_combo.dart';
 import 'package:wombocombo/providers/custom_combo_provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/saved_combos_screen.dart';
 import 'package:intl/intl.dart';
@@ -357,7 +358,10 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
 
                       Navigator.pop(ctx);
                     },
-                    child: Text('Save'),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
                 ],
               ),
@@ -366,11 +370,13 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           });
   }
 
+  late ThemeProvider darkThemeProvider;
   @override
   void initState() {
     super.initState();
     customComboProvider =
         Provider.of<CustomComboProvider>(context, listen: false);
+    darkThemeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
     customComboProvider.fetchAttacks();
 
@@ -600,7 +606,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text('Save Combo'),
               Checkbox(
-                checkColor: Colors.white,
                 value: isChecked,
                 onChanged: (bool? value) {
                   setState(() {
@@ -624,12 +629,14 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
       child: FormField<String>(
         builder: (FormFieldState<String> state) {
           return DropdownButton<String>(
+            icon: Icon(Icons.arrow_drop_down,
+                color:
+                    darkThemeProvider.darkTheme ? Colors.white : Colors.black),
             value: dropdownValue,
             elevation: 16,
-            style: const TextStyle(color: Colors.black),
             underline: Container(
               height: 2,
-              color: Colors.black,
+              color: darkThemeProvider.darkTheme ? Colors.white : Colors.black,
             ),
             onChanged: (String? value) {
               // This is called when the user selects an item.

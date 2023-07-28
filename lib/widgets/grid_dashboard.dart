@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/faq/faq_screen.dart';
@@ -67,89 +69,98 @@ class GridDashboard extends StatelessWidget {
       item8
     ];
     return Flexible(
-      child: GridView.count(
-          childAspectRatio: 1.0,
-          padding: EdgeInsets.only(top: 2, left: 16, right: 16, bottom: 2),
-          crossAxisCount: 2,
-          crossAxisSpacing: 9,
-          mainAxisSpacing: 9,
-          children: myMenuItems.map((data) {
-            return GestureDetector(
-              onTap: () {
-                if (data.title == 'Combos') {
-                  Navigator.of(context)
-                      .pushNamed(TrainingLevel.routeName, arguments: userId);
-                } else if (data.title == 'Think Quick') {
-                  Navigator.of(context).pushNamed(BoxingMapping.routeName);
-                } else if (data.title == "Customize Combos") {
-                  Navigator.of(context)
-                      .pushNamed(MakeYourComboScreen.routeName);
-                } else if (data.title == "Timer") {
-                  Navigator.of(context).pushNamed(SetTimeScreen.routeName,
-                      arguments: 'fromHomeScreen');
-                } else if (data.title == "Record Your Session") {
-                  Navigator.of(context).pushNamed(StartRecording.routeName);
-                } else if (data.title == "Leaderboard") {
-                  Navigator.of(context).pushNamed(LeaderboardScreen.routeName);
-                } else if (data.title == "Friend List") {
-                  Navigator.of(context).pushNamed(FriendList.routeName,
-                      arguments: [friendRequests.length]);
-                } else if (data.title == "FAQ") {
-                  Navigator.of(context).pushNamed(
-                    FAQScreen.routeName,
-                  );
-                }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Color(0xff023E8A),
-                    borderRadius: BorderRadius.circular(10)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // Image.asset(
-                    //   data.img,
-                    //   width: 42,
-                    // ),
-                    Icon(data.img, size: 30),
-                    SizedBox(
-                      height: 14,
-                    ),
-                    Text(
-                      data.title,
-                      style: TextStyle(
-                          color: Colors.yellow.shade200,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(data.subtitle,
+      child: Consumer<ThemeProvider>(builder: (context, value, child) {
+        return GridView.count(
+            childAspectRatio: 1.0,
+            padding: EdgeInsets.only(top: 12, left: 16, right: 16, bottom: 12),
+            crossAxisCount: 2,
+            crossAxisSpacing: 9,
+            mainAxisSpacing: 9,
+            children: myMenuItems.map((data) {
+              return GestureDetector(
+                onTap: () {
+                  if (data.title == 'Combos') {
+                    Navigator.of(context)
+                        .pushNamed(TrainingLevel.routeName, arguments: userId);
+                  } else if (data.title == 'Think Quick') {
+                    Navigator.of(context).pushNamed(BoxingMapping.routeName);
+                  } else if (data.title == "Customize Combos") {
+                    Navigator.of(context)
+                        .pushNamed(MakeYourComboScreen.routeName);
+                  } else if (data.title == "Timer") {
+                    Navigator.of(context).pushNamed(SetTimeScreen.routeName,
+                        arguments: 'fromHomeScreen');
+                  } else if (data.title == "Record Your Session") {
+                    Navigator.of(context).pushNamed(StartRecording.routeName);
+                  } else if (data.title == "Leaderboard") {
+                    Navigator.of(context)
+                        .pushNamed(LeaderboardScreen.routeName);
+                  } else if (data.title == "Friend List") {
+                    Navigator.of(context).pushNamed(FriendList.routeName,
+                        arguments: [friendRequests.length]);
+                  } else if (data.title == "FAQ") {
+                    Navigator.of(context).pushNamed(
+                      FAQScreen.routeName,
+                    );
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: value.darkTheme
+                          ? Color(0xff023E8A)
+                          : Color.fromARGB(255, 36, 101, 187),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      // Image.asset(
+                      //   data.img,
+                      //   width: 42,
+                      // ),
+                      Icon(
+                        data.img,
+                        size: 30,
+                        color: Colors.amber.shade800,
+                      ),
+                      SizedBox(
+                        height: 14,
+                      ),
+                      Text(
+                        data.title,
                         style: TextStyle(
-                            color: Colors.yellow.shade100,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600)),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    if (friendRequests.length != 0 &&
-                        data.title == "Friend List")
-                      Center(
-                          child: ClipOval(
-                        child: Container(
-                          color: Colors.red,
-                          padding: EdgeInsets.symmetric(horizontal: 6),
-                          child: Text(
-                            "${friendRequests.length}",
+                            color: Colors.yellow.shade200,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      Text(data.subtitle,
+                          style: TextStyle(
+                              color: Colors.yellow.shade100,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600)),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      if (friendRequests.length != 0 &&
+                          data.title == "Friend List")
+                        Center(
+                            child: ClipOval(
+                          child: Container(
+                            color: Colors.red,
+                            padding: EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              "${friendRequests.length}",
+                            ),
                           ),
-                        ),
-                      ))
-                  ],
+                        ))
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList()),
+              );
+            }).toList());
+      }),
     );
   }
 }

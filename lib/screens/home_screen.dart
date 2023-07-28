@@ -4,11 +4,13 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/main_drawer.dart';
 import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../widgets/grid_dashboard.dart';
+import '../customAppBar.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
@@ -128,10 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffFBDF8D),
-      appBar: AppBar(
-        title: Text("Activities"),
-      ),
+      backgroundColor: Theme.of(context).colorScheme.background,
+      appBar: customAppBar("Home", Provider.of<ThemeProvider>(context)),
       drawer: MainDrawer(currentUserId),
       body: Column(
         children: [

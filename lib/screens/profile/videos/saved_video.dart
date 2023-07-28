@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wombocombo/models/comment.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/comments_provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import '../../../widgets/video_image_widgets/video_player.dart';
 import 'package:intl/intl.dart';
 import 'package:wombocombo/providers/user_provider.dart';

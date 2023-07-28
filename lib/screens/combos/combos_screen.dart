@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
@@ -50,7 +51,6 @@ class _CombosScreenState extends State<CombosScreen> {
       key: const ValueKey<String>('home_page'),
       appBar: AppBar(
         title: Text(' Level ${currentLevel.toString()}'),
-        actions: <Widget>[],
       ),
       body: WillPopScope(
         onWillPop: () async {
@@ -85,13 +85,14 @@ class _FighterVideoRemote extends StatefulWidget {
 
 class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
-  late final UserProvider userProvider = Provider.of<UserProvider>(context);
-
+  late UserProvider userProvider = Provider.of<UserProvider>(context);
+  late ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
   var isLoading = true;
 
   @override
   void initState() {
     super.initState();
+
     playerSetSource();
     Timer.periodic(Duration(seconds: 3), (timer) {
       setState(() {
@@ -292,20 +293,33 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                   ),
                   Text(wordsFromNumbsString),
                   SizedBox(height: 40),
-                  buildTimer(
-                      previousScreen,
-                      started,
-                      secs,
-                      maxSeconds,
-                      initialCountdown,
-                      currentTerm,
-                      initialCountdownMax,
-                      Color(0xff90E0EF),
-                      Color(0xff023E8A),
-                      Color(0xff023E8A)),
+                  themeProvider.darkTheme
+                      ? buildTimer(
+                          previousScreen,
+                          started,
+                          secs,
+                          maxSeconds,
+                          initialCountdown,
+                          currentTerm,
+                          initialCountdownMax,
+                          Color(0xff90E0EF),
+                          Color.fromARGB(255, 41, 62, 218),
+                          Color.fromARGB(255, 180, 207, 242))
+                      : buildTimer(
+                          previousScreen,
+                          started,
+                          secs,
+                          maxSeconds,
+                          initialCountdown,
+                          currentTerm,
+                          initialCountdownMax,
+                          Color(0xff90E0EF),
+                          Color.fromARGB(255, 223, 235, 237),
+                          Color(0xff023E8A)),
                   SizedBox(height: 10),
                   buildButtons(timer, secs, maxSeconds, null, stopTimer,
                       startTimer, previousScreen, null, isRunning, resetTimer),
+                  SizedBox(height: 5),
                 ],
               ),
       ),

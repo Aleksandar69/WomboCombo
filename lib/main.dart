@@ -9,6 +9,7 @@ import 'package:wombocombo/providers/custom_combo_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
 import 'package:wombocombo/providers/messages_provider.dart';
 import 'package:wombocombo/providers/storage_provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
@@ -35,6 +36,7 @@ import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wombocombo/utils/styles.dart';
 import 'package:wombocombo/widgets/recording/video_recorder.dart';
 import 'screens/auth/auth_screen.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +50,25 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeProvider themeChangeProvider = new ThemeProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.themePreference.getTheme();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -80,58 +100,68 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => CommentsProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
       ],
-      child: MaterialApp(
-          title: 'WomboCombo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch().copyWith(
-              primary: Color(0xff03045E),
-              secondary: Color(0xff023E8A),
+      child: Consumer<ThemeProvider>(builder: (context, value, child) {
+        return MaterialApp(
+            title: 'WomboCombo',
+            theme: Styles.themeData(value.darkTheme, context),
+
+            // ThemeData(
+            //   colorScheme: ColorScheme.fromSwatch().copyWith(
+            //     primary: Color(0xff03045E),
+            //     secondary: Color(0xff023E8A),
+            //     background: value.theme == true
+            //         ? Color.fromARGB(255, 32, 62, 93)
+            //         : Colors.white,
+            //   ),
+            //   primaryColor: Color(0xff023E8A),
+            //   buttonTheme: ButtonTheme.of(context).copyWith(
+            //     buttonColor: Colors.yellow,
+            //     textTheme: ButtonTextTheme.primary,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //   ),
+            // ),
+            home: StreamBuilder(
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return HomeScreen();
+                }
+                return AuthScreen();
+              },
+              stream: FirebaseAuth.instance.authStateChanges(),
             ),
-            primaryColor: Color(0xff023E8A),
-            buttonTheme: ButtonTheme.of(context).copyWith(
-              buttonColor: Colors.yellow,
-              textTheme: ButtonTextTheme.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          ),
-          home: StreamBuilder(
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return HomeScreen();
-              }
-              return AuthScreen();
-            },
-            stream: FirebaseAuth.instance.authStateChanges(),
-          ),
-          routes: {
-            SetTimeScreen.routeName: (context) => SetTimeScreen(),
-            CombosScreen.routeName: (context) => CombosScreen(),
-            MakeYourComboScreen.routeName: (context) => MakeYourComboScreen(),
-            CountdownTimer.routeName: (context) => CountdownTimer(),
-            ChooseMartialArt.routeName: (context) => ChooseMartialArt(),
-            BoxingMapping.routeName: (context) => BoxingMapping(),
-            MuayThaiMapping.routeName: (context) => MuayThaiMapping(),
-            KickBoxingMapping.routeName: (context) => KickBoxingMapping(),
-            TrainingDiff.routeName: (context) => TrainingDiff(),
-            TrainingLevel.routeName: (context) => TrainingLevel(),
-            SavedCombos.routeName: (context) => SavedCombos(),
-            HomeScreen.routeName: (context) => HomeScreen(),
-            EditProfileScreen.routeName: (context) => EditProfileScreen(),
-            ProfileScreen.routeName: (context) => ProfileScreen(),
-            StartRecording.routeName: (context) => StartRecording(),
-            LeaderboardScreen.routeName: (context) => LeaderboardScreen(),
-            SavedVideos.routeName: (context) => SavedVideos(),
-            SavedVideo.routeName: (context) => SavedVideo(),
-            FriendList.routeName: (context) => FriendList(),
-            FriendRequests.routeName: (context) => FriendRequests(),
-            ChatScreen.routeName: (context) => ChatScreen(),
-            FAQScreen.routeName: (context) => FAQScreen(),
-            AuthScreen.routeName: (context) => AuthScreen(),
-            VideoRecorder.routeName: (context) => VideoRecorder(),
-          }),
+            routes: {
+              SetTimeScreen.routeName: (context) => SetTimeScreen(),
+              CombosScreen.routeName: (context) => CombosScreen(),
+              MakeYourComboScreen.routeName: (context) => MakeYourComboScreen(),
+              CountdownTimer.routeName: (context) => CountdownTimer(),
+              ChooseMartialArt.routeName: (context) => ChooseMartialArt(),
+              BoxingMapping.routeName: (context) => BoxingMapping(),
+              MuayThaiMapping.routeName: (context) => MuayThaiMapping(),
+              KickBoxingMapping.routeName: (context) => KickBoxingMapping(),
+              TrainingDiff.routeName: (context) => TrainingDiff(),
+              TrainingLevel.routeName: (context) => TrainingLevel(),
+              SavedCombos.routeName: (context) => SavedCombos(),
+              HomeScreen.routeName: (context) => HomeScreen(),
+              EditProfileScreen.routeName: (context) => EditProfileScreen(),
+              ProfileScreen.routeName: (context) => ProfileScreen(),
+              StartRecording.routeName: (context) => StartRecording(),
+              LeaderboardScreen.routeName: (context) => LeaderboardScreen(),
+              SavedVideos.routeName: (context) => SavedVideos(),
+              SavedVideo.routeName: (context) => SavedVideo(),
+              FriendList.routeName: (context) => FriendList(),
+              FriendRequests.routeName: (context) => FriendRequests(),
+              ChatScreen.routeName: (context) => ChatScreen(),
+              FAQScreen.routeName: (context) => FAQScreen(),
+              AuthScreen.routeName: (context) => AuthScreen(),
+              VideoRecorder.routeName: (context) => VideoRecorder(),
+            });
+      }),
     );
   }
 }

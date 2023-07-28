@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'countdown_timer.dart';
 
 class SetTimeScreen extends StatefulWidget {
@@ -47,7 +49,9 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Set Timer')),
+      appBar: AppBar(
+        title: Text('Set Timer'),
+      ),
       body: Column(
         children: [
           Center(

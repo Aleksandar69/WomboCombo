@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/combos_provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
@@ -91,7 +92,7 @@ class _TrainingLevelState extends State<TrainingLevel> {
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                             ),
                             margin: EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 5.0),

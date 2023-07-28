@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart.';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutterfire_ui/firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
@@ -68,46 +69,26 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
               ),
             ),
-            StreamBuilder<QuerySnapshot>(
-                stream: !isSearchTerm
-                    ? userProvider.getAllUsersWithOrderAndLimit(
-                        'userPoints', true, 50)
-                    : userProvider.getUserFilterIsEqualTo(
-                        'username', _search.text),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
+            Expanded(
+              child: FirestoreListView<Map<String, dynamic>>(
+                  query: userProvider.getAllUsersWithOrderAndLimit(
+                      'userPoints', true, 10),
+                  itemBuilder: (context, snapshot) {
+                    Map<String, dynamic> userDocs = snapshot.data();
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).pushNamed(
+                        ProfileScreen.routeName,
+                        arguments: [snapshot.id],
+                      ),
+                      child: LeaderboardItem(
+                          userDocs['username'],
+                          userDocs['userPoints'],
+                          userDocs['image_url'],
+                          snapshot.id,
+                          snapshot.id == authProvider.userId),
                     );
-                  }
-                  final userDocs = snapshot.data!.docs;
-
-                  return userDocs?.length == 0
-                      ? Center(
-                          child: Text('No results found'),
-                        )
-                      : Expanded(
-                          child: ListView.builder(
-                              shrinkWrap: true,
-                              reverse: false,
-                              itemCount: userDocs?.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () => Navigator.of(context).pushNamed(
-                                    ProfileScreen.routeName,
-                                    arguments: [userDocs[index].id],
-                                  ),
-                                  child: LeaderboardItem(
-                                      userDocs[index]['username'],
-                                      userDocs[index]['userPoints'],
-                                      userDocs[index]['image_url'],
-                                      userDocs[index].id,
-                                      userDocs[index].id ==
-                                          authProvider.userId),
-                                );
-                              }),
-                        );
-                }),
+                  }),
+            )
           ],
         ),
       ),

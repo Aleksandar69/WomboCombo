@@ -197,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: TextFormField(
                           controller: _usernameController,
                           decoration: InputDecoration(
-                            labelText: "Userame",
+                            labelText: "Username",
                             border: OutlineInputBorder(),
                           ),
                           onChanged: (value) {

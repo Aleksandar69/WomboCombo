@@ -40,11 +40,41 @@ class UserRepository {
         .snapshots();
   }
 
-  getAllUsersWithOrderAndLimit(orderBy, isDescending, limit) {
+  getAllUsersWithOrderAndLimitStream(orderBy, isDescending, limit) {
     return FirebaseFirestore.instance
         .collection('users')
         .orderBy(orderBy, descending: isDescending)
-        .limit(50)
+        .limit(limit)
+        .snapshots();
+  }
+
+  getAllUsersWithOrderAndLimit(orderBy, isDescending, limit) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .orderBy(orderBy, descending: isDescending);
+  }
+
+  getAllUsersWithOrderAndLimitStartAfter(
+      orderBy, isDescending, limit, startAfter) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .orderBy(orderBy, descending: isDescending)
+        .limit(limit)
+        .startAfterDocument(startAfter)
+        .get()
+        .then((value) {
+      var fetchedUsers = value;
+      return fetchedUsers;
+    });
+  }
+
+  getAllUsersWithOrderAndLimitStartAfterStream(
+      orderBy, isDescending, limit, startAfter) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .orderBy(orderBy, descending: isDescending)
+        .limit(limit)
+        .startAfterDocument(startAfter)
         .snapshots();
   }
 }

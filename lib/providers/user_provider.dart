@@ -21,8 +21,25 @@ class UserProvider with ChangeNotifier {
     return userRespository.getUserFilterIsEqualTo(arg1, arg2);
   }
 
+  getAllUsersWithOrderAndLimitStream(orderBy, isDescending, limit) {
+    return userRespository.getAllUsersWithOrderAndLimitStream(
+        orderBy, isDescending, limit);
+  }
+
+  getAllUsersWithOrderAndLimitStartAfterStream(
+      orderBy, isDescending, limit, startAfter) {
+    return userRespository.getAllUsersWithOrderAndLimitStartAfterStream(
+        orderBy, isDescending, limit, startAfter);
+  }
+
   getAllUsersWithOrderAndLimit(orderBy, isDescending, limit) {
     return userRespository.getAllUsersWithOrderAndLimit(
         orderBy, isDescending, limit);
+  }
+
+  getAllUsersWithOrderAndLimitStartAfter(
+      orderBy, isDescending, limit, startAfter) async {
+    return await userRespository.getAllUsersWithOrderAndLimitStartAfter(
+        orderBy, isDescending, limit, startAfter);
   }
 }
