@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 
 class MessageBubble extends StatelessWidget {
   final String message;
@@ -10,6 +12,7 @@ class MessageBubble extends StatelessWidget {
       {required this.key});
   @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<ThemeProvider>(context);
     return Stack(
       children: [
         Row(
@@ -19,8 +22,12 @@ class MessageBubble extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                   color: isMe
-                      ? Colors.grey[300]
-                      : Theme.of(context).colorScheme.secondary,
+                      ? themeProvider.darkTheme
+                          ? Color.fromARGB(255, 3, 81, 182)
+                          : Color.fromARGB(255, 178, 230, 231)
+                      : themeProvider.darkTheme
+                          ? Color.fromARGB(255, 53, 80, 141)
+                          : Color.fromARGB(255, 203, 229, 230),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(12),
                     topRight: Radius.circular(12),
@@ -46,14 +53,10 @@ class MessageBubble extends StatelessWidget {
                     userName,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: isMe ? Colors.black : Colors.white,
                     ),
                   ),
                   Text(
                     message,
-                    style: TextStyle(
-                      color: isMe ? Colors.black : Colors.white,
-                    ),
                     textAlign: isMe ? TextAlign.end : TextAlign.start,
                   ),
                 ],

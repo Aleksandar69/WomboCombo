@@ -15,18 +15,8 @@ class AttackListItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Container(
-              width: 50,
-              height: 50,
-              child: Image(
-                  fit: BoxFit.contain,
-                  image: AssetImage(
-                    boxingAttack.attackImage,
-                  )),
-            ),
-            Container(
               width: 175,
               alignment: Alignment.center,
-              padding: EdgeInsets.only(left: 50),
               child: Text(
                 boxingAttack.attackName,
                 style: Theme.of(context).textTheme.titleMedium,
@@ -38,7 +28,8 @@ class AttackListItem extends StatelessWidget {
               child: Text(
                 boxingAttack.correspondingNumber.toString(),
               ),
-            )
+            ),
+            ElevatedButton(onPressed: () {}, child: Text("View"))
           ],
         ),
       ),

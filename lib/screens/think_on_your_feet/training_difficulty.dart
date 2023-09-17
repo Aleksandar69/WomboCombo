@@ -21,13 +21,17 @@ class TrainingDiff extends StatelessWidget {
             child: Card(
               elevation: 5,
               child: Container(
-                decoration: BoxDecoration(color: Color(0xff90E0EF)),
+                decoration:
+                    BoxDecoration(color: Color.fromARGB(255, 116, 213, 228)),
                 height: 100,
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: Text(
                   'Beginner',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -45,7 +49,10 @@ class TrainingDiff extends StatelessWidget {
                 width: double.infinity,
                 child: Text(
                   'Intermediate',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -63,7 +70,10 @@ class TrainingDiff extends StatelessWidget {
                 width: double.infinity,
                 child: Text(
                   'Advanced',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -81,7 +91,10 @@ class TrainingDiff extends StatelessWidget {
                 width: double.infinity,
                 child: Text(
                   'Nightmare',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),

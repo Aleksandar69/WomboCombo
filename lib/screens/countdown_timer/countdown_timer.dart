@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
@@ -398,29 +399,37 @@ class _CountdownTimerState extends State<CountdownTimer>
           var totalPts;
           if (previousScreen == 'fromQuickCombos') {
             if (trainingLevel == 'Beginner' && maxSeconds >= 60) {
-              totalPts = 1 + rounds;
+              totalPts = 1 + maxRounds;
             } else if (trainingLevel == 'Beginner' && maxSeconds < 60) {
               totalPts = 1;
             } else if (trainingLevel == 'Intermediate' && maxSeconds >= 60) {
-              totalPts = 2 + rounds;
+              totalPts = 2 + maxRounds;
             } else if (trainingLevel == 'Intermediate' && maxSeconds < 60) {
               totalPts = 2;
             } else if (trainingLevel == 'Advanced' && maxSeconds >= 60) {
-              totalPts = 3 + rounds;
+              totalPts = 3 + maxRounds;
             } else if (trainingLevel == 'Advanced' && maxSeconds < 60) {
               totalPts = 3;
             } else if (trainingLevel == 'Nightmare' && maxSeconds >= 60) {
-              totalPts = 5 + rounds;
+              totalPts = 5 + maxRounds;
             } else if (trainingLevel == 'Nightmare' && maxSeconds < 60) {
               totalPts = 5;
             }
             pointsEarnedText = '+$totalPts WomboCombo Points';
             setUserPoints(currentPoints + totalPts);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(pointsEarnedText),
-              ),
-            );
+          } else if (previousScreen == 'fromMakeYourComboScreen') {
+            if (maxSeconds >= 60) {
+              totalPts = 1 + maxRounds;
+            } else if (maxSeconds < 60) {
+              totalPts = 1;
+            }
+          }
+          if (totalPts == 1) {
+            SnackbarHelper.showSnackbarSuccess(
+                context, "You've earned ${totalPts} point", "Good job!");
+          } else {
+            SnackbarHelper.showSnackbarSuccess(
+                context, "You've earned ${totalPts} points", "Good job!");
           }
 
           // ScaffoldMessenger.of(context).showSnackBar(

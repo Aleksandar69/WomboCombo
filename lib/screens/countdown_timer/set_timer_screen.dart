@@ -48,6 +48,8 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Set Timer'),
@@ -75,7 +77,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         magnification: 2,
                         onValueChanged: (i) => print(i),
                         maxValue: 59,
-                        listHeight: 200,
+                        listHeight: 170,
                         minValue: 0,
                         step: 1,
                         unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -100,7 +102,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         magnification: 2,
                         onValueChanged: (i) => print(i),
                         maxValue: 59,
-                        listHeight: 200,
+                        listHeight: 170,
                         minValue: 0,
                         step: 1,
                         unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -137,7 +139,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         magnification: 2,
                         onValueChanged: (i) => print(i),
                         maxValue: 20,
-                        listHeight: 200,
+                        listHeight: 170,
                         minValue: 0,
                         step: 1,
                         unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -162,7 +164,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                         magnification: 2,
                         onValueChanged: (i) => print(i),
                         maxValue: 99,
-                        listHeight: 200,
+                        listHeight: 170,
                         minValue: 0,
                         step: 1,
                         unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -189,7 +191,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     magnification: 2,
                     onValueChanged: (i) => print(i),
                     maxValue: 99,
-                    listHeight: 200,
+                    listHeight: 170,
                     minValue: 1,
                     step: 1,
                     unSelectTextStyle: TextStyle(color: Colors.grey),
@@ -239,10 +241,13 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               ]);
             },
             elevation: 2.0,
-            fillColor: Colors.white,
+            fillColor: themeProvider.darkTheme
+                ? Color.fromARGB(255, 71, 162, 159)
+                : Color.fromARGB(255, 36, 89, 188),
+            textStyle: TextStyle(color: Colors.white),
             child: Icon(
               Icons.play_arrow,
-              size: 35.0,
+              size: 70.0,
             ),
             padding: EdgeInsets.all(10.0),
             shape: CircleBorder(),

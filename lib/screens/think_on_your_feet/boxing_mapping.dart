@@ -40,7 +40,6 @@ class _BoxingMappingState extends State<BoxingMapping> {
       appBar: AppBar(title: Text('Punches mapping')),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.black,
         extendedPadding: EdgeInsets.all(25),
         elevation: 12,
         onPressed: () {

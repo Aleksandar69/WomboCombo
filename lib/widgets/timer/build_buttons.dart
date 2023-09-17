@@ -13,6 +13,7 @@ Widget buildButtons(timer, secs, maxSeconds, timerAttacks, stopTimer,
         children: [
           const SizedBox(width: 12),
           RawMaterialButton(
+            textStyle: TextStyle(color: Colors.black),
             onPressed: () {
               if (isActive) {
                 timerAttacks?.cancel();

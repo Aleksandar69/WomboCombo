@@ -97,6 +97,8 @@ class _FriendRequestsState extends State<FriendRequests> {
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
+                                  backgroundImage: NetworkImage(
+                                      friendRequestData[index]["image_url"]),
                                   radius: 30,
                                   child: Padding(
                                     padding: EdgeInsets.all(2),

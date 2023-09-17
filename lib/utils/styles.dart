@@ -73,19 +73,6 @@ abstract class Styles {
 
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
     return ThemeData(
-      //* Custom Google Font
-      //  fontFamily: Devfest.google_sans_family,
-      primarySwatch: Colors.blue,
-      primaryColor: isDarkTheme ? Colors.black : Colors.white,
-      colorScheme: ColorScheme.fromSwatch().copyWith(
-        primary: isDarkTheme
-            ? Color.fromARGB(255, 145, 231, 243)
-            : Color.fromARGB(255, 18, 37, 69),
-        secondary: Color.fromARGB(255, 0, 88, 203),
-        background: isDarkTheme == true
-            ? Color.fromARGB(255, 32, 62, 93)
-            : Color(0xffCBDCF8),
-      ),
       textTheme: TextTheme(
         bodyLarge: TextStyle(
           color: isDarkTheme ? Colors.white : Colors.black,
@@ -133,8 +120,40 @@ abstract class Styles {
           color: isDarkTheme ? Colors.white : Colors.black,
         ),
       ),
+      primarySwatch: Colors.blue,
+      primaryColor: isDarkTheme ? Colors.white : Colors.black,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: isDarkTheme
+            ? Color.fromARGB(255, 145, 231, 243)
+            : Color.fromARGB(255, 18, 37, 69),
+        secondary: Color.fromARGB(255, 0, 88, 203),
+        background: isDarkTheme == true
+            ? Color.fromARGB(255, 32, 62, 93)
+            : Color(0xffCBDCF8),
+      ),
+      elevatedButtonTheme: isDarkTheme
+          ? ElevatedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(
+                  Color.fromARGB(255, 51, 134, 131),
+                ),
+              ),
+            )
+          : ElevatedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(
+                  Color.fromARGB(255, 69, 116, 204),
+                ),
+              ),
+            ),
+
       dropdownMenuTheme: DropdownMenuThemeData(
         inputDecorationTheme: InputDecorationTheme(
+          labelStyle:
+              TextStyle(color: isDarkTheme ? Colors.white : Colors.black),
+          hintStyle: TextStyle(
+            color: isDarkTheme ? Colors.white : Colors.black,
+          ),
           border: UnderlineInputBorder(
             borderSide: BorderSide(
               color: isDarkTheme ? Colors.white : Colors.black,
@@ -143,7 +162,7 @@ abstract class Styles {
         ),
       ),
       iconTheme: IconThemeData(
-        color: isDarkTheme ? Colors.black : Colors.white,
+        color: isDarkTheme ? Colors.white : Colors.black,
       ),
       checkboxTheme: CheckboxThemeData(
         checkColor:
@@ -179,13 +198,31 @@ abstract class Styles {
       // buttonTheme: Theme.of(context).buttonTheme.copyWith(
       //     colorScheme: isDarkTheme ? ColorScheme.dark() : ColorScheme.light()),
       appBarTheme: AppBarTheme(
+        iconTheme:
+            IconThemeData(color: isDarkTheme ? Colors.white : Colors.black),
         color: isDarkTheme
             ? Color.fromARGB(255, 18, 37, 69)
             : Color.fromARGB(255, 203, 230, 246),
         titleTextStyle: TextStyle(
             color: isDarkTheme ? Colors.white : Colors.black, fontSize: 20),
-        toolbarTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        toolbarTextStyle: isDarkTheme
+            ? TextStyle(color: Colors.white, fontSize: 20)
+            : TextStyle(color: Colors.black, fontSize: 20),
+        actionsIconTheme: isDarkTheme
+            ? IconThemeData(color: Colors.white)
+            : IconThemeData(color: Colors.black),
       ),
+      floatingActionButtonTheme: isDarkTheme
+          ? FloatingActionButtonThemeData(
+              foregroundColor: Colors.white,
+              backgroundColor: Color.fromARGB(255, 71, 162, 159),
+              extendedTextStyle: TextStyle(color: Colors.black),
+            )
+          : FloatingActionButtonThemeData(
+              foregroundColor: Colors.white,
+              backgroundColor: Color.fromARGB(255, 36, 89, 188),
+              extendedTextStyle: TextStyle(color: Colors.white),
+            ),
     );
   }
 }

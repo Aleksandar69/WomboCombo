@@ -108,24 +108,6 @@ class _MyAppState extends State<MyApp> {
         return MaterialApp(
             title: 'WomboCombo',
             theme: Styles.themeData(value.darkTheme, context),
-
-            // ThemeData(
-            //   colorScheme: ColorScheme.fromSwatch().copyWith(
-            //     primary: Color(0xff03045E),
-            //     secondary: Color(0xff023E8A),
-            //     background: value.theme == true
-            //         ? Color.fromARGB(255, 32, 62, 93)
-            //         : Colors.white,
-            //   ),
-            //   primaryColor: Color(0xff023E8A),
-            //   buttonTheme: ButtonTheme.of(context).copyWith(
-            //     buttonColor: Colors.yellow,
-            //     textTheme: ButtonTextTheme.primary,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(20),
-            //     ),
-            //   ),
-            // ),
             home: StreamBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {

@@ -360,7 +360,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                     },
                     child: Text(
                       'Save',
-                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ],
@@ -431,13 +430,12 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             FloatingActionButton.extended(
               heroTag: 'one',
               onPressed: () {
-                Navigator.of(context).pushNamed(SavedCombos.routeName);
+                Navigator.of(context)
+                    .pushReplacementNamed(SavedCombos.routeName);
               },
               label: Text('Saved Combos'),
-              backgroundColor: Colors.black,
             ),
             FloatingActionButton.extended(
-              backgroundColor: Colors.black,
               extendedPadding: EdgeInsets.all(25),
               elevation: 12,
               onPressed: () {
@@ -639,7 +637,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               color: darkThemeProvider.darkTheme ? Colors.white : Colors.black,
             ),
             onChanged: (String? value) {
-              // This is called when the user selects an item.
               setState(() {
                 if (currentDropdownValue == '1-1') {
                   dropdownValueOneOne = value!;

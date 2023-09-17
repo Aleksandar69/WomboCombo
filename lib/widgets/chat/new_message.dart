@@ -46,6 +46,7 @@ class _NewMessageState extends State<NewMessage> {
       widget.receiverId,
       widget.receiverImg,
       widget.receiverUsername,
+      false,
     ));
     _enteredMessage = '';
     _controller.clear();

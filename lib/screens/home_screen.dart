@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var user2CurrentUser;
   var isLoading = true;
   List friendRequests = [];
+  var allFriendRequests = [];
   var currentUserData;
 
   getFriendNotif() async {
@@ -42,12 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
         'user2', currentUserId, 'status', 0);
 
     friendRequests = user2CurrentUser!.docs as List;
-
-    for (var user in user2CurrentUser!.docs) {
-      if (user['status'] == 0) {
-        friendRequests.add(user['user1']);
-      }
-    }
     setState(() {
       isLoading = false;
     });

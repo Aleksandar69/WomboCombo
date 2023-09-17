@@ -129,7 +129,6 @@ class _TrainingLevelState extends State<TrainingLevel> {
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(10.0),
-                              color: Colors.white,
                             ),
                             margin: EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 5.0),

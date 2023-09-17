@@ -50,6 +50,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userId == currentUserId ? isCurrentUser = true : isCurrentUser = false;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    checkIfUserIsAddedAsFriend();
+  }
+
   var currentUserUsername;
   var currentUserUserImg;
   var currentUser2;
@@ -143,7 +149,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           TextButton.icon(
                             icon: Icon(Icons.edit),
                             onPressed: () => Navigator.of(context)
-                                .pushNamed(EditProfileScreen.routeName),
+                                .pushReplacementNamed(
+                                    EditProfileScreen.routeName),
                             label: Text('Edit Profile'),
                           ),
                         SizedBox(height: 10),

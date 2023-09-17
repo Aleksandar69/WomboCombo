@@ -11,8 +11,9 @@ class CustomComboListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.of(context)
-          .pushNamed(MakeYourComboScreen.routeName, arguments: customCombo),
+      onTap: () => Navigator.of(context).pushReplacementNamed(
+          MakeYourComboScreen.routeName,
+          arguments: customCombo),
       child: Card(
         elevation: 5,
         child: Container(

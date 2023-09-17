@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
@@ -85,7 +86,8 @@ class _FighterVideoRemote extends StatefulWidget {
 
 class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
-  late UserProvider userProvider = Provider.of<UserProvider>(context);
+  late UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
   late ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
   var isLoading = true;
 
@@ -115,7 +117,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   String previousScreen = 'fromHomeScreen';
   var started = false;
-  var maxSeconds = 180;
+  var maxSeconds = 14;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -221,6 +223,11 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
           userProvider.updateUserInfo(
               widget.userId, {'currentMaxLevel': widget.level + 1});
         }
+        SnackbarHelper.showSnackbarSuccess(
+          context,
+          'Level ${widget.level + 1} unlocked',
+          'Good Job!',
+        );
       }
     });
   }
@@ -238,12 +245,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   var comboMapping = {
     '1': 'Jab',
-    'b21': 'Jab body',
+    'b1': 'Jab body',
     '2': 'Cross',
     'b2': 'Cross body',
     '3': 'Left hook',
     'b3': 'Left hook body',
-    '3j': 'Jumping left hook',
+    'j3': 'Jumping left hook',
     '4': 'Right hook',
     'b4': 'Right hook body',
     '5': 'Left uppercut',

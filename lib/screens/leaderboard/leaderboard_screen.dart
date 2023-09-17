@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterfire_ui/firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
@@ -27,6 +28,7 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
@@ -49,22 +51,25 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    focusColor: Colors.white,
-                    prefixIcon: Icon(
-                      Icons.person_outline_rounded,
-                      color: Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.blue, width: 1.0),
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    fillColor: Colors.grey,
-                    hintText: "Search",
-                  ),
+                      focusColor: Colors.white,
+                      prefixIcon: Icon(
+                        Icons.person_outline_rounded,
+                        color: Colors.grey,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 1.0),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      fillColor: Colors.grey,
+                      hintText: "Search",
+                      hintStyle: TextStyle(
+                          color: themeProvider.darkTheme
+                              ? Colors.white
+                              : Colors.black)),
                   textInputAction: TextInputAction.search,
                 ),
               ),

@@ -10,6 +10,7 @@ class Message with ChangeNotifier {
   String? receiverId;
   String? receiverImg;
   String? receiverUsername;
+  bool isRead;
 
   Message(
       this.groupChatId,
@@ -19,5 +20,6 @@ class Message with ChangeNotifier {
       this.senderImg,
       this.receiverId,
       this.receiverImg,
-      this.receiverUsername);
+      this.receiverUsername,
+      this.isRead);
 }

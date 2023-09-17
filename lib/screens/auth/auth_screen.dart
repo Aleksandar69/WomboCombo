@@ -1,4 +1,6 @@
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/screens/home_screen.dart';
 import '../../widgets/auth/auth_form.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +22,8 @@ class _AuthScreenState extends State<AuthScreen> {
       Provider.of<AuthProvider>(context, listen: false);
   late GoogleSignIn _googleSignIn;
 
+  var message = 'An error occured, please check your credentials!';
+
   _submitAuthForm(
     U.User user,
     bool isLogin,
@@ -32,46 +36,43 @@ class _AuthScreenState extends State<AuthScreen> {
         await authProvider.handleLogin(
           user,
         );
-        //Navigator.of(context).pushNamed(HomeScreen.routeName);
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
       } else {
         await authProvider.handleRegister(user);
 
-        //Navigator.of(context).pushNamed(HomeScreen.routeName);
+        Navigator.of(context).pushNamed(HomeScreen.routeName);
       }
     } on PlatformException catch (e) {
       var message = 'An error occured, please check your credentials!';
       if (e.message != null) {
         message = e.message!;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        message,
+        "Oh snap!",
       );
-
       setState(() {
         _isLoading = false;
       });
     } on FirebaseAuthException catch (e) {
-      var message = 'An error occured, please check your credentials!';
       if (e.message != null) {
         message = e.message!;
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        message,
+        "Oh snap!",
       );
       setState(() {
         _isLoading = false;
       });
     } catch (e) {
-      print(e);
-      setState(() {
-        _isLoading = false;
-      });
+      SnackbarHelper.showSnackbarError(
+        context,
+        message,
+        "Oh snap!",
+      );
     }
     setState(() {
       _isLoading = false;

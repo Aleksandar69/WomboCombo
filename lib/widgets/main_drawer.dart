@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
+import 'package:wombocombo/screens/auth/auth_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 
@@ -54,7 +55,7 @@ class MainDrawer extends StatelessWidget {
           Divider(),
           buildListTile('Log Out', Icons.logout, () {
             authProvider.logOut();
-            //Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+            Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
           }, themeProvider),
           Divider(),
         ],
