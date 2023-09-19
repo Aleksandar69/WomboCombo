@@ -71,3 +71,70 @@ exports.sendNotification = functions.firestore
             })
         return null
     })
+
+exports.sendFriendNotification = functions.firestore
+    .document('friendList/{friendrequest}')
+    .onCreate((snap, context) => {
+        console.log('----------------start function--------------------')
+
+        const doc = snap.data()
+        console.log(doc)
+
+        const idFrom = doc.user1;
+        const idTo = doc.user2;
+        const user1Username = doc.user1Username;
+        const user2Username = doc.user2Username;
+
+        console.log('before admin.firestore');
+
+        // Get push token user to (receive)
+        return admin
+            .firestore()
+            .collection('users')
+            .where('username', '==', user2Username)
+            .get()
+            .then(querySnapshot => {
+                console.log('before query snapshot');
+                querySnapshot.forEach(userTo => {
+                    console.log('before foundUserTo');
+                    console.log(`Found user to: ${userTo.data().username}`)
+                    if (userTo.data().pushToken) {
+                        // Get info user from (sent)
+                        console.log('before second user');
+
+                        admin
+                            .firestore()
+                            .collection('users')
+                            .where('username', '==', user1Username)
+                            .get()
+                            .then(querySnapshot2 => {
+                                querySnapshot2.forEach(userFrom => {
+                                    console.log(`Found user from: ${userFrom.data().username}`)
+                                    const message = {
+                                        notification: {
+                                            title: `You have a new friend request`,
+                                            body: `From user "${userFrom.data().username}"`,
+                                        },
+                                        token: userTo.data().pushToken,
+                                    }
+                                    // Let push to the target device
+                                    console.log(`prije pusha`)
+
+                                    admin
+                                        .messaging()
+                                        .send(message)
+                                        .then(response => {
+                                            console.log('Successfully sent message:', response)
+                                        })
+                                        .catch(error => {
+                                            console.log('Error sending message:', error)
+                                        })
+                                })
+                            })
+                    } else {
+                        console.log('Can not find pushToken target user')
+                    }
+                })
+            })
+        return null
+    })

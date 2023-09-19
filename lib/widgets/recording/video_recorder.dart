@@ -71,7 +71,7 @@ class _VideoRecorderState extends State<VideoRecorder>
   Duration duration = Duration();
   Timer? timer;
   bool countDown = true;
-  Duration startCountdownDuration = Duration(seconds: 15);
+  Duration startCountdownDuration = Duration(seconds: 3);
   Duration startDuration = Duration();
   Timer? initialTimer;
   var isInitialCountdownVisible = true;
@@ -133,13 +133,9 @@ class _VideoRecorderState extends State<VideoRecorder>
       setState(() {
         duration = countdownDuration;
         startDuration = startCountdownDuration;
-        initialTimer?.cancel();
-        timer?.cancel();
       });
     } else {
       setState(() => duration = Duration());
-      initialTimer?.cancel();
-      timer?.cancel();
     }
   }
 
@@ -198,15 +194,10 @@ class _VideoRecorderState extends State<VideoRecorder>
   }
 
   void stopTimer({bool resets = true}) {
-    isStarted = false;
     if (resets) {
       reset();
     }
-
-    setState(() {
-      timer?.cancel();
-      initialTimer?.cancel();
-    });
+    setState(() => timer?.cancel());
   }
 
   @override
@@ -270,25 +261,12 @@ class _VideoRecorderState extends State<VideoRecorder>
                   ),
                   if (isInitialCountdownVisible && isStarted)
                     Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Countdown started, setup your phone",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            startDuration.inSeconds.toString(),
-                            style: TextStyle(
-                                fontSize: 80,
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                      child: Text(
+                        startDuration.inSeconds.toString(),
+                        style: TextStyle(
+                            fontSize: 80,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   Align(
@@ -508,6 +486,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                     onLongPress: () {
                       if (controller != null) {
                         controller!.setExposurePoint(null);
+                        showInSnackBar('Resetting exposure point');
                       }
                     },
                     child: const Text('AUTO'),
@@ -553,8 +532,7 @@ class _VideoRecorderState extends State<VideoRecorder>
           color: Colors.blue,
           onPressed: cameraController != null &&
                   cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo &&
-                  !isStarted
+                  !cameraController.value.isRecordingVideo
               ? onVideoRecordButtonPressed
               : null,
         ),
@@ -575,10 +553,9 @@ class _VideoRecorderState extends State<VideoRecorder>
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
-          onPressed: (cameraController != null &&
-                      cameraController.value.isInitialized &&
-                      cameraController.value.isRecordingVideo) ||
-                  isStarted
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  cameraController.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
         ),
@@ -605,17 +582,19 @@ class _VideoRecorderState extends State<VideoRecorder>
       return const Text('None');
     } else {
       for (final CameraDescription cameraDescription in _cameras) {
-        toggles.add(
-          SizedBox(
-            width: 90.0,
-            child: RadioListTile<CameraDescription>(
-              title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.description,
-              value: cameraDescription,
-              onChanged: onChanged,
+        if (toggles.length < 2) {
+          toggles.add(
+            SizedBox(
+              width: 90.0,
+              child: RadioListTile<CameraDescription>(
+                title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
+                groupValue: controller?.description,
+                value: cameraDescription,
+                onChanged: onChanged,
+              ),
             ),
-          ),
-        );
+          );
+        }
       }
     }
 
@@ -772,6 +751,7 @@ class _VideoRecorderState extends State<VideoRecorder>
         final CameraController cameraController = controller!;
         if (cameraController.value.isCaptureOrientationLocked) {
           await cameraController.unlockCaptureOrientation();
+          showInSnackBar('Capture orientation unlocked');
         } else {
           await cameraController.lockCaptureOrientation();
           showInSnackBar(
@@ -788,6 +768,7 @@ class _VideoRecorderState extends State<VideoRecorder>
       if (mounted) {
         setState(() {});
       }
+      showInSnackBar('Flash mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -796,6 +777,7 @@ class _VideoRecorderState extends State<VideoRecorder>
       if (mounted) {
         setState(() {});
       }
+      showInSnackBar('Exposure mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -804,6 +786,7 @@ class _VideoRecorderState extends State<VideoRecorder>
       if (mounted) {
         setState(() {});
       }
+      showInSnackBar('Focus mode set to ${mode.toString().split('.').last}');
     });
   }
 
@@ -829,6 +812,7 @@ class _VideoRecorderState extends State<VideoRecorder>
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
       return;
     }
 
@@ -849,6 +833,7 @@ class _VideoRecorderState extends State<VideoRecorder>
       if (mounted) {
         setState(() {});
       }
+      showInSnackBar('Video recording paused');
     });
   }
 
@@ -858,6 +843,7 @@ class _VideoRecorderState extends State<VideoRecorder>
       if (mounted) {
         setState(() {});
       }
+      showInSnackBar('Video recording resumed');
     });
   }
 

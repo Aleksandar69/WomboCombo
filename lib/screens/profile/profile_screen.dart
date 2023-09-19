@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/friend_status.dart';
+import 'package:wombocombo/models/user.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
@@ -28,13 +29,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Provider.of<FriendsProvider>(context, listen: false);
   var userId;
   var isCurrentUser = true;
-  var imgUrl;
-  var user;
-  var username;
+  var userDataDb;
+  late User user;
   var userPoints;
   var currentUserId;
   var isLoading = true;
   File? newImage;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -50,15 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     userId == currentUserId ? isCurrentUser = true : isCurrentUser = false;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    checkIfUserIsAddedAsFriend();
-  }
-
-  var currentUserUsername;
-  var currentUserUserImg;
-  var currentUser2;
+  var currentUser;
 
   void getUser() async {
     currentUserId = authProvider.userId;
@@ -66,9 +59,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = true;
     });
 
+    currentUser = await userProvider.getUser(currentUserId);
+
     userId == null
-        ? user = await userProvider.getUser(currentUserId)
-        : user = await userProvider.getUser(userId);
+        ? userDataDb = await userProvider.getUser(currentUserId)
+        : userDataDb = await userProvider.getUser(userId);
+    user = User(
+        userDataDb['username'],
+        userDataDb['email'],
+        null,
+        userDataDb['image_url'],
+        userDataDb['userPoints'],
+        userDataDb['currentMaxLevel'],
+        null);
 
     setState(() {
       isLoading = false;
@@ -85,9 +88,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isLoading = true;
     });
     user1CurrentUser = await friendProvider.getFriendFilterTwoEquals(
-        'user1', currentUserId, 'status', 1);
+        'user1', currentUserId, 'user2', userId);
+
     user2CurrentUser = await friendProvider.getFriendFilterTwoEquals(
-        'user2', currentUserId, 'status', 1);
+        'user2', currentUserId, 'user1', userId);
 
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == userId) {
@@ -135,22 +139,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(height: 20),
                         CircleAvatar(
                           backgroundImage: newImage == null
-                              ? NetworkImage(user['image_url'])
+                              ? NetworkImage(user.profileImageURL!)
                               : FileImage(newImage!) as ImageProvider,
                           radius: 50,
                         ),
                         SizedBox(height: 10),
                         Text(
-                          user['username'],
+                          user.username!,
                           style: TextStyle(
                               fontSize: 27, fontWeight: FontWeight.bold),
                         ),
                         if (isCurrentUser)
                           TextButton.icon(
                             icon: Icon(Icons.edit),
-                            onPressed: () => Navigator.of(context)
-                                .pushReplacementNamed(
-                                    EditProfileScreen.routeName),
+                            onPressed: () async {
+                              var result = await Navigator.of(context)
+                                      .pushNamed(EditProfileScreen.routeName)
+                                  as User;
+
+                              setState(() {
+                                user.username = result.username;
+                                user.email = result.username;
+                                user.profileImageURL = result.profileImageURL;
+                              });
+                            },
                             label: Text('Edit Profile'),
                           ),
                         SizedBox(height: 10),
@@ -158,30 +170,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'Earned Points',
-                                  style: TextStyle(
-                                    fontSize: 27,
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Earned Points',
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                Text(user['userPoints'].toString(),
-                                    style: TextStyle(
-                                      fontSize: 27,
-                                    )),
-                              ],
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(user.userPoints.toString(),
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        )),
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(width: 20),
-                            Column(
-                              children: [
-                                Text('Level Reached',
-                                    style: TextStyle(fontSize: 27)),
-                                Text(user['currentMaxLevel'].toString(),
-                                    style: TextStyle(
-                                      fontSize: 27,
-                                    )),
-                              ],
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.45,
+                              child: Column(
+                                children: [
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text('Level Reached',
+                                        style: TextStyle(fontSize: 24)),
+                                  ),
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(user.levelReached.toString(),
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -205,8 +237,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     text: 'Add Friend',
                                   ),
                                   onTap: () {
-                                    friendProvider.addFriend(
-                                        FriendStatus(currentUserId, userId, 0));
+                                    friendProvider.addFriend(FriendStatus(
+                                        currentUserId,
+                                        userId,
+                                        0,
+                                        currentUser['username'],
+                                        user.username!));
                                     setState(() {
                                       isAlreadyFriendRequested = true;
                                     });
@@ -235,8 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Navigator.of(context).pushNamed(
                                 ChatScreen.routeName,
                                 arguments: [
-                                  username,
-                                  imgUrl,
+                                  user.username,
+                                  user.profileImageURL,
                                   userId,
                                 ],
                               );

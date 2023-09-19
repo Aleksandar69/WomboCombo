@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wombocombo/models/video.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/profile/videos/saved_video.dart';
+import 'package:wombocombo/widgets/profile/videos/video_list_item.dart';
 
 class SavedVideos extends StatefulWidget {
   static const routeName = '/saved-vids';
@@ -20,6 +22,7 @@ class _SavedVideosState extends State<SavedVideos> {
       Provider.of<VideosProvider>(context, listen: false);
   bool isLoading = false;
   var userId;
+  var currentUserId;
   @override
   void initState() {
     super.initState();
@@ -29,7 +32,7 @@ class _SavedVideosState extends State<SavedVideos> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    userId = authProvider.userId;
+    currentUserId = authProvider.userId;
 
     if (ModalRoute.of(context)!.settings.arguments != null) {
       final args = ModalRoute.of(context)!.settings.arguments as List;
@@ -39,7 +42,9 @@ class _SavedVideosState extends State<SavedVideos> {
 
   var userVideos;
   getVideosForUser() {
-    return videosProvider.getVideoForUser(userId);
+    return userId != null || userId != ''
+        ? videosProvider.getVideoForUser(userId)
+        : videosProvider.getVideoForUser(currentUserId);
   }
 
   removeVideo(String id, int index) {}
@@ -65,98 +70,106 @@ class _SavedVideosState extends State<SavedVideos> {
             return a['createdAt'].compareTo(b['createdAt']);
           });
 
-          if (snapshot.hasData)
-            return GridView.count(
-              crossAxisCount: 3, // number of columns
-              children: List.generate(
-                videoDocs.length, // total number of items
-                (index) {
-                  return Container(
-                    margin: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.0),
-                      color: Colors.grey[200],
-                    ),
-                    child: GestureDetector(
-                      child: Container(
-                          child: LayoutBuilder(builder: (ctx, constraints) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Expanded(
-                              child: Stack(fit: StackFit.expand, children: [
-                                Image.network(
-                                  videoDocs[index]['thumbnail'],
-                                  fit: BoxFit.cover,
-                                ),
-                                if (userId == videoDocs[index]['userId'])
-                                  Positioned(
-                                    top: constraints.maxHeight * 0.01,
-                                    left: constraints.maxWidth * 0.65,
-                                    child: IconButton(
-                                        onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (BuildContext ctx) {
-                                                return AlertDialog(
-                                                  title: const Text(
-                                                      'Please Confirm'),
-                                                  content: const Text(
-                                                      'Remove user from friend list?'),
-                                                  actions: [
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          videosProvider
-                                                              .deleteVideo(
-                                                                  videoDocs[
-                                                                          index]
-                                                                      .id);
-                                                          setState(() {
-                                                            videoDocs.removeAt(
-                                                                index);
-                                                          });
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child:
-                                                            const Text('Yes')),
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: const Text('No'))
-                                                  ],
-                                                );
-                                              });
-                                        },
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: Colors.red.shade700,
-                                        )),
-                                  ),
-                              ]),
+          if (snapshot.data.size > 0)
+            return ListView.builder(
+              itemCount: videoDocs.length,
+              itemBuilder: (context, index) {
+                var currentVideo = videoDocs[index];
+                Video video = Video(
+                    currentVideo['videoUrl'],
+                    currentVideo['userId'],
+                    currentVideo['createdAt'],
+                    currentVideo['videoTitle'],
+                    currentVideo['thumbnail']);
+                return Container(
+                  padding: EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Stack(
+                        children: [
+                          VideoListItem(
+                              video: video,
+                              userId: userId,
+                              videosProvider: videosProvider,
+                              videoId: currentVideo.id,
+                              index: index),
+                          if (currentUserId == video.userId)
+                            Align(
+                              heightFactor: 4.2,
+                              alignment: Alignment.bottomRight,
+                              child: IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              'Please Confirm',
+                                              style: TextStyle(
+                                                  color: Colors.black),
+                                            ),
+                                            content: const Text(
+                                                'Remove your video?',
+                                                style: TextStyle(
+                                                    color: Colors.black)),
+                                            actions: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    videosProvider.deleteVideo(
+                                                        videoDocs[index].id);
+                                                    setState(() {
+                                                      videoDocs.removeAt(index);
+                                                    });
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Yes')),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('No'))
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red.shade700,
+                                  )),
                             ),
-                            Container(
-                              child: Text(videoDocs[index]["videoTitle"]),
+                          Align(
+                            heightFactor: 2.5,
+                            alignment: Alignment.bottomCenter,
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: 50,
+                              color: Colors.blue.shade300,
                             ),
-                          ],
-                        );
-                      })),
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(SavedVideo.routeName, arguments: [
-                          videoDocs[index]['videoUrl'],
-                          videoDocs[index].id,
-                        ]);
-                      },
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                },
-              ),
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(SavedVideo.routeName, arguments: [
+                        videoDocs[index]['videoUrl'],
+                        videoDocs[index].id,
+                      ]);
+                    },
+                  ),
+                );
+              },
             );
           else
-            return Text('No videos yet');
+            return Center(
+              child: Text(
+                'No videos posted',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+              ),
+            );
         },
       ),
     );

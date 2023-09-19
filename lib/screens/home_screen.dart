@@ -95,9 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void showNotification(RemoteNotification remoteNotification) async {
     AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      Platform.isAndroid
-          ? 'com.dfa.flutterchatdemo'
-          : 'com.duytq.flutterchatdemo',
+      'com.aleksandar.wombocombo',
       'Flutter chat demo',
       playSound: true,
       enableVibration: true,

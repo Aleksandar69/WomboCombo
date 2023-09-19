@@ -26,6 +26,10 @@ class UserProvider with ChangeNotifier {
         orderBy, isDescending, limit);
   }
 
+  getUserByUsername(username) async {
+    return await userRespository.getUserByUsername(username);
+  }
+
   getAllUsersWithOrderAndLimitStartAfterStream(
       orderBy, isDescending, limit, startAfter) {
     return userRespository.getAllUsersWithOrderAndLimitStartAfterStream(
@@ -41,5 +45,9 @@ class UserProvider with ChangeNotifier {
       orderBy, isDescending, limit, startAfter) async {
     return await userRespository.getAllUsersWithOrderAndLimitStartAfter(
         orderBy, isDescending, limit, startAfter);
+  }
+
+  getAllUsers(orderBy, isDescending) {
+    return userRespository.getAllUsers(orderBy, isDescending);
   }
 }

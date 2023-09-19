@@ -51,6 +51,13 @@ class UserRepository {
   getAllUsersWithOrderAndLimit(orderBy, isDescending, limit) {
     return FirebaseFirestore.instance
         .collection("users")
+        .orderBy(orderBy, descending: isDescending)
+        .limit(limit);
+  }
+
+  getAllUsers(orderBy, isDescending) {
+    return FirebaseFirestore.instance
+        .collection("users")
         .orderBy(orderBy, descending: isDescending);
   }
 
@@ -76,5 +83,11 @@ class UserRepository {
         .limit(limit)
         .startAfterDocument(startAfter)
         .snapshots();
+  }
+
+  getUserByUsername(username) {
+    return FirebaseFirestore.instance
+        .collection("users")
+        .where('username', isEqualTo: username);
   }
 }

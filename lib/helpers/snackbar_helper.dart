@@ -17,12 +17,12 @@ class SnackbarHelper {
             children: [
               Text(
                 headline,
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 15),
                 textAlign: TextAlign.center,
               ),
               Text(
                 message,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 13),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,

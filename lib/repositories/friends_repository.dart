@@ -1,23 +1,22 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wombocombo/models/friend_status.dart';
 
 class FriendsRepository {
   getFriendFilterTwoEquals(arg1, arg2, arg3, arg4) async {
-    var fetchedFriend;
+    var fetchedFriends;
     await FirebaseFirestore.instance
         .collection('friendList')
         .where(arg1, isEqualTo: arg2)
         .where(arg3, isEqualTo: arg4)
         .get()
         .then((value) {
-      fetchedFriend = value;
+      fetchedFriends = value;
     });
-    return fetchedFriend;
+    return fetchedFriends;
   }
 
   getFriendFilterThreeEquals(arg1, arg2, arg3, arg4, arg5, arg6) async {
-    var fetchedFriend;
+    var fetchedFriends;
     await FirebaseFirestore.instance
         .collection('friendList')
         .where(arg1, isEqualTo: arg2)
@@ -25,9 +24,9 @@ class FriendsRepository {
         .where(arg5, isNotEqualTo: arg6)
         .get()
         .then((value) {
-      fetchedFriend = value;
+      fetchedFriends = value;
     });
-    return fetchedFriend;
+    return fetchedFriends;
   }
 
   deleteFriend(id) {
@@ -42,6 +41,8 @@ class FriendsRepository {
     FirebaseFirestore.instance.collection('friendList').add({
       'user1': friendStatus.user1Id,
       'user2': friendStatus.user2Id,
+      'user1Username': friendStatus.senderUsername,
+      'user2Username': friendStatus.receiverUsername,
       'status': friendStatus.status
     });
   }

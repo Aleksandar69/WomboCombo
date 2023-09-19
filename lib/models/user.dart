@@ -5,9 +5,13 @@ class User {
   String? username;
   String? email;
   File? profileImage;
+  String? profileImageURL;
+  int? userPoints;
+  int? levelReached;
   String? password;
 
-  User(this.username, this.email, this.profileImage, this.password);
+  User(this.username, this.email, this.profileImage, this.profileImageURL,
+      this.userPoints, this.levelReached, this.password);
 
   set currentusername(String currentUsername) {
     username = currentUsername;

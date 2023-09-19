@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
@@ -124,15 +125,10 @@ class _FriendRequestsState extends State<FriendRequests> {
                                             friendRequestData.removeAt(index);
                                           });
 
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Friend request accepted'),
-                                              backgroundColor: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          );
+                                          SnackbarHelper.showSnackbarSuccess(
+                                              context,
+                                              '',
+                                              'Friend Request Accepted');
                                         },
                                         icon: Icon(Icons.check_outlined,
                                             color: Colors.green),

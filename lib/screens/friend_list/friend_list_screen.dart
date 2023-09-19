@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
 import 'package:wombocombo/providers/user_provider.dart';
@@ -91,6 +92,8 @@ class _FriendListState extends State<FriendList> {
                     setState(() {
                       friendData.removeAt(index);
                     });
+                    SnackbarHelper.showSnackbarSuccess(
+                        context, '', 'User succesfully removed');
                   },
                   child: const Text('Yes')),
               TextButton(
@@ -151,7 +154,13 @@ class _FriendListState extends State<FriendList> {
                                         Navigator.of(context).pushNamed(
                                             LeaderboardScreen.routeName);
                                       },
-                                      child: Text('Go to Leaderboard')),
+                                      child: Text(
+                                        'Go to Leaderboard',
+                                        style: TextStyle(
+                                            color: Colors.blue.shade500,
+                                            decoration:
+                                                TextDecoration.underline),
+                                      )),
                             ],
                           ),
                           Center(

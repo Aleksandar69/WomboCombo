@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:wombocombo/models/friend_status.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/user_provider.dart';
+import 'package:wombocombo/screens/combos/training_levels.dart';
 import '../../widgets/profile/profile_list_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -26,25 +28,37 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
       Provider.of<AuthProvider>(context, listen: false);
   late final FriendsProvider friendProvider =
       Provider.of<FriendsProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
 
   var user1CurrentUser;
   var user2CurrentUser;
   bool isAlreadyFriendRequested = false;
   bool isAlreadyFriend = false;
   var currentUserId;
+  var currentUser;
+  var addedUser;
 
   @override
   void initState() {
     super.initState();
     checkIfUserIsAddedAsFriend();
+    getUserProfiles();
+  }
+
+  void getUserProfiles() async {
+    currentUser = await userProvider.getUser(currentUserId);
+    addedUser = await userProvider.getUser(widget.userId);
   }
 
   void checkIfUserIsAddedAsFriend() async {
     currentUserId = authProvider.userId;
+
     user1CurrentUser = await friendProvider.getFriendFilterTwoEquals(
-        'user1', currentUserId, 'status', 1);
+        'user1', currentUserId, 'user2', widget.userId);
+
     user2CurrentUser = await friendProvider.getFriendFilterTwoEquals(
-        'user2', currentUserId, 'status', 1);
+        'user2', currentUserId, 'user1', widget.userId);
 
     for (var user in user1CurrentUser!.docs) {
       if (user['user2'] == widget.userId) {
@@ -95,8 +109,12 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
                   ? TextButton.icon(
                       label: Text('Add Friend'),
                       onPressed: () {
-                        friendProvider.addFriend(
-                            FriendStatus(currentUserId, widget.userId, 0));
+                        friendProvider.addFriend(FriendStatus(
+                            currentUserId,
+                            widget.userId,
+                            0,
+                            currentUser['username'],
+                            addedUser['username']));
                         setState(() {
                           isAlreadyFriendRequested = true;
                         });
