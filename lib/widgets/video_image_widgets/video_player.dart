@@ -6,7 +6,10 @@ import 'package:video_player/video_player.dart';
 class MyRecordedRemoteVideo extends StatefulWidget {
   var video;
   var isRemote;
-  MyRecordedRemoteVideo(this.video, this.isRemote);
+  var isAutoplay;
+  var showProgressIndicator;
+  MyRecordedRemoteVideo(
+      this.video, this.isRemote, this.isAutoplay, this.showProgressIndicator);
 
   @override
   _MyRecordedRemoteVideoState createState() => _MyRecordedRemoteVideoState();
@@ -28,6 +31,9 @@ class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
     });
     _controller.setLooping(true);
     _controller.initialize();
+    if (widget.isAutoplay == true) {
+      _controller.play();
+    }
   }
 
   @override
@@ -52,7 +58,8 @@ class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
                   _ControlsOverlay(controller: _controller),
-                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                  if (widget.showProgressIndicator)
+                    VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
             ),

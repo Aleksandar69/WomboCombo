@@ -225,4 +225,205 @@ abstract class Styles {
             ),
     );
   }
+
+  static ThemeData darkTheme(BuildContext context) {
+    return ThemeData(
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white),
+          bodySmall: TextStyle(color: Colors.white),
+          headlineLarge: TextStyle(color: Colors.white),
+          headlineMedium: TextStyle(color: Colors.white),
+          headlineSmall: TextStyle(color: Colors.white),
+          displayLarge: TextStyle(color: Colors.white),
+          displayMedium: TextStyle(color: Colors.white),
+          displaySmall: TextStyle(color: Colors.white),
+          labelLarge: TextStyle(color: Colors.white),
+          labelMedium: TextStyle(color: Colors.white),
+          labelSmall: TextStyle(color: Colors.white),
+          titleSmall: TextStyle(color: Colors.white),
+          titleMedium: TextStyle(color: Colors.white),
+          titleLarge: TextStyle(color: Colors.white),
+        ),
+        primarySwatch: Colors.blue,
+        primaryColor: Colors.white,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: Color.fromARGB(255, 145, 231, 243),
+            secondary: Color.fromARGB(255, 0, 88, 203),
+            background: Color.fromARGB(255, 32, 62, 93)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStatePropertyAll(
+              Color.fromARGB(255, 51, 134, 131),
+            ),
+          ),
+        ),
+        dropdownMenuTheme: DropdownMenuThemeData(
+          inputDecorationTheme: InputDecorationTheme(
+            labelStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(
+              color: Colors.white,
+            ),
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        checkboxTheme: CheckboxThemeData(
+          checkColor: MaterialStatePropertyAll(Colors.black),
+          fillColor: MaterialStatePropertyAll(Colors.white),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+            labelStyle: TextStyle(color: Color.fromARGB(255, 165, 222, 229))),
+        iconButtonTheme: IconButtonThemeData(
+          style: ButtonStyle(
+            iconColor:
+                MaterialStatePropertyAll(Color.fromARGB(255, 203, 230, 246)),
+          ),
+        ),
+        indicatorColor: Color(0xff0E1D36),
+        hintColor: Color(0xff280C0B),
+        highlightColor: Color(0xff372901),
+        hoverColor: Color(0xff3A3A3B),
+        focusColor: Color(0xff0B2512),
+        disabledColor: Colors.grey,
+        cardColor: Color(0xff023E8A),
+        canvasColor: Color.fromARGB(255, 32, 62, 93),
+        // buttonTheme: Theme.of(context).buttonTheme.copyWith(
+        //     colorScheme:ColorScheme.dark() : ColorScheme.light()),
+        appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.white),
+            color: Color.fromARGB(255, 18, 37, 69),
+            titleTextStyle: TextStyle(color: Colors.white),
+            toolbarTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+            actionsIconTheme: IconThemeData(color: Colors.white)),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          foregroundColor: Colors.white,
+          backgroundColor: Color.fromARGB(255, 71, 162, 159),
+          extendedTextStyle: TextStyle(color: Colors.black),
+        ));
+  }
+
+  static ThemeData lightTheme(BuildContext context) {
+    return ThemeData(
+      textTheme: TextTheme(
+        bodyLarge: TextStyle(
+          color: Colors.black,
+        ),
+        bodyMedium: TextStyle(
+          color: Colors.black,
+        ),
+        bodySmall: TextStyle(
+          color: Colors.black,
+        ),
+        headlineLarge: TextStyle(
+          color: Colors.black,
+        ),
+        headlineMedium: TextStyle(
+          color: Colors.black,
+        ),
+        headlineSmall: TextStyle(
+          color: Colors.black,
+        ),
+        displayLarge: TextStyle(
+          color: Colors.black,
+        ),
+        displayMedium: TextStyle(
+          color: Colors.black,
+        ),
+        displaySmall: TextStyle(
+          color: Colors.black,
+        ),
+        labelLarge: TextStyle(
+          color: Colors.black,
+        ),
+        labelMedium: TextStyle(
+          color: Colors.black,
+        ),
+        labelSmall: TextStyle(
+          color: Colors.black,
+        ),
+        titleSmall: TextStyle(
+          color: Colors.black,
+        ),
+        titleMedium: TextStyle(
+          color: Colors.black,
+        ),
+        titleLarge: TextStyle(
+          color: Colors.black,
+        ),
+      ),
+      primarySwatch: Colors.blue,
+      primaryColor: Colors.black,
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: Color.fromARGB(255, 18, 37, 69),
+        secondary: Color.fromARGB(255, 0, 88, 203),
+        background: Color(0xffCBDCF8),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(
+            Color.fromARGB(255, 69, 116, 204),
+          ),
+        ),
+      ),
+
+      dropdownMenuTheme: DropdownMenuThemeData(
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Colors.black),
+          hintStyle: TextStyle(
+            color: Colors.black,
+          ),
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ),
+      iconTheme: IconThemeData(
+        color: Colors.black,
+      ),
+      checkboxTheme: CheckboxThemeData(
+        checkColor: MaterialStatePropertyAll(Colors.white),
+        fillColor: MaterialStatePropertyAll(Colors.black),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(
+        color: Color.fromARGB(255, 18, 37, 69),
+      )),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          iconColor: MaterialStatePropertyAll(Color.fromARGB(255, 18, 37, 69)),
+        ),
+      ),
+      indicatorColor: Color(0xffCBDCF8),
+      hintColor: Color.fromARGB(255, 116, 106, 183),
+      highlightColor: Color(0xffFCE192),
+      hoverColor: Color(0xff4285F4),
+      focusColor: Color(0xffA8DAB5),
+      disabledColor: Colors.grey,
+      cardColor: Color.fromARGB(255, 203, 230, 246),
+      canvasColor: Color(0xffCBDCF8),
+      // buttonTheme: Theme.of(context).buttonTheme.copyWith(
+      //     colorScheme: isDarkTheme ? ColorScheme.dark() : ColorScheme.light()),
+      appBarTheme: AppBarTheme(
+        iconTheme: IconThemeData(color: Colors.black),
+        color: Color.fromARGB(255, 203, 230, 246),
+        titleTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        toolbarTextStyle: TextStyle(color: Colors.black, fontSize: 20),
+        actionsIconTheme: IconThemeData(color: Colors.black),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        foregroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 36, 89, 188),
+        extendedTextStyle: TextStyle(color: Colors.white),
+      ),
+    );
+  }
 }

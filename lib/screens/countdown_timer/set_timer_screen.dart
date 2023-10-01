@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
+import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'countdown_timer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
 
 class SetTimeScreen extends StatefulWidget {
   static const routeName = '/settimer';
@@ -48,8 +50,6 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Set Timer'),
@@ -205,53 +205,56 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
               ),
             ),
           ),
-          RawMaterialButton(
-            onPressed: () {
-              if (_minutesController.selectedItem <= 0 &&
-                  _secondsController.selectedItem < 15) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('A round must be at least 15 seconds long'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
-              if (_restControllerMin.selectedItem <= 0 &&
-                  _restControllerSec.selectedItem < 5) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content:
-                        Text('A rest timer must be at least 5 seconds long'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                return;
-              }
-              Navigator.of(context)
-                  .pushNamed(CountdownTimer.routeName, arguments: [
-                _minutesController.selectedItem,
-                _secondsController.selectedItem,
-                _restControllerMin.selectedItem,
-                _restControllerSec.selectedItem,
-                _roundsController.selectedItem,
-                previousScreen,
-                difficultyLevel,
-                customCombos
-              ]);
-            },
-            elevation: 2.0,
-            fillColor: themeProvider.darkTheme
-                ? Color.fromARGB(255, 71, 162, 159)
-                : Color.fromARGB(255, 36, 89, 188),
-            textStyle: TextStyle(color: Colors.white),
-            child: Icon(
-              Icons.play_arrow,
-              size: 70.0,
-            ),
-            padding: EdgeInsets.all(10.0),
-            shape: CircleBorder(),
-          ),
+          r.Consumer(builder: (context, ref, child) {
+            var darkMode = ref.watch(darkModeProvider);
+            return RawMaterialButton(
+              onPressed: () {
+                if (_minutesController.selectedItem <= 0 &&
+                    _secondsController.selectedItem < 15) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('A round must be at least 15 seconds long'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+                if (_restControllerMin.selectedItem <= 0 &&
+                    _restControllerSec.selectedItem < 5) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text('A rest timer must be at least 5 seconds long'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return;
+                }
+                Navigator.of(context)
+                    .pushNamed(CountdownTimer.routeName, arguments: [
+                  _minutesController.selectedItem,
+                  _secondsController.selectedItem,
+                  _restControllerMin.selectedItem,
+                  _restControllerSec.selectedItem,
+                  _roundsController.selectedItem,
+                  previousScreen,
+                  difficultyLevel,
+                  customCombos
+                ]);
+              },
+              elevation: 2.0,
+              fillColor: darkMode
+                  ? Color.fromARGB(255, 71, 162, 159)
+                  : Color.fromARGB(255, 36, 89, 188),
+              textStyle: TextStyle(color: Colors.white),
+              child: Icon(
+                Icons.play_arrow,
+                size: 70.0,
+              ),
+              padding: EdgeInsets.all(10.0),
+              shape: CircleBorder(),
+            );
+          }),
           SizedBox(
             height: 8,
           )

@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wombocombo/helpers/snackbar_helper.dart';
+import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
 import 'package:wombocombo/widgets/timer/build_timer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
 
 class CombosScreen extends StatefulWidget {
   static const routeName = '/combos';
@@ -88,7 +90,6 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late VideoPlayerController _controller;
   late UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
-  late ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
   var isLoading = true;
 
   @override
@@ -289,46 +290,58 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                   ),
                 ),
               )
-            : Column(
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
+            : r.Consumer(builder: (context, ref, child) {
+                var darkMode = ref.watch(darkModeProvider);
+                return Column(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
                     ),
-                  ),
-                  Text(wordsFromNumbsString),
-                  SizedBox(height: 40),
-                  themeProvider.darkTheme
-                      ? buildTimer(
-                          previousScreen,
-                          started,
-                          secs,
-                          maxSeconds,
-                          initialCountdown,
-                          currentTerm,
-                          initialCountdownMax,
-                          Color(0xff90E0EF),
-                          Color.fromARGB(255, 41, 62, 218),
-                          Color.fromARGB(255, 180, 207, 242))
-                      : buildTimer(
-                          previousScreen,
-                          started,
-                          secs,
-                          maxSeconds,
-                          initialCountdown,
-                          currentTerm,
-                          initialCountdownMax,
-                          Color(0xff90E0EF),
-                          Color.fromARGB(255, 223, 235, 237),
-                          Color(0xff023E8A)),
-                  SizedBox(height: 10),
-                  buildButtons(timer, secs, maxSeconds, null, stopTimer,
-                      startTimer, previousScreen, null, isRunning, resetTimer),
-                  SizedBox(height: 5),
-                ],
-              ),
+                    Text(wordsFromNumbsString),
+                    SizedBox(height: 40),
+                    darkMode
+                        ? buildTimer(
+                            previousScreen,
+                            started,
+                            secs,
+                            maxSeconds,
+                            initialCountdown,
+                            currentTerm,
+                            initialCountdownMax,
+                            Color(0xff90E0EF),
+                            Color.fromARGB(255, 41, 62, 218),
+                            Color.fromARGB(255, 180, 207, 242))
+                        : buildTimer(
+                            previousScreen,
+                            started,
+                            secs,
+                            maxSeconds,
+                            initialCountdown,
+                            currentTerm,
+                            initialCountdownMax,
+                            Color(0xff90E0EF),
+                            Color.fromARGB(255, 223, 235, 237),
+                            Color(0xff023E8A)),
+                    SizedBox(height: 10),
+                    buildButtons(
+                        timer,
+                        secs,
+                        maxSeconds,
+                        null,
+                        stopTimer,
+                        startTimer,
+                        previousScreen,
+                        null,
+                        isRunning,
+                        resetTimer),
+                    SizedBox(height: 5),
+                  ],
+                );
+              }),
       ),
     );
   }

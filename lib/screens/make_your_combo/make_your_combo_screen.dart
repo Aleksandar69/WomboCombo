@@ -2,10 +2,10 @@ import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/custom_combo.dart';
 import 'package:wombocombo/providers/custom_combo_provider.dart';
-import 'package:wombocombo/providers/theme_provider.dart';
+import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/saved_combos_screen.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
 
 enum currentNumberOfCombos { one, two, three, four }
 
@@ -369,13 +369,11 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           });
   }
 
-  late ThemeProvider darkThemeProvider;
   @override
   void initState() {
     super.initState();
     customComboProvider =
         Provider.of<CustomComboProvider>(context, listen: false);
-    darkThemeProvider = Provider.of<ThemeProvider>(context, listen: false);
 
     customComboProvider.fetchAttacks();
 
@@ -626,88 +624,90 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: FormField<String>(
         builder: (FormFieldState<String> state) {
-          return DropdownButton<String>(
-            icon: Icon(Icons.arrow_drop_down,
-                color:
-                    darkThemeProvider.darkTheme ? Colors.white : Colors.black),
-            value: dropdownValue,
-            elevation: 16,
-            underline: Container(
-              height: 2,
-              color: darkThemeProvider.darkTheme ? Colors.white : Colors.black,
-            ),
-            onChanged: (String? value) {
-              setState(() {
-                if (currentDropdownValue == '1-1') {
-                  dropdownValueOneOne = value!;
-                } else if (currentDropdownValue == '1-2') {
-                  dropdownValueOneTwo = value!;
-                } else if (currentDropdownValue == '1-3') {
-                  dropdownValueOneThree = value!;
-                } else if (currentDropdownValue == '1-4') {
-                  dropdownValueOneFour = value!;
-                } else if (currentDropdownValue == '1-5') {
-                  dropdownValueOneFive = value!;
-                } else if (currentDropdownValue == '2-1') {
-                  dropdownValueTwoOne = value!;
-                } else if (currentDropdownValue == '2-2') {
-                  dropdownValueTwoTwo = value!;
-                } else if (currentDropdownValue == '2-3') {
-                  dropdownValueTwoThree = value!;
-                } else if (currentDropdownValue == '2-4') {
-                  dropdownValueTwoFour = value!;
-                } else if (currentDropdownValue == '2-5') {
-                  dropdownValueTwoFive = value!;
-                } else if (currentDropdownValue == '3-1') {
-                  dropdownValueThreeOne = value!;
-                } else if (currentDropdownValue == '3-2') {
-                  dropdownValueThreeTwo = value!;
-                } else if (currentDropdownValue == '3-3') {
-                  dropdownValueThreeThree = value!;
-                } else if (currentDropdownValue == '3-4') {
-                  dropdownValueThreeFour = value!;
-                } else if (currentDropdownValue == '3-5') {
-                  dropdownValueThreeFive = value!;
-                } else if (currentDropdownValue == '4-1') {
-                  dropdownValueFourOne = value!;
-                } else if (currentDropdownValue == '4-2') {
-                  dropdownValueFourTwo = value!;
-                } else if (currentDropdownValue == '4-3') {
-                  dropdownValueFourThree = value!;
-                } else if (currentDropdownValue == '4-4') {
-                  dropdownValueFourFour = value!;
-                } else if (currentDropdownValue == '4-5') {
-                  dropdownValueFourFive = value!;
-                } else if (currentDropdownValue == '5-1') {
-                  dropdownValueFiveOne = value!;
-                } else if (currentDropdownValue == '5-2') {
-                  dropdownValueFiveTwo = value!;
-                } else if (currentDropdownValue == '5-3') {
-                  dropdownValueFiveThree = value!;
-                } else if (currentDropdownValue == '5-4') {
-                  dropdownValueFiveFour = value!;
-                } else if (currentDropdownValue == '5-5') {
-                  dropdownValueFiveFive = value!;
-                } else if (currentDropdownValue == '6-1') {
-                  dropdownValueSixOne = value!;
-                } else if (currentDropdownValue == '6-2') {
-                  dropdownValueSixTwo = value!;
-                } else if (currentDropdownValue == '6-3') {
-                  dropdownValueSixThree = value!;
-                } else if (currentDropdownValue == '6-4') {
-                  dropdownValueSixFour = value!;
-                } else if (currentDropdownValue == '6-5') {
-                  dropdownValueSixFive = value!;
-                }
-              });
-            },
-            items: widget.list.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          );
+          return r.Consumer(builder: (context, ref, child) {
+            var darkMode = ref.watch(darkModeProvider);
+            return DropdownButton<String>(
+              icon: Icon(Icons.arrow_drop_down,
+                  color: darkMode ? Colors.white : Colors.black),
+              value: dropdownValue,
+              elevation: 16,
+              underline: Container(
+                height: 2,
+                color: darkMode ? Colors.white : Colors.black,
+              ),
+              onChanged: (String? value) {
+                setState(() {
+                  if (currentDropdownValue == '1-1') {
+                    dropdownValueOneOne = value!;
+                  } else if (currentDropdownValue == '1-2') {
+                    dropdownValueOneTwo = value!;
+                  } else if (currentDropdownValue == '1-3') {
+                    dropdownValueOneThree = value!;
+                  } else if (currentDropdownValue == '1-4') {
+                    dropdownValueOneFour = value!;
+                  } else if (currentDropdownValue == '1-5') {
+                    dropdownValueOneFive = value!;
+                  } else if (currentDropdownValue == '2-1') {
+                    dropdownValueTwoOne = value!;
+                  } else if (currentDropdownValue == '2-2') {
+                    dropdownValueTwoTwo = value!;
+                  } else if (currentDropdownValue == '2-3') {
+                    dropdownValueTwoThree = value!;
+                  } else if (currentDropdownValue == '2-4') {
+                    dropdownValueTwoFour = value!;
+                  } else if (currentDropdownValue == '2-5') {
+                    dropdownValueTwoFive = value!;
+                  } else if (currentDropdownValue == '3-1') {
+                    dropdownValueThreeOne = value!;
+                  } else if (currentDropdownValue == '3-2') {
+                    dropdownValueThreeTwo = value!;
+                  } else if (currentDropdownValue == '3-3') {
+                    dropdownValueThreeThree = value!;
+                  } else if (currentDropdownValue == '3-4') {
+                    dropdownValueThreeFour = value!;
+                  } else if (currentDropdownValue == '3-5') {
+                    dropdownValueThreeFive = value!;
+                  } else if (currentDropdownValue == '4-1') {
+                    dropdownValueFourOne = value!;
+                  } else if (currentDropdownValue == '4-2') {
+                    dropdownValueFourTwo = value!;
+                  } else if (currentDropdownValue == '4-3') {
+                    dropdownValueFourThree = value!;
+                  } else if (currentDropdownValue == '4-4') {
+                    dropdownValueFourFour = value!;
+                  } else if (currentDropdownValue == '4-5') {
+                    dropdownValueFourFive = value!;
+                  } else if (currentDropdownValue == '5-1') {
+                    dropdownValueFiveOne = value!;
+                  } else if (currentDropdownValue == '5-2') {
+                    dropdownValueFiveTwo = value!;
+                  } else if (currentDropdownValue == '5-3') {
+                    dropdownValueFiveThree = value!;
+                  } else if (currentDropdownValue == '5-4') {
+                    dropdownValueFiveFour = value!;
+                  } else if (currentDropdownValue == '5-5') {
+                    dropdownValueFiveFive = value!;
+                  } else if (currentDropdownValue == '6-1') {
+                    dropdownValueSixOne = value!;
+                  } else if (currentDropdownValue == '6-2') {
+                    dropdownValueSixTwo = value!;
+                  } else if (currentDropdownValue == '6-3') {
+                    dropdownValueSixThree = value!;
+                  } else if (currentDropdownValue == '6-4') {
+                    dropdownValueSixFour = value!;
+                  } else if (currentDropdownValue == '6-5') {
+                    dropdownValueSixFive = value!;
+                  }
+                });
+              },
+              items: widget.list.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            );
+          });
         },
       ),
     );

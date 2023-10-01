@@ -20,17 +20,17 @@ class BoxingMapping extends StatefulWidget {
 class _BoxingMappingState extends State<BoxingMapping> {
   late List<BoxingAttack> _boxingAttacks = [
     BoxingAttack('jab', 'assets/images/jab.png', '1'),
-    BoxingAttack('jab body', 'assets/images/jabBody.png', '1b'),
+    BoxingAttack('jab body', 'assets/images/jabBody.png', 'b1'),
     BoxingAttack('cross', 'assets/images/cross.png', '2'),
-    BoxingAttack('cross body', 'assets/images/crossBody.png', '2b'),
+    BoxingAttack('cross body', 'assets/images/crossBody.png', 'b2'),
     BoxingAttack('left hook', 'assets/images/leftHook.png', '3'),
-    BoxingAttack('left hook body', 'assets/images/leftUppercutBody.png', '3b'),
+    BoxingAttack('left hook body', 'assets/images/leftUppercutBody.png', 'b3'),
     BoxingAttack('right hook', 'assets/images/rightHook.png', '4'),
     BoxingAttack(
-        'right hook body', 'assets/images/rightUppercutBody.png', '4b'),
+        'right hook body', 'assets/images/rightUppercutBody.png', 'b4'),
     BoxingAttack('left uppercut', 'assets/images/leftupperreal.png', '5'),
     BoxingAttack(
-        'left uppercut body', 'assets/images/leftUppercutBody.png', '5b'),
+        'left uppercut body', 'assets/images/leftUppercutBody.png', 'b5'),
     BoxingAttack('right uppercut', 'assets/images/leftUppercutBody.png', '6'),
   ];
 

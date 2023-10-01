@@ -118,7 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.pop(context);

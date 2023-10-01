@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: customAppBar("Home", Provider.of<ThemeProvider>(context)),
+      appBar: customAppBar("Home"),
       drawer: MainDrawer(currentUserId),
       body: Column(
         children: [

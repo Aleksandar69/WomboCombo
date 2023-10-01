@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart.';
 import 'package:wombocombo/utils/theme_pref.dart';
+import 'package:riverpod/riverpod.dart';
 
-class ThemeProvider with ChangeNotifier {
+class ThemeNotifier with ChangeNotifier {
   ThemePreference themePreference = ThemePreference();
-  bool _darkTheme = false;
+  bool _isDarkTheme = false;
 
-  bool get darkTheme => _darkTheme;
+  bool get isDarkTheme => _isDarkTheme;
 
-  set darkTheme(bool value) {
-    _darkTheme = value;
-    themePreference.setTheme(_darkTheme);
+  void init() async {
+    _isDarkTheme = await themePreference
+        .getTheme(); // get ThemeMode from shared preferences
+    notifyListeners();
+  }
+
+  set setTheme(bool value) {
+    _isDarkTheme = value;
+    themePreference.setTheme(_isDarkTheme);
     notifyListeners();
   }
 }

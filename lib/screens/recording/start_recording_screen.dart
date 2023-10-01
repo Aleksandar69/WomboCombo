@@ -204,7 +204,7 @@ class _StartRecordingState extends State<StartRecording> {
                                   height: 640,
                                   width: 360,
                                   child: MyRecordedRemoteVideo(
-                                      _convertedVideo, false)),
+                                      _convertedVideo, false, false, true)),
                             ),
                             Form(
                               key: _formKey,

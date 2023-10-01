@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wombocombo/models/boxing_attack.dart';
+import '../../screens/think_on_your_feet/strike_animation.dart';
 
 class AttackListItem extends StatelessWidget {
   AttackListItem({required this.boxingAttack});
@@ -29,7 +30,12 @@ class AttackListItem extends StatelessWidget {
                 boxingAttack.correspondingNumber.toString(),
               ),
             ),
-            ElevatedButton(onPressed: () {}, child: Text("View"))
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(StrikeAnimation.routeName,
+                      arguments: boxingAttack.correspondingNumber);
+                },
+                child: Text("View"))
           ],
         ),
       ),

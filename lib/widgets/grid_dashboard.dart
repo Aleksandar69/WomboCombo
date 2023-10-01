@@ -69,7 +69,7 @@ class GridDashboard extends StatelessWidget {
       item8
     ];
     return Flexible(
-      child: Consumer<ThemeProvider>(builder: (context, value, child) {
+      child: Consumer<ThemeNotifier>(builder: (context, value, child) {
         return GridView.count(
             childAspectRatio: 1.0,
             padding: EdgeInsets.only(top: 12, left: 16, right: 16, bottom: 12),
@@ -106,7 +106,7 @@ class GridDashboard extends StatelessWidget {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                      color: value.darkTheme
+                      color: value.isDarkTheme
                           ? Color(0xff023E8A)
                           : Color.fromARGB(255, 36, 101, 187),
                       borderRadius: BorderRadius.circular(10)),

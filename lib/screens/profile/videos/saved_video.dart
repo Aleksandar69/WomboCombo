@@ -90,7 +90,7 @@ class _SavedVideoState extends State<SavedVideo> {
               child: Container(
                 height: 640,
                 width: 360,
-                child: MyRecordedRemoteVideo(videoUrl, true),
+                child: MyRecordedRemoteVideo(videoUrl, true, false, true),
               ),
             ),
             Form(

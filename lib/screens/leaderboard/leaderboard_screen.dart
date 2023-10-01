@@ -4,11 +4,13 @@ import 'package:flutterfire_ui/firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/models/user.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/profile/profile_screen.dart';
 import 'package:wombocombo/widgets/leaderboard/leaderboard_item.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
 
 class LeaderboardScreen extends StatefulWidget {
   static const routeName = '/leaderboard';
@@ -54,7 +56,6 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var themeProvider = Provider.of<ThemeProvider>(context);
     return WillPopScope(
       onWillPop: () async {
         Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
@@ -67,49 +68,50 @@ class LeaderboardScreenState extends State<LeaderboardScreen> {
         body: Column(
           children: [
             Form(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: TextFormField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      filteredUsers = allLoadedUsers
-                          .where((item) => item['username'].contains(value))
-                          .toList();
+              child: r.Consumer(builder: (ctx, ref, child) {
+                var darkMode = ref.watch(darkModeProvider);
+                return Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: TextFormField(
+                    controller: _searchController,
+                    onChanged: (value) {
                       setState(() {
-                        isSearchTerm = true;
-                      });
-
-                      if (_searchController.text == '') {
+                        filteredUsers = allLoadedUsers
+                            .where((item) => item['username'].contains(value))
+                            .toList();
                         setState(() {
-                          isSearchTerm = false;
+                          isSearchTerm = true;
                         });
-                      }
-                    });
-                  },
-                  decoration: InputDecoration(
-                      focusColor: Colors.white,
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(color: Colors.blue, width: 1.0),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      fillColor: Colors.grey,
-                      hintText: "Search",
-                      hintStyle: TextStyle(
-                          color: themeProvider.darkTheme
-                              ? Colors.white
-                              : Colors.black)),
-                  textInputAction: TextInputAction.search,
-                ),
-              ),
+
+                        if (_searchController.text == '') {
+                          setState(() {
+                            isSearchTerm = false;
+                          });
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
+                        focusColor: Colors.white,
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Colors.blue, width: 1.0),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        fillColor: Colors.grey,
+                        hintText: "Search",
+                        hintStyle: TextStyle(
+                            color: darkMode ? Colors.white : Colors.black)),
+                    textInputAction: TextInputAction.search,
+                  ),
+                );
+              }),
             ),
             Expanded(
               child: !isSearchTerm
