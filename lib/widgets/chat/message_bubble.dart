@@ -39,10 +39,10 @@ class MessageBubble extends StatelessWidget {
                         bottomRight:
                             isMe ? Radius.circular(0) : Radius.circular(12),
                       )),
-                  width: 140,
+                  width: 180,
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
-                    horizontal: 16,
+                    horizontal: 27,
                   ),
                   margin: const EdgeInsets.symmetric(
                     vertical: 4,
@@ -75,8 +75,8 @@ class MessageBubble extends StatelessWidget {
             backgroundImage: NetworkImage(userImage),
           ),
           top: 0,
-          left: isMe ? null : 130,
-          right: isMe ? 120 : null,
+          left: isMe ? null : 165,
+          right: isMe ? 165 : null,
         ),
       ],
       clipBehavior: Clip.none,

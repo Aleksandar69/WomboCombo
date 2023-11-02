@@ -4,7 +4,10 @@ import 'package:wombocombo/providers/dark_mode_notifier.dart';
 
 PreferredSizeWidget customAppBar(title) {
   return AppBar(
-    title: Text(title),
+    title: Text(
+      title,
+      style: TextStyle(fontSize: 20),
+    ),
     actions: [
       Consumer(builder: (context, ref, child) {
         var darkMode = ref.watch(darkModeProvider);

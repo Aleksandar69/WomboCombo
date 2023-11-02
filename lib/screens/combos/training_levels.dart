@@ -6,6 +6,7 @@ import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/combos_provider.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
+import 'package:wombocombo/screens/combos/choose_martial_art.dart';
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 
@@ -26,10 +27,14 @@ class _TrainingLevelState extends State<TrainingLevel> {
   late final CombosProvider combosProvider =
       Provider.of<CombosProvider>(context);
   late final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+  var currentMartialArt;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final args = ModalRoute.of(context)!.settings.arguments as List;
+    currentMartialArt = args[0];
+
     getCurrentUserLevel();
     setState(() {
       isLoading = false;
@@ -46,11 +51,14 @@ class _TrainingLevelState extends State<TrainingLevel> {
 
   late final currentUserData;
   var currentMaxLevel;
-
   getCurrentUserLevel() async {
     currentUserData = await userProvider.getUser(authProvider.userId);
     setState(() {
-      currentMaxLevel = currentUserData['currentMaxLevel'];
+      if (currentMartialArt == 'boxing') {
+        currentMaxLevel = currentUserData['currentMaxLevelB'];
+      } else if (currentMartialArt == 'kickboxing') {
+        currentMaxLevel = currentUserData['currentMaxLevelKb'];
+      }
     });
   }
 
@@ -58,7 +66,7 @@ class _TrainingLevelState extends State<TrainingLevel> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+        Navigator.pop(context);
         return false;
       },
       child: Scaffold(
@@ -68,7 +76,9 @@ class _TrainingLevelState extends State<TrainingLevel> {
         body: isLoading
             ? Center(child: CircularProgressIndicator())
             : StreamBuilder(
-                stream: combosProvider.getCombosStream(),
+                stream: currentMartialArt == "boxing"
+                    ? combosProvider.getBoxingCombosStream()
+                    : combosProvider.getKickboxingCombosStream(),
                 builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -82,8 +92,9 @@ class _TrainingLevelState extends State<TrainingLevel> {
                       itemCount: comboDocs.length,
                       itemBuilder: (BuildContext context, int index) {
                         var currentLevel = comboDocs[index]['level'];
-                        var combo = comboDocs[index]['name_numbers'];
+                        var combo = comboDocs[index]['combo'];
                         var videoUrl = comboDocs[index]['video_url'];
+                        var difficulty = comboDocs[index]['difficulty'];
                         var videoId = comboDocs[index].id;
                         if (currentMaxLevel != null &&
                             currentMaxLevel - 1 >= index &&
@@ -106,21 +117,27 @@ class _TrainingLevelState extends State<TrainingLevel> {
                                 ),
                               ),
                               subtitle: Text(
-                                '$combo',
+                                '$combo, difficulty: $difficulty',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                               trailing: Icon(Icons.arrow_forward),
-                              onTap: () {
-                                Navigator.of(context).pushNamed(
-                                    CombosScreen.routeName,
-                                    arguments: [
+                              onTap: () async {
+                                var result = await Navigator.of(context)
+                                    .pushNamed(CombosScreen.routeName,
+                                        arguments: [
                                       currentLevel,
                                       combo,
                                       videoUrl,
                                       videoId,
                                       currentUserData.id,
-                                      currentMaxLevel
+                                      currentMaxLevel,
+                                      currentMartialArt
                                     ]);
+                                if (result != null) {
+                                  setState(() {
+                                    currentMaxLevel = result;
+                                  });
+                                }
                               },
                             ),
                           );
@@ -140,10 +157,6 @@ class _TrainingLevelState extends State<TrainingLevel> {
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey),
-                              ),
-                              subtitle: Text(
-                                '$combo',
-                                style: TextStyle(fontSize: 16.0),
                               ),
                               trailing: Icon(Icons.arrow_forward),
                               onTap: () {},

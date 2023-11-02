@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/messages_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/friend_list/friend_requests_screen.dart';
@@ -27,6 +28,8 @@ class _FriendListState extends State<FriendList> {
       Provider.of<FriendsProvider>(context, listen: false);
   late final UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
+  late final MessagesProvider messagesProvider =
+      Provider.of<MessagesProvider>(context, listen: false);
   var currentUserId;
   var user1CurrentUser;
   var user2CurrentUser;
@@ -37,6 +40,8 @@ class _FriendListState extends State<FriendList> {
   List friendData = [];
   List friendRequests = [];
   var fetchedFriendsRequests;
+  var groupChatId;
+  List messages = [];
 
   getFriendList() async {
     currentUserId = authProvider.userId;
@@ -71,7 +76,20 @@ class _FriendListState extends State<FriendList> {
       var currentFriend = await userProvider.getUser(friendEntry['friend']);
       friendData.add(currentFriend);
     }
+    int noOfMessages = 0;
 
+    for (var i = 0; i < friendData.length; i++) {
+      var friendId = friendData[i].id;
+      if (currentUserId.hashCode <= friendId.hashCode) {
+        groupChatId = '${currentUserId}-${friendId}';
+      } else {
+        groupChatId = '${friendId}-${currentUserId}';
+      }
+      var message = await messagesProvider.getMessagesForReceiver(
+          groupChatId, currentUserId);
+      noOfMessages = message.size;
+      messages.add(noOfMessages);
+    }
     setState(() {
       isLoading = false;
     });
@@ -220,9 +238,9 @@ class _FriendListState extends State<FriendList> {
                                                 .textTheme
                                                 .titleMedium,
                                           ),
-                                          subtitle: Text(friendData[index]
-                                                  ['userPoints']
-                                              .toString()),
+                                          subtitle: Text(
+                                              messages[index].toString() +
+                                                  " new messages"),
                                           trailing: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment:

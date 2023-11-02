@@ -1,13 +1,13 @@
 import 'dart:io';
 
-class BoxingAttack {
+class Strike {
+  final String id;
   final String attackName;
-  final String attackImage;
   final String correspondingNumber;
 
-  BoxingAttack(
+  Strike(
+    this.id,
     this.attackName,
-    this.attackImage,
     this.correspondingNumber,
   );
 }

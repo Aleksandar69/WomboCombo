@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/models/friend_status.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
@@ -119,11 +120,10 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
                           isAlreadyFriendRequested = true;
                         });
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Friend request sent'),
-                            backgroundColor: Theme.of(context).primaryColor,
-                          ),
+                        SnackbarHelper.showSnackbarSuccess(
+                          context,
+                          'User friend request successfully sent',
+                          'Friend request sent',
                         );
                       },
                       icon: Icon(Icons.add),
@@ -137,11 +137,10 @@ class _LeaderboardItemState extends State<LeaderboardItem> {
                         style: TextStyle(color: Colors.grey.shade500),
                       ),
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Friend request already sent'),
-                            backgroundColor: Colors.red.shade900,
-                          ),
+                        SnackbarHelper.showSnackbarError(
+                          context,
+                          'Friend request already sent',
+                          'Error',
                         );
                       },
                       icon: Icon(Icons.add),

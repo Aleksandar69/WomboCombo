@@ -106,8 +106,15 @@ class _AuthScreenState extends State<AuthScreen> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
-        body: AuthForm(_submitAuthForm, _isLoading, _handleGoogleSignin),
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/shutterstock_636062642.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: AuthForm(_submitAuthForm, _isLoading, _handleGoogleSignin),
+        ),
       ),
     );
   }

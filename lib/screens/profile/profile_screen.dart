@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/models/friend_status.dart';
 import 'package:wombocombo/models/user.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
-import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/screens/chat/chat_screen.dart';
 import 'package:wombocombo/screens/profile/edit_profile_screen.dart';
@@ -70,7 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         null,
         userDataDb['image_url'],
         userDataDb['userPoints'],
-        userDataDb['currentMaxLevel'],
+        userDataDb['currentMaxLevelB'],
+        userDataDb['currentMaxLevelKb'],
         null);
 
     setState(() {
@@ -165,6 +166,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             label: Text('Edit Profile'),
                           ),
                         SizedBox(height: 10),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: Text(
+                                'Earned Points',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                            ),
+                            FittedBox(
+                              fit: BoxFit.fitWidth,
+                              child: Text(user.userPoints.toString(),
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                  )),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -178,7 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   FittedBox(
                                     fit: BoxFit.fitWidth,
                                     child: Text(
-                                      'Earned Points',
+                                      'Boxing Level',
                                       style: TextStyle(
                                         fontSize: 24,
                                       ),
@@ -186,7 +212,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   FittedBox(
                                     fit: BoxFit.fitWidth,
-                                    child: Text(user.userPoints.toString(),
+                                    child: Text(user.levelReachedB.toString(),
                                         style: TextStyle(
                                           fontSize: 24,
                                         )),
@@ -201,12 +227,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   FittedBox(
                                     fit: BoxFit.fitWidth,
-                                    child: Text('Level Reached',
+                                    child: Text('Kickboxing Level',
                                         style: TextStyle(fontSize: 24)),
                                   ),
                                   FittedBox(
                                     fit: BoxFit.fitWidth,
-                                    child: Text(user.levelReached.toString(),
+                                    child: Text(user.levelReachedKb.toString(),
                                         style: TextStyle(
                                           fontSize: 24,
                                         )),
@@ -246,12 +272,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       isAlreadyFriendRequested = true;
                                     });
 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Friend request sent'),
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                      ),
+                                    SnackbarHelper.showSnackbarSuccess(
+                                      context,
+                                      'User friend request successfully sent',
+                                      'Friend request sent',
                                     );
                                   })
                               : GestureDetector(

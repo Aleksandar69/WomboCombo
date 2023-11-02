@@ -127,8 +127,8 @@ class _FriendRequestsState extends State<FriendRequests> {
 
                                           SnackbarHelper.showSnackbarSuccess(
                                               context,
-                                              '',
-                                              'Friend Request Accepted');
+                                              'Friend Request Accepted',
+                                              'Success');
                                         },
                                         icon: Icon(Icons.check_outlined,
                                             color: Colors.green),
@@ -143,15 +143,10 @@ class _FriendRequestsState extends State<FriendRequests> {
                                             friendRequestData.removeAt(index);
                                           });
 
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Friend request removed'),
-                                              backgroundColor: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          );
+                                          SnackbarHelper.showSnackbarSuccess(
+                                              context,
+                                              'Friend request removed',
+                                              'Success');
                                         },
                                         icon: Icon(Icons.close_outlined,
                                             color: Colors.red),

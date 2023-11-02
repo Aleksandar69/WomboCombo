@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart' as VT;
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/models/video.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/storage_provider.dart';
@@ -124,11 +125,10 @@ class _StartRecordingState extends State<StartRecording> {
         setState(() {
           isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Success'),
-            backgroundColor: Colors.green,
-          ),
+        SnackbarHelper.showSnackbarSuccess(
+          context,
+          'Video added',
+          'Success',
         );
         Navigator.of(context, rootNavigator: true).pop();
       }

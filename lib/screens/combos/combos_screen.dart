@@ -28,6 +28,7 @@ class _CombosScreenState extends State<CombosScreen> {
   var isLoading;
   var currentUserId;
   var currentUserMaxLvl;
+  var currentMartialArt;
 
   @override
   void didChangeDependencies() {
@@ -41,6 +42,7 @@ class _CombosScreenState extends State<CombosScreen> {
     videoId = countdownTimerStuff[3] as String;
     currentUserId = countdownTimerStuff[4] as String;
     currentUserMaxLvl = countdownTimerStuff[5] as int;
+    currentMartialArt = countdownTimerStuff[6] as String;
   }
 
   @override
@@ -55,19 +57,13 @@ class _CombosScreenState extends State<CombosScreen> {
       appBar: AppBar(
         title: Text(' Level ${currentLevel.toString()}'),
       ),
-      body: WillPopScope(
-        onWillPop: () async {
-          Navigator.pushReplacementNamed(context, TrainingLevel.routeName);
-          return false;
-        },
-        child: Column(
-          children: [
-            Expanded(
-              child: _FighterVideoRemote(videoUrl, combo, currentLevel, videoId,
-                  currentUserId, currentUserMaxLvl),
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: _FighterVideoRemote(videoUrl, combo, currentLevel, videoId,
+                currentUserId, currentUserMaxLvl, currentMartialArt),
+          ),
+        ],
       ),
     );
   }
@@ -80,8 +76,9 @@ class _FighterVideoRemote extends StatefulWidget {
   String videoId;
   String userId;
   int currentUserMaxLvl;
+  String currentMartialArt;
   _FighterVideoRemote(this.videoUrl, this.combo, this.level, this.videoId,
-      this.userId, this.currentUserMaxLvl);
+      this.userId, this.currentUserMaxLvl, this.currentMartialArt);
   @override
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
@@ -91,29 +88,32 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   late UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
   var isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-
+  var isLevelCompleted = false;
+  _loadAndPlay() async {
     playerSetSource();
-    Timer.periodic(Duration(seconds: 3), (timer) {
-      setState(() {
-        isLoading = false;
-      });
-      timer.cancel();
-    });
     _controller = VideoPlayerController.network(
       widget.videoUrl,
       videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
     );
-
     _controller.addListener(() {
       setState(() {});
     });
-    _controller.setLooping(true);
-    _controller.play();
     _controller.initialize();
+    _controller.setLooping(true);
+
+    await Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+      }); // Prints after 1 second.
+    });
+
+    _controller.play();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAndPlay();
   }
 
   String previousScreen = 'fromHomeScreen';
@@ -221,14 +221,18 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
         setState(() => started = false);
         stopTimer(reset: false);
         if (widget.level == widget.currentUserMaxLvl) {
-          userProvider.updateUserInfo(
-              widget.userId, {'currentMaxLevel': widget.level + 1});
+          widget.currentMartialArt == 'boxing'
+              ? userProvider.updateUserInfo(
+                  widget.userId, {'currentMaxLevelB': widget.level + 1})
+              : userProvider.updateUserInfo(
+                  widget.userId, {'currentMaxLevelKb': widget.level + 1});
+          isLevelCompleted = true;
+          SnackbarHelper.showSnackbarSuccess(
+            context,
+            'Level ${widget.level + 1} unlocked',
+            'Good Job!',
+          );
         }
-        SnackbarHelper.showSnackbarSuccess(
-          context,
-          'Level ${widget.level + 1} unlocked',
-          'Good Job!',
-        );
       }
     });
   }
@@ -246,16 +250,35 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   var comboMapping = {
     '1': 'Jab',
-    'b1': 'Jab body',
+    'b1': 'Jab Body',
+    'j1': 'Leaping Jab',
     '2': 'Cross',
-    'b2': 'Cross body',
-    '3': 'Left hook',
-    'b3': 'Left hook body',
-    'j3': 'Jumping left hook',
-    '4': 'Right hook',
-    'b4': 'Right hook body',
-    '5': 'Left uppercut',
-    '6': 'Right uppercut',
+    'b2': 'Cross Body',
+    '3': 'Left Hook',
+    'b3': 'Left Hook Body',
+    'j3': 'Leaping Left Hook',
+    '4': 'Right Hook',
+    'b4': 'Right Hook Body',
+    '5': 'Left Uppercut',
+    '6': 'Right Uppercut',
+    'flk': 'Front Low Kick',
+    'fmk': 'Front Middle Kick',
+    'fhk': 'Front High Kick',
+    'rlk': 'Rear Low Kick',
+    'rmk': 'Rear Middle Kick',
+    'rhk': 'Rear High Kick',
+    'fpk': 'Front Push Kick',
+    'lpk': 'Rear Push Kick',
+    'tr': 'Turn Right',
+    'tl': 'Turn Left',
+    'sfr': 'Step Forward Right',
+    'sfl': 'Step Forward Left',
+    'sr': 'Step Right',
+    'sl': 'Step Left',
+    'p': 'Pause',
+    'sb': 'Step Back',
+    'el': 'Evade Left',
+    'er': 'Evade Right',
   };
 
   @override
@@ -271,7 +294,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
       child: WillPopScope(
         onWillPop: () async {
           stopTimer();
-          Navigator.pop(context);
+          if (widget.level == widget.currentUserMaxLvl && isLevelCompleted) {
+            Navigator.pop(context, widget.level + 1);
+          } else {
+            Navigator.pop(context);
+          }
+
           return false;
         },
         child: isLoading
@@ -293,6 +321,8 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
             : r.Consumer(builder: (context, ref, child) {
                 var darkMode = ref.watch(darkModeProvider);
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
                       padding: const EdgeInsets.all(20),
@@ -301,7 +331,10 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                         child: VideoPlayer(_controller),
                       ),
                     ),
-                    Text(wordsFromNumbsString),
+                    Text(
+                      wordsFromNumbsString,
+                      textAlign: TextAlign.center,
+                    ),
                     SizedBox(height: 40),
                     darkMode
                         ? buildTimer(
@@ -314,7 +347,8 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                             initialCountdownMax,
                             Color(0xff90E0EF),
                             Color.fromARGB(255, 41, 62, 218),
-                            Color.fromARGB(255, 180, 207, 242))
+                            Color.fromARGB(255, 180, 207, 242),
+                            context)
                         : buildTimer(
                             previousScreen,
                             started,
@@ -325,7 +359,8 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                             initialCountdownMax,
                             Color(0xff90E0EF),
                             Color.fromARGB(255, 223, 235, 237),
-                            Color(0xff023E8A)),
+                            Color(0xff023E8A),
+                            context),
                     SizedBox(height: 10),
                     buildButtons(
                         timer,
@@ -337,7 +372,9 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                         previousScreen,
                         null,
                         isRunning,
-                        resetTimer),
+                        resetTimer,
+                        'combos',
+                        context),
                     SizedBox(height: 5),
                   ],
                 );

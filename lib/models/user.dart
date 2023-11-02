@@ -7,11 +7,12 @@ class User {
   File? profileImage;
   String? profileImageURL;
   int? userPoints;
-  int? levelReached;
+  int? levelReachedB;
+  int? levelReachedKb;
   String? password;
 
   User(this.username, this.email, this.profileImage, this.profileImageURL,
-      this.userPoints, this.levelReached, this.password);
+      this.userPoints, this.levelReachedB, this.levelReachedKb, this.password);
 
   set currentusername(String currentUsername) {
     username = currentUsername;

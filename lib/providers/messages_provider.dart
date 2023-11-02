@@ -13,4 +13,25 @@ class MessagesProvider with ChangeNotifier {
   addMessage(Message message) {
     messageRepository.addMessage(message);
   }
+
+  markMessageAsRead(groupChatId, messageId) {
+    messageRepository.markMessageAsRead(groupChatId, messageId);
+  }
+
+  getMessagesForReceiver(groupChatId, receiverId) async {
+    return await messageRepository.getMessagesForReceiver(
+        groupChatId, receiverId);
+  }
+
+  addIsRead(groupChatId, userId) {
+    messageRepository.addIsRead(groupChatId, userId);
+  }
+
+  nullifyIsRead(groupChatId) {
+    messageRepository.nullifyIsRead(groupChatId);
+  }
+
+  getAllMessagesForReceiver(receiverId) async {
+    return await messageRepository.getAllMessagesForReceiver(receiverId);
+  }
 }

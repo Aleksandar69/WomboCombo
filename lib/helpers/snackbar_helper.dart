@@ -45,7 +45,7 @@ class SnackbarHelper {
           padding: EdgeInsets.all(16),
           height: 90,
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 3, 255, 205),
+            color: Color.fromARGB(255, 5, 136, 123),
             borderRadius: BorderRadius.all(Radius.circular(20)),
           ),
           child: Column(
@@ -55,13 +55,14 @@ class SnackbarHelper {
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               ),
-              Text(
-                message,
-                style: TextStyle(fontSize: 14),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
+              if (message != '')
+                Text(
+                  message,
+                  style: TextStyle(fontSize: 14),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
             ],
           ),
         ),

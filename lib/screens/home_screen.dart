@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/friends_providers.dart';
+import 'package:wombocombo/providers/messages_provider.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/main_drawer.dart';
@@ -29,12 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
       Provider.of<FriendsProvider>(context, listen: false);
   late final UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
+  late final MessagesProvider messagesProvider =
+      Provider.of<MessagesProvider>(context, listen: false);
   var currentUserId;
   var user2CurrentUser;
   var isLoading = true;
   List friendRequests = [];
   var allFriendRequests = [];
   var currentUserData;
+  var messages;
+  int numberOfUnreadMess = 0;
 
   getFriendNotif() async {
     currentUserId = authProvider.userId;
@@ -43,6 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
         'user2', currentUserId, 'status', 0);
 
     friendRequests = user2CurrentUser!.docs as List;
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  getUnreadMess() async {
+    messages = await messagesProvider.getAllMessagesForReceiver(currentUserId);
+
+    numberOfUnreadMess = messages.size;
     setState(() {
       isLoading = false;
     });
@@ -59,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     getFriendNotif();
+    getUnreadMess();
   }
 
   void registerNotification() {
@@ -128,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: MainDrawer(currentUserId),
       body: Column(
         children: [
-          GridDashboard(currentUserId, friendRequests),
+          GridDashboard(currentUserId, friendRequests, numberOfUnreadMess),
         ],
       ),
     );

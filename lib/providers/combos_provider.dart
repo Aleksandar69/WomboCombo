@@ -5,7 +5,11 @@ import '../repositories/combos_repository.dart';
 class CombosProvider with ChangeNotifier {
   CombosRepository combosRepository = CombosRepository();
 
-  Stream<QuerySnapshot> getCombosStream() {
-    return combosRepository.getCombosStream();
+  Stream<QuerySnapshot> getBoxingCombosStream() {
+    return combosRepository.getBoxingCombosStream();
+  }
+
+  Stream<QuerySnapshot> getKickboxingCombosStream() {
+    return combosRepository.getKickboxingCombosStream();
   }
 }

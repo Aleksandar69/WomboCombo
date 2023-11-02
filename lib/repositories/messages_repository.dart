@@ -11,6 +11,58 @@ class MessageRepository {
         .snapshots();
   }
 
+  getMessagesForReceiver(groupChatId, receiverId) async {
+    var fetchedMessages;
+    await FirebaseFirestore.instance
+        .collection('messages')
+        .doc(groupChatId)
+        .collection(groupChatId)
+        .where('isRead', isEqualTo: false)
+        .where('receiverId', isEqualTo: receiverId)
+        .get()
+        .then((value) {
+      fetchedMessages = value;
+    });
+    return fetchedMessages;
+  }
+
+  getAllMessagesForReceiver(receiverId) async {
+    var fetchedMessages;
+    await FirebaseFirestore.instance
+        .collection('messages')
+        .where('unreadMessages', isEqualTo: receiverId)
+        .get()
+        .then((value) {
+      fetchedMessages = value;
+    });
+    return fetchedMessages;
+  }
+
+  markMessageAsRead(groupChatId, messageId) {
+    FirebaseFirestore.instance
+        .collection('messages')
+        .doc(groupChatId)
+        .collection(groupChatId!)
+        .doc(messageId)
+        .update(
+      {'isRead': true},
+    );
+  }
+
+  addIsRead(groupChatId, userId) {
+    FirebaseFirestore.instance
+        .collection('messages')
+        .doc(groupChatId)
+        .set({'unreadMessages': userId});
+  }
+
+  nullifyIsRead(groupChatId) {
+    FirebaseFirestore.instance
+        .collection('messages')
+        .doc(groupChatId)
+        .set({'unreadMessages': null});
+  }
+
   addMessage(Message message) {
     FirebaseFirestore.instance
         .collection('messages')

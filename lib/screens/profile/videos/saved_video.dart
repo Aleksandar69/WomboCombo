@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/models/comment.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/comments_provider.dart';
@@ -51,11 +52,10 @@ class _SavedVideoState extends State<SavedVideo> {
     ));
     commentController.clear();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Success'),
-        backgroundColor: Colors.green,
-      ),
+    SnackbarHelper.showSnackbarSuccess(
+      context,
+      'Comment added',
+      'Success',
     );
   }
 
@@ -115,6 +115,9 @@ class _SavedVideoState extends State<SavedVideo> {
                 ],
               ),
             ),
+            SizedBox(
+              height: 15,
+            ),
             StreamBuilder<QuerySnapshot>(
               stream: commentsProvider.getCommentForVideo(videoId),
               builder: (context, AsyncSnapshot snapshot) {
@@ -155,7 +158,6 @@ class _SavedVideoState extends State<SavedVideo> {
                                 commentDocs![index]['comment'].toString(),
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.black,
                                 ),
                               ),
                               SizedBox(height: 4),

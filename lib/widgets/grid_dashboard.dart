@@ -8,13 +8,16 @@ import 'package:wombocombo/screens/friend_list/friend_list_screen.dart';
 import 'package:wombocombo/screens/leaderboard/leaderboard_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
-import 'package:wombocombo/screens/think_on_your_feet/boxing_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/strikes_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
 import '../presentation/custom_icons_icons.dart';
+import '../screens/combos/choose_martial_art.dart';
 
 class GridDashboard extends StatelessWidget {
   var userId;
+  int newMessages;
   List friendRequests;
-  GridDashboard(this.userId, this.friendRequests);
+  GridDashboard(this.userId, this.friendRequests, this.newMessages);
 
   Items item1 = new Items(
     title: "Combos",
@@ -80,10 +83,11 @@ class GridDashboard extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   if (data.title == 'Combos') {
-                    Navigator.of(context)
-                        .pushNamed(TrainingLevel.routeName, arguments: userId);
+                    Navigator.of(context).pushNamed(
+                        ChooseMartialArtCombos.routeName,
+                        arguments: userId);
                   } else if (data.title == 'Think Quick') {
-                    Navigator.of(context).pushNamed(BoxingMapping.routeName);
+                    Navigator.of(context).pushNamed(ChooseMartialArt.routeName);
                   } else if (data.title == "Customize Combos") {
                     Navigator.of(context)
                         .pushNamed(MakeYourComboScreen.routeName);
@@ -143,15 +147,15 @@ class GridDashboard extends StatelessWidget {
                       SizedBox(
                         height: 8,
                       ),
-                      if (friendRequests.length != 0 &&
-                          data.title == "Friend List")
+                      if (friendRequests.length != 0 ||
+                          newMessages != 0 && data.title == "Friend List")
                         Center(
                             child: ClipOval(
                           child: Container(
                             color: Colors.red,
                             padding: EdgeInsets.symmetric(horizontal: 6),
                             child: Text(
-                              "${friendRequests.length}",
+                              "${friendRequests.length + newMessages}",
                             ),
                           ),
                         ))

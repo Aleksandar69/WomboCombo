@@ -17,10 +17,29 @@ class MyRecordedRemoteVideo extends StatefulWidget {
 
 class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
   late VideoPlayerController _controller;
+  var isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    // if (!widget.isRemote!) {
+    //   _controller = VideoPlayerController.file(widget.video!);
+    // } else {
+    //   _controller = VideoPlayerController.network(widget.video!);
+    // }
+    // _controller.addListener(() {
+    //   setState(() {});
+    // });
+    // _controller.setLooping(true);
+    // _controller.initialize();
+    // if (widget.isAutoplay == true) {
+    //   _controller.play();
+    // }
+
+    _loadAndPlay();
+  }
+
+  _loadAndPlay() async {
     if (!widget.isRemote!) {
       _controller = VideoPlayerController.file(widget.video!);
     } else {
@@ -29,8 +48,14 @@ class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
     _controller.addListener(() {
       setState(() {});
     });
-    _controller.setLooping(true);
     _controller.initialize();
+    _controller.setLooping(true);
+
+    await Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        isLoading = false;
+      }); // Prints after 1 second.
+    });
     if (widget.isAutoplay == true) {
       _controller.play();
     }
@@ -44,29 +69,46 @@ class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          Container(padding: const EdgeInsets.only(top: 20.0)),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: <Widget>[
-                  VideoPlayer(_controller),
-                  ClosedCaption(text: _controller.value.caption.text),
-                  _ControlsOverlay(controller: _controller),
-                  if (widget.showProgressIndicator)
-                    VideoProgressIndicator(_controller, allowScrubbing: true),
+    return isLoading
+        ? SizedBox(
+            height: MediaQuery.of(context).size.height / 1.3,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text("Please wait while the video loads"),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          )
+        : SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Container(padding: const EdgeInsets.only(top: 20.0)),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  child: AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        VideoPlayer(_controller),
+                        ClosedCaption(text: _controller.value.caption.text),
+                        _ControlsOverlay(controller: _controller),
+                        if (widget.showProgressIndicator)
+                          VideoProgressIndicator(_controller,
+                              allowScrubbing: true),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
   }
 }
 

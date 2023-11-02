@@ -61,7 +61,9 @@ class AuthRepository {
       'image_url': url,
       'userPoints': 0,
       'chattingWith': null,
-      'currentMaxLevel': 1,
+      'currentMaxLevelB': 1,
+      'currentMaxLevelKb': 1,
+      'isTrainer': false,
     });
     return authResult;
   }

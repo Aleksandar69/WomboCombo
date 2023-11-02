@@ -20,10 +20,7 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
   void didChangeDependencies() async {
     super.didChangeDependencies();
     var strikeNumber = ModalRoute.of(context)!.settings.arguments as String;
-    //strike = strikesProvider.getStrike('correspondingNumber', strikeNumber);
     strike = await getStrike(strikeNumber);
-    var test = strike['strikeUrl'];
-    var i = 0;
     setState(() {
       isLoading = false;
     });
@@ -56,7 +53,7 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 MyRecordedRemoteVideo(strike['strikeUrl'], true, true, false),
-                Text('attack name'),
+                Text(strike['name']),
               ],
             ),
     );

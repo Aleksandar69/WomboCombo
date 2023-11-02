@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 
-class TrainingDiff extends StatelessWidget {
+class TrainingDiff extends StatefulWidget {
   static const routeName = 'training-diff';
 
   const TrainingDiff({Key? key}) : super(key: key);
+
+  @override
+  State<TrainingDiff> createState() => _TrainingDiffState();
+}
+
+class _TrainingDiffState extends State<TrainingDiff> {
+  var selectedMartialArt;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var args = ModalRoute.of(context)!.settings.arguments as List;
+    selectedMartialArt = args[0];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +30,7 @@ class TrainingDiff extends StatelessWidget {
           GestureDetector(
             onTap: () => Navigator.of(context).pushNamed(
                 SetTimeScreen.routeName,
-                arguments: ['fromQuickCombos', 'Beginner']),
+                arguments: ['fromQuickCombos', 'Beginner', selectedMartialArt]),
             child: Card(
               elevation: 5,
               child: Container(
@@ -37,9 +50,12 @@ class TrainingDiff extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(
-                SetTimeScreen.routeName,
-                arguments: ['fromQuickCombos', 'Intermediate']),
+            onTap: () => Navigator.of(context)
+                .pushNamed(SetTimeScreen.routeName, arguments: [
+              'fromQuickCombos',
+              'Intermediate',
+              selectedMartialArt
+            ]),
             child: Card(
               elevation: 5,
               child: Container(
@@ -60,7 +76,7 @@ class TrainingDiff extends StatelessWidget {
           GestureDetector(
             onTap: () => Navigator.of(context).pushNamed(
                 SetTimeScreen.routeName,
-                arguments: ['fromQuickCombos', 'Advanced']),
+                arguments: ['fromQuickCombos', 'Advanced', selectedMartialArt]),
             child: Card(
               elevation: 5,
               child: Container(
@@ -79,9 +95,12 @@ class TrainingDiff extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed(
-                SetTimeScreen.routeName,
-                arguments: ['fromQuickCombos', 'Nightmare']),
+            onTap: () => Navigator.of(context)
+                .pushNamed(SetTimeScreen.routeName, arguments: [
+              'fromQuickCombos',
+              'Nightmare',
+              selectedMartialArt
+            ]),
             child: Card(
               elevation: 5,
               child: Container(

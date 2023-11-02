@@ -1,24 +1,23 @@
-import 'package:flutter/material.dart.';
-import 'package:provider/provider.dart';
-import 'package:wombocombo/models/strike.dart';
-import 'package:wombocombo/screens/think_on_your_feet/strikes_mapping.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart';
+import 'package:wombocombo/screens/combos/combos_screen.dart';
+import 'package:wombocombo/screens/combos/training_levels.dart';
 
-class ChooseMartialArt extends StatelessWidget {
-  static const routeName = '/choose-martialart';
+class ChooseMartialArtCombos extends StatelessWidget {
+  static const routeName = '/choosemartialart';
+  const ChooseMartialArtCombos({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Martial Art'),
-      ),
+      appBar: AppBar(title: Text('Martial Art')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () => Navigator.of(context)
-                .pushNamed(StrikesMapping.routeName, arguments: ['boxing']),
+                .pushNamed(TrainingLevel.routeName, arguments: ['boxing']),
             child: Card(
               elevation: 5,
               child: Container(
@@ -38,7 +37,7 @@ class ChooseMartialArt extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () => Navigator.of(context)
-                .pushNamed(StrikesMapping.routeName, arguments: ['kickboxing']),
+                .pushNamed(TrainingLevel.routeName, arguments: ['kickboxing']),
             child: Card(
               elevation: 5,
               child: Container(

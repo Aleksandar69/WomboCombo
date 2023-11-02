@@ -20,9 +20,10 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   final _restControllerMin = FixedExtentScrollController(initialItem: 0);
   final _roundsController = FixedExtentScrollController(initialItem: 3);
 
-  late final previousScreen;
+  var previousScreen;
   late String difficultyLevel = 'Beginner';
   late List customCombos = [];
+  var selectedMartialArt;
 
   @override
   void didChangeDependencies() {
@@ -35,6 +36,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
     if (previousArgs is List) {
       previousScreen = previousArgs[0] as String;
+      selectedMartialArt = previousArgs[2] as String;
       if (previousScreen == 'fromQuickCombos') {
         difficultyLevel = previousArgs[1] as String;
       } else if (previousScreen == 'fromMakeYourComboScreen') {
@@ -239,7 +241,8 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                   _roundsController.selectedItem,
                   previousScreen,
                   difficultyLevel,
-                  customCombos
+                  customCombos,
+                  selectedMartialArt,
                 ]);
               },
               elevation: 2.0,

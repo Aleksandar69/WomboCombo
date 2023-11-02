@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 import 'package:sqflite/sql.dart';
 import 'package:sqflite/sqlite_api.dart';
-import 'package:wombocombo/models/boxing_attack.dart';
+import 'package:wombocombo/models/strike.dart';
 
 class CustomComboDBhelper {
   static Future<Database> database() async {

@@ -27,9 +27,7 @@ import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.
 import 'package:wombocombo/screens/combos/combos_screen.dart';
 import 'package:wombocombo/screens/home_screen.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
-import 'package:wombocombo/screens/think_on_your_feet/boxing_mapping.dart';
-import 'package:wombocombo/screens/think_on_your_feet/kickboxing_mapping.dart';
-import 'package:wombocombo/screens/think_on_your_feet/muay_thai_mapping.dart';
+import 'package:wombocombo/screens/think_on_your_feet/strikes_mapping.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/strike_animation.dart';
 import 'package:wombocombo/screens/think_on_your_feet/training_difficulty.dart';
@@ -40,9 +38,9 @@ import 'package:wombocombo/widgets/recording/video_recorder.dart';
 import 'screens/auth/auth_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
-import 'package:riverpod/riverpod.dart' as rr;
 import 'providers/dark_mode_notifier.dart';
 import 'providers/user_provider.dart';
+import './screens/combos/choose_martial_art.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -119,9 +117,7 @@ class MyApp extends r.ConsumerWidget {
               MakeYourComboScreen.routeName: (context) => MakeYourComboScreen(),
               CountdownTimer.routeName: (context) => CountdownTimer(),
               ChooseMartialArt.routeName: (context) => ChooseMartialArt(),
-              BoxingMapping.routeName: (context) => BoxingMapping(),
-              MuayThaiMapping.routeName: (context) => MuayThaiMapping(),
-              KickBoxingMapping.routeName: (context) => KickBoxingMapping(),
+              StrikesMapping.routeName: (context) => StrikesMapping(),
               TrainingDiff.routeName: (context) => TrainingDiff(),
               TrainingLevel.routeName: (context) => TrainingLevel(),
               SavedCombos.routeName: (context) => SavedCombos(),
@@ -139,6 +135,8 @@ class MyApp extends r.ConsumerWidget {
               AuthScreen.routeName: (context) => AuthScreen(),
               VideoRecorder.routeName: (context) => VideoRecorder(),
               StrikeAnimation.routeName: (context) => StrikeAnimation(),
+              ChooseMartialArtCombos.routeName: (context) =>
+                  ChooseMartialArtCombos(),
             });
         // return MaterialApp(
         //   title: 'Flutter Demo',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wombocombo/models/boxing_attack.dart';
+import 'package:wombocombo/models/strike.dart';
 import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import '../../models/custom_combo.dart';
 

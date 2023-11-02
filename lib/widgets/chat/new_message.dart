@@ -48,6 +48,7 @@ class _NewMessageState extends State<NewMessage> {
       widget.receiverUsername,
       false,
     ));
+    messagesProvider.addIsRead(groupChatId, receiverId);
     _enteredMessage = '';
     _controller.clear();
   }

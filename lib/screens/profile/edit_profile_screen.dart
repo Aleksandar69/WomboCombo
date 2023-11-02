@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/storage_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
@@ -24,9 +25,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final AuthProvider authProvider =
       Provider.of<AuthProvider>(context, listen: false);
 
+  final _formKey = GlobalKey<FormState>();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _confirmPasswordController = TextEditingController();
 
   XFile? _pickedImage;
   File? _convertedImage;
@@ -52,8 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late String username;
   late String email;
   var currentUserId;
-  String password = "џџџџџ";
-
+  var password = '';
   void getUser() async {
     currentUserId = authProvider.userId;
     setState(() {
@@ -70,7 +72,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     _usernameController.text = username;
     _emailController.text = email;
-    _passwordController.text = password;
   }
 
   void submitUserData() async {
@@ -95,59 +96,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       });
     }
     try {
-      var hasChar = password.indexOf('џ', 0);
-      if (hasChar == -1 && _passwordController.text.isNotEmpty) {
-        await authProvider.changePassword(password);
+      if (_passwordController.text.isNotEmpty) {
+        if (_passwordController.text != _confirmPasswordController.text) {
+          SnackbarHelper.showSnackbarError(
+              context, 'Passwords do not match', 'Error');
+          hasError = true;
+        } else {
+          await authProvider.changePassword(password);
+        }
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message!),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        e.message!,
+        'Error',
       );
       hasError = true;
     } catch (e) {
       var message = 'An error occured, please try again';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        message,
+        'Error',
       );
       hasError = true;
     }
     try {
-      await authProvider.changeEmail(email);
+      if (email != _emailController.text) {
+        await authProvider.changeEmail(_emailController.text);
+      }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message!),
-          backgroundColor: Colors.red,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        e.message!,
+        'Error',
       );
       hasError = true;
     } catch (e) {
       var message = 'An error occured, please try again';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        ),
+      SnackbarHelper.showSnackbarError(
+        context,
+        message,
+        'Error',
       );
       hasError = true;
     }
 
     if (!hasError)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Success'),
-          backgroundColor: Colors.green,
-        ),
+      SnackbarHelper.showSnackbarSuccess(
+        context,
+        'Action successful',
+        'Success',
       );
 
     user = u.User(_usernameController.text, _emailController.text, null, imgUrl,
-        null, null, null);
+        null, null, null, null);
     Navigator.of(context).pop(user);
   }
 
@@ -174,6 +177,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Form(
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -202,6 +206,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                          validator: (value) {
+                            if (value.toString().isEmpty ||
+                                value == '' ||
+                                value == null) {
+                              return "Field can't be empty";
+                            }
+                            return null;
+                          },
                           controller: _usernameController,
                           decoration: InputDecoration(
                             labelText: "Username",
@@ -216,24 +228,60 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                          controller: _emailController,
+                        validator: (value) {
+                          if (value.toString().isEmpty ||
+                              value == '' ||
+                              value == null) {
+                            return "Field can't be empty";
+                          }
+                          final emailRegex =
+                              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Please check your email format';
+                          }
+                          return null;
+                        },
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: "Email",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                          validator: (value) {
+                            if (value != _confirmPasswordController.text) {
+                              return "Passwords don't match";
+                            }
+                            return null;
+                          },
+                          controller: _passwordController,
+                          obscureText: true,
                           decoration: InputDecoration(
-                            labelText: "Email",
+                            labelText: "Password",
                             border: OutlineInputBorder(),
                           ),
                           onChanged: (value) {
                             setState(() {
-                              email = value;
+                              password = value;
                             });
                           }),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
-                          controller: _passwordController,
+                          validator: (value) {
+                            if (value != _passwordController.text) {
+                              return "Passwords don't match";
+                            }
+                            return null;
+                          },
+                          controller: _confirmPasswordController,
                           obscureText: true,
                           decoration: InputDecoration(
-                            labelText: "Password",
+                            labelText: "Confirm  Password",
                             border: OutlineInputBorder(),
                           ),
                           onChanged: (value) {
@@ -250,13 +298,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           fontSize: 20,
                         ),
                       ),
-                      onPressed: username.isNotEmpty &&
-                              password.isNotEmpty &&
-                              email.isNotEmpty
-                          ? () {
-                              submitUserData();
-                            }
-                          : null,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          submitUserData();
+                        }
+                      },
+                      //  username.isNotEmpty && email.isNotEmpty
+                      //     ? () {
+                      //         submitUserData();
+                      //       }
+                      //     : null,
                     ),
                   ],
                 ),

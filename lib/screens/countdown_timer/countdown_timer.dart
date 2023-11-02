@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter_tts/flutter_tts.dart';
@@ -12,6 +11,7 @@ import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../widgets/timer/build_timer.dart';
+import '../../utils/combinations.dart';
 
 import 'package:wakelock/wakelock.dart';
 
@@ -57,6 +57,7 @@ class _CountdownTimerState extends State<CountdownTimer>
   late String trainingLevel;
   late List customCombos = [];
   var pointsEarnedText;
+  var selectedMartialArt;
 
   late AnimationController _controller;
 
@@ -131,46 +132,46 @@ class _CountdownTimerState extends State<CountdownTimer>
     previousScreen = args[5] as String;
     trainingLevel = args[6] as String;
     customCombos = args[7] as List;
+    if (args[8] != null) {
+      selectedMartialArt = args[8] as String;
+    }
 
     if (previousScreen == 'fromMakeYourComboScreen') {
       currentAttacks = List.from(customCombos);
     }
 
-    if (trainingLevel == 'Beginner' && previousScreen == 'fromQuickCombos') {
-      currentAttacks = [
-        '2 4 3',
-        '1 2 3',
-        '1 1 5',
-        '1 1 2',
-        '1 6 4',
-      ];
+    if (trainingLevel == 'Beginner' &&
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'boxing') {
+      currentAttacks = Combinations.beginnerBoxing;
     } else if (trainingLevel == 'Intermediate' &&
-        previousScreen == 'fromQuickCombos') {
-      currentAttacks = [
-        '2 4 3',
-        '1 2 3 4',
-        '1 1 5 6',
-        '1 1 2',
-        '1 6 4 3',
-      ];
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'boxing') {
+      currentAttacks = Combinations.advancedBoxing;
     } else if (trainingLevel == 'Advanced' &&
-        previousScreen == 'fromQuickCombos') {
-      currentAttacks = [
-        '2 4 3 3',
-        '1 2 3 4 1',
-        '1 1 5 6 2 ',
-        '1 1 2 3',
-        '1 6 4 3 3'
-      ];
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'boxing') {
+      currentAttacks = Combinations.advancedBoxing;
     } else if (trainingLevel == 'Nightmare' &&
-        previousScreen == 'fromQuickCombos') {
-      currentAttacks = [
-        '2 4 3 3 3',
-        '1 2 3 4 1 2',
-        '1 1 5 6 2 2',
-        '1 1 2 3 1',
-        '1 6 4 3 3 4'
-      ];
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'boxing') {
+      currentAttacks = Combinations.nightmareBoxing;
+    } else if (trainingLevel == 'Beginner' &&
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'kickboxing') {
+      currentAttacks = Combinations.beginnerKickBoxing;
+    } else if (trainingLevel == 'Intermediate' &&
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'kickboxing') {
+      currentAttacks = Combinations.intermediateKickboxing;
+    } else if (trainingLevel == 'Advanced' &&
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'kickboxing') {
+      currentAttacks = Combinations.advancedKickboxing;
+    } else if (trainingLevel == 'Nightmare' &&
+        previousScreen == 'fromQuickCombos' &&
+        selectedMartialArt == 'kickboxing') {
+      currentAttacks = Combinations.nightmareKickboxing;
     }
 
     restTimeMax = restSecs + (restMins * 60);
@@ -500,7 +501,7 @@ class _CountdownTimerState extends State<CountdownTimer>
       });
     } else if (trainingLevel == 'Intermediate' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(seconds: 3), (_) {
+      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
@@ -511,7 +512,7 @@ class _CountdownTimerState extends State<CountdownTimer>
       });
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(milliseconds: 2500), (_) {
+      timerAttacks = Timer.periodic(Duration(milliseconds: 5000), (_) {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
@@ -522,7 +523,7 @@ class _CountdownTimerState extends State<CountdownTimer>
       });
     } else if (trainingLevel == 'Nightmare' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(seconds: 2), (_) {
+      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
@@ -547,13 +548,20 @@ class _CountdownTimerState extends State<CountdownTimer>
           child: GradientWidget(
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Round $currentRound',
-                    style: TextStyle(fontSize: 30, color: Colors.white),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
                   ),
-                  SizedBox(height: 40),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: Text(
+                      'Round $currentRound',
+                      style: TextStyle(fontSize: 30, color: Colors.white),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
                   buildTimer(
                       previousScreen,
                       started,
@@ -564,8 +572,9 @@ class _CountdownTimerState extends State<CountdownTimer>
                       initialCountdownMax,
                       Colors.white,
                       Colors.green,
-                      Colors.white),
-                  const SizedBox(height: 80),
+                      Colors.white,
+                      context),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   buildButtons(
                       timer,
                       secs,
@@ -576,7 +585,9 @@ class _CountdownTimerState extends State<CountdownTimer>
                       previousScreen,
                       startSpeakTimer,
                       isRunning,
-                      resetTimer),
+                      resetTimer,
+                      'countdownTimer',
+                      context),
                 ],
               ),
             ),
