@@ -36,13 +36,14 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
 
     if (previousArgs is List) {
       previousScreen = previousArgs[0] as String;
-      selectedMartialArt = previousArgs[2] as String;
+      if (previousArgs.asMap().containsKey(2) && previousArgs[2] != null) {
+        selectedMartialArt = previousArgs[2] as String;
+      }
       if (previousScreen == 'fromQuickCombos') {
         difficultyLevel = previousArgs[1] as String;
       } else if (previousScreen == 'fromMakeYourComboScreen') {
         var combos = previousArgs[1] as List;
         customCombos = List.from(combos);
-        for (var combo in customCombos) {}
       }
     } else {
       previousScreen = previousArgs;
@@ -212,7 +213,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             return RawMaterialButton(
               onPressed: () {
                 if (_minutesController.selectedItem <= 0 &&
-                    _secondsController.selectedItem < 15) {
+                    _secondsController.selectedItem < 5) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('A round must be at least 15 seconds long'),

@@ -5,8 +5,8 @@ import '../repositories/user_repository.dart';
 class UserProvider with ChangeNotifier {
   UserRepository userRespository = UserRepository();
 
-  updateUserInfo(String userId, updateData) {
-    return userRespository.updateUserInfo(userId, updateData);
+  updateUserInfo(String userId, updateData) async {
+    return await userRespository.updateUserInfo(userId, updateData);
   }
 
   getUser(userId) async {

@@ -5,8 +5,10 @@ class ButtonWidget extends StatelessWidget {
   final Color color;
   final Color backgroundColor;
   final VoidCallback onClicked;
+  final String previousScreen;
 
   const ButtonWidget({
+    required this.previousScreen,
     Key? key,
     required this.text,
     this.color = Colors.white,
@@ -18,11 +20,15 @@ class ButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) => ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: backgroundColor,
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: previousScreen != 'fromCombosScreen'
+              ? EdgeInsets.symmetric(horizontal: 32, vertical: 16)
+              : EdgeInsets.symmetric(horizontal: 20, vertical: 14),
         ),
         child: Text(
           text,
-          style: TextStyle(fontSize: 20, color: color),
+          style: previousScreen != 'fromCombosScreen'
+              ? TextStyle(fontSize: 20, color: color)
+              : TextStyle(fontSize: 18, color: color),
         ),
         onPressed: onClicked,
       );

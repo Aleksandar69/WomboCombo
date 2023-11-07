@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart.';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/models/custom_combo.dart';
 import 'package:wombocombo/providers/custom_combo_provider.dart';
 import 'package:wombocombo/providers/dark_mode_notifier.dart';
@@ -26,12 +27,14 @@ class MakeYourComboScreen extends StatefulWidget {
     'b4',
     'b5',
     'b6',
-    'flk',
-    'fmk',
-    'fhk',
-    'rlk',
-    'rmk',
-    'rhk',
+    'Front Left Kick',
+    'Front Mid Kick',
+    'Front High Kick',
+    'Rear Left Kick',
+    'Rear Mid Kick',
+    'Rear High Kick',
+    'Front Teep',
+    'Rear Teep'
   ];
 
   @override
@@ -121,7 +124,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
         if (savedComboListLength >= 1 &&
             savedComboList.asMap()[0] != null &&
             savedComboList.asMap()[0].toString().isNotEmpty) {
-          var attacksList = savedComboList.asMap()[0].split(' ');
+          var attacksList = savedComboList.asMap()[0].split(', ');
           var attacksLength = attacksList.length;
 
           dropdownValueOneOne =
@@ -145,7 +148,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             savedComboList.asMap()[1].toString().isNotEmpty) {
           secondRowActivated = true;
 
-          var attacksList = savedComboList.asMap()[1].split(' ');
+          var attacksList = savedComboList.asMap()[1].split(', ');
           var attacksLength = attacksList.length;
           dropdownValueTwoOne =
               attacksLength >= 1 ? attacksList[0] : widget.list.first;
@@ -164,7 +167,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             savedComboList.asMap()[2].toString().isNotEmpty) {
           thirdRowActivated = true;
 
-          var attacksList = savedComboList.asMap()[2].split(' ');
+          var attacksList = savedComboList.asMap()[2].split(', ');
           var attacksLength = attacksList.length;
 
           dropdownValueThreeOne =
@@ -188,7 +191,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             savedComboList.asMap()[3].toString().isNotEmpty) {
           fourthRowActivated = true;
 
-          var attacksList = savedComboList.asMap()[3].split(' ');
+          var attacksList = savedComboList.asMap()[3].split(', ');
           var attacksLength = attacksList.length;
           dropdownValueFourOne =
               attacksLength >= 1 ? attacksList[0] : widget.list.first;
@@ -210,7 +213,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             savedComboList.asMap()[4].toString().isNotEmpty) {
           fifthRowActivated = true;
 
-          var attacksList = savedComboList.asMap()[4].split(' ');
+          var attacksList = savedComboList.asMap()[4].split(', ');
           var attacksLength = attacksList.length;
           dropdownValueFiveOne =
               attacksLength >= 1 ? attacksList[0] : widget.list.first;
@@ -233,7 +236,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
             savedComboList.asMap()[5].toString().isNotEmpty) {
           sixsthRowActivated = true;
 
-          var attacksList = savedComboList.asMap()[5].split(' ');
+          var attacksList = savedComboList.asMap()[5].split(', ');
           var attacksLength = attacksList.length;
           dropdownValueSixOne =
               attacksLength >= 1 ? attacksList[0] : widget.list.first;
@@ -284,52 +287,103 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                   ElevatedButton(
                     onPressed: () {
                       combos1.clear();
+                      combos1Str = '';
                       combos1.add(dropdownValueOneOne);
                       combos1.add(dropdownValueOneTwo);
                       combos1.add(dropdownValueOneThree);
                       combos1.add(dropdownValueOneFour);
                       combos1.add(dropdownValueOneFive);
-                      combos1Str = combos1.join(' ').trim();
-
+                      for (var i = 0; i < combos1.length - 1; i++) {
+                        if (combos1[i] != ' ') {
+                          combos1Str += combos1[i] + ', ';
+                        }
+                      }
+                      if (combos1Str.isNotEmpty || combos1Str != '') {
+                        combos1Str =
+                            combos1Str.substring(0, combos1Str.length - 2);
+                      }
                       combos2.clear();
+                      combos2Str = '';
                       combos2.add(dropdownValueTwoOne);
                       combos2.add(dropdownValueTwoTwo);
                       combos2.add(dropdownValueTwoThree);
                       combos2.add(dropdownValueTwoFour);
                       combos2.add(dropdownValueTwoFive);
-                      combos2Str = combos2.join(' ').trim();
-
+                      for (var i = 0; i < combos2.length - 1; i++) {
+                        if (combos2[i] != ' ') {
+                          combos2Str += combos2[i] + ', ';
+                        }
+                      }
+                      if (combos2Str.isNotEmpty || combos2Str != '') {
+                        combos2Str =
+                            combos2Str.substring(0, combos2Str.length - 2);
+                      }
                       combos3.clear();
+                      combos3Str = '';
                       combos3.add(dropdownValueThreeOne);
                       combos3.add(dropdownValueThreeTwo);
                       combos3.add(dropdownValueThreeThree);
                       combos3.add(dropdownValueThreeFour);
                       combos3.add(dropdownValueThreeFive);
-                      combos3Str = combos3.join(' ').trim();
+                      for (var i = 0; i < combos3.length - 1; i++) {
+                        if (combos3[i] != ' ') {
+                          combos3Str += combos3[i] + ', ';
+                        }
+                      }
+                      if (combos3Str.isNotEmpty || combos3Str != '') {
+                        combos3Str =
+                            combos3Str.substring(0, combos3Str.length - 2);
+                      }
 
                       combos4.clear();
+                      combos4Str = '';
                       combos4.add(dropdownValueFourOne);
                       combos4.add(dropdownValueFourTwo);
                       combos4.add(dropdownValueFourThree);
                       combos4.add(dropdownValueFourFour);
                       combos4.add(dropdownValueFourFive);
-                      combos4Str = combos4.join(' ').trim();
-
+                      for (var i = 0; i < combos4.length - 1; i++) {
+                        if (combos4[i] != ' ') {
+                          combos4Str += combos4[i] + ', ';
+                        }
+                      }
+                      if (combos4Str.isNotEmpty || combos4Str != '') {
+                        combos4Str =
+                            combos4Str.substring(0, combos4Str.length - 2);
+                      }
                       combos5.clear();
+                      combos5Str = '';
                       combos5.add(dropdownValueFiveOne);
                       combos5.add(dropdownValueFiveTwo);
                       combos5.add(dropdownValueFiveThree);
                       combos5.add(dropdownValueFiveFour);
                       combos5.add(dropdownValueFiveFive);
-                      combos5Str = combos5.join(' ').trim();
+                      for (var i = 0; i < combos5.length - 1; i++) {
+                        if (combos5[i] != ' ') {
+                          combos5Str += combos5[i] + ', ';
+                        }
+                      }
+                      if (combos5Str.isNotEmpty || combos5Str != '') {
+                        combos5Str =
+                            combos5Str.substring(0, combos5Str.length - 2);
+                      }
 
                       combos6.clear();
+                      combos6Str = '';
                       combos6.add(dropdownValueSixOne);
                       combos6.add(dropdownValueSixTwo);
                       combos6.add(dropdownValueSixThree);
                       combos6.add(dropdownValueSixFour);
                       combos6.add(dropdownValueSixFive);
-                      combos6Str = combos6.join(' ').trim();
+                      for (var i = 0; i < combos6.length - 1; i++) {
+                        if (combos6[i] != ' ') {
+                          combos6Str += combos6[i] + ', ';
+                        }
+                      }
+                      if (combos6Str.isNotEmpty || combos6Str != '') {
+                        combos6Str =
+                            combos6Str.substring(0, combos6Str.length - 2);
+                      }
 
                       combosCombined.clear();
                       combosCombined.add(combos1Str);
@@ -355,12 +409,8 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                             .addCombo(CustomCombo(comboName, splitCombos));
                       }
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Combo Saved'),
-                          backgroundColor: Theme.of(context).primaryColor,
-                        ),
-                      );
+                      SnackbarHelper.showSnackbarSuccess(
+                          context, 'Combo Saved', 'Success');
 
                       Navigator.pop(ctx);
                     },
@@ -444,52 +494,99 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               elevation: 12,
               onPressed: () {
                 combos1.clear();
+                combos1Str = '';
                 combos1.add(dropdownValueOneOne);
                 combos1.add(dropdownValueOneTwo);
                 combos1.add(dropdownValueOneThree);
                 combos1.add(dropdownValueOneFour);
                 combos1.add(dropdownValueOneFive);
-                combos1Str = combos1.join(' ').trim();
+                for (var i = 0; i < combos1.length - 1; i++) {
+                  if (combos1[i] != ' ') {
+                    combos1Str += combos1[i] + ', ';
+                  }
+                }
+
+                if (combos1Str.isNotEmpty || combos1Str != '') {
+                  combos1Str = combos1Str.substring(0, combos1Str.length - 2);
+                }
 
                 combos2.clear();
+                combos2Str = '';
                 combos2.add(dropdownValueTwoOne);
                 combos2.add(dropdownValueTwoTwo);
                 combos2.add(dropdownValueTwoThree);
                 combos2.add(dropdownValueTwoFour);
                 combos2.add(dropdownValueTwoFive);
-                combos2Str = combos2.join(' ').trim();
-
+                for (var i = 0; i < combos2.length - 1; i++) {
+                  if (combos2[i] != ' ') {
+                    combos2Str += combos2[i] + ', ';
+                  }
+                }
+                if (combos2Str.isNotEmpty || combos2Str != '') {
+                  combos2Str = combos2Str.substring(0, combos2Str.length - 2);
+                }
                 combos3.clear();
+                combos3Str = '';
                 combos3.add(dropdownValueThreeOne);
                 combos3.add(dropdownValueThreeTwo);
                 combos3.add(dropdownValueThreeThree);
                 combos3.add(dropdownValueThreeFour);
                 combos3.add(dropdownValueThreeFive);
-                combos3Str = combos3.join(' ').trim();
+                for (var i = 0; i < combos3.length - 1; i++) {
+                  if (combos3[i] != ' ') {
+                    combos3Str += combos3[i] + ', ';
+                  }
+                }
+                if (combos3Str.isNotEmpty || combos3Str != '') {
+                  combos3Str = combos3Str.substring(0, combos3Str.length - 2);
+                }
 
                 combos4.clear();
+                combos4Str = '';
                 combos4.add(dropdownValueFourOne);
                 combos4.add(dropdownValueFourTwo);
                 combos4.add(dropdownValueFourThree);
                 combos4.add(dropdownValueFourFour);
                 combos4.add(dropdownValueFourFive);
-                combos4Str = combos4.join(' ').trim();
-
+                for (var i = 0; i < combos4.length - 1; i++) {
+                  if (combos4[i] != ' ') {
+                    combos4Str += combos4[i] + ', ';
+                  }
+                }
+                if (combos4Str.isNotEmpty || combos4Str != '') {
+                  combos4Str = combos4Str.substring(0, combos4Str.length - 2);
+                }
                 combos5.clear();
+                combos5Str = '';
                 combos5.add(dropdownValueFiveOne);
                 combos5.add(dropdownValueFiveTwo);
                 combos5.add(dropdownValueFiveThree);
                 combos5.add(dropdownValueFiveFour);
                 combos5.add(dropdownValueFiveFive);
-                combos5Str = combos5.join(' ').trim();
+                for (var i = 0; i < combos5.length - 1; i++) {
+                  if (combos5[i] != ' ') {
+                    combos5Str += combos5[i] + ', ';
+                  }
+                }
+                if (combos5Str.isNotEmpty || combos5Str != '') {
+                  combos5Str = combos5Str.substring(0, combos5Str.length - 2);
+                }
 
                 combos6.clear();
+                combos6Str = '';
                 combos6.add(dropdownValueSixOne);
                 combos6.add(dropdownValueSixTwo);
                 combos6.add(dropdownValueSixThree);
                 combos6.add(dropdownValueSixFour);
                 combos6.add(dropdownValueSixFive);
-                combos6Str = combos6.join(' ').trim();
+                for (var i = 0; i < combos6.length - 1; i++) {
+                  if (combos6[i] != ' ') {
+                    combos6Str += combos6[i] + ', ';
+                  }
+                }
+                if (combos6Str.isNotEmpty || combos6Str != '') {
+                  combos6Str = combos6Str.substring(0, combos6Str.length - 2);
+                }
 
                 combosCombined.clear();
                 combosCombined.add(combos1Str);
@@ -632,86 +729,94 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
         builder: (FormFieldState<String> state) {
           return r.Consumer(builder: (context, ref, child) {
             var darkMode = ref.watch(darkModeProvider);
-            return DropdownButton<String>(
-              icon: Icon(Icons.arrow_drop_down,
-                  color: darkMode ? Colors.white : Colors.black),
-              value: dropdownValue,
-              elevation: 16,
-              underline: Container(
-                height: 2,
-                color: darkMode ? Colors.white : Colors.black,
+            return FittedBox(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.25,
+                height: 50,
+                child: DropdownButton<String>(
+                  icon: Icon(Icons.arrow_drop_down,
+                      color: darkMode ? Colors.white : Colors.black),
+                  value: dropdownValue,
+                  elevation: 16,
+                  isExpanded: true,
+                  underline: Container(
+                    height: 2,
+                    color: darkMode ? Colors.white : Colors.black,
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      if (currentDropdownValue == '1-1') {
+                        dropdownValueOneOne = value!;
+                      } else if (currentDropdownValue == '1-2') {
+                        dropdownValueOneTwo = value!;
+                      } else if (currentDropdownValue == '1-3') {
+                        dropdownValueOneThree = value!;
+                      } else if (currentDropdownValue == '1-4') {
+                        dropdownValueOneFour = value!;
+                      } else if (currentDropdownValue == '1-5') {
+                        dropdownValueOneFive = value!;
+                      } else if (currentDropdownValue == '2-1') {
+                        dropdownValueTwoOne = value!;
+                      } else if (currentDropdownValue == '2-2') {
+                        dropdownValueTwoTwo = value!;
+                      } else if (currentDropdownValue == '2-3') {
+                        dropdownValueTwoThree = value!;
+                      } else if (currentDropdownValue == '2-4') {
+                        dropdownValueTwoFour = value!;
+                      } else if (currentDropdownValue == '2-5') {
+                        dropdownValueTwoFive = value!;
+                      } else if (currentDropdownValue == '3-1') {
+                        dropdownValueThreeOne = value!;
+                      } else if (currentDropdownValue == '3-2') {
+                        dropdownValueThreeTwo = value!;
+                      } else if (currentDropdownValue == '3-3') {
+                        dropdownValueThreeThree = value!;
+                      } else if (currentDropdownValue == '3-4') {
+                        dropdownValueThreeFour = value!;
+                      } else if (currentDropdownValue == '3-5') {
+                        dropdownValueThreeFive = value!;
+                      } else if (currentDropdownValue == '4-1') {
+                        dropdownValueFourOne = value!;
+                      } else if (currentDropdownValue == '4-2') {
+                        dropdownValueFourTwo = value!;
+                      } else if (currentDropdownValue == '4-3') {
+                        dropdownValueFourThree = value!;
+                      } else if (currentDropdownValue == '4-4') {
+                        dropdownValueFourFour = value!;
+                      } else if (currentDropdownValue == '4-5') {
+                        dropdownValueFourFive = value!;
+                      } else if (currentDropdownValue == '5-1') {
+                        dropdownValueFiveOne = value!;
+                      } else if (currentDropdownValue == '5-2') {
+                        dropdownValueFiveTwo = value!;
+                      } else if (currentDropdownValue == '5-3') {
+                        dropdownValueFiveThree = value!;
+                      } else if (currentDropdownValue == '5-4') {
+                        dropdownValueFiveFour = value!;
+                      } else if (currentDropdownValue == '5-5') {
+                        dropdownValueFiveFive = value!;
+                      } else if (currentDropdownValue == '6-1') {
+                        dropdownValueSixOne = value!;
+                      } else if (currentDropdownValue == '6-2') {
+                        dropdownValueSixTwo = value!;
+                      } else if (currentDropdownValue == '6-3') {
+                        dropdownValueSixThree = value!;
+                      } else if (currentDropdownValue == '6-4') {
+                        dropdownValueSixFour = value!;
+                      } else if (currentDropdownValue == '6-5') {
+                        dropdownValueSixFive = value!;
+                      }
+                    });
+                  },
+                  items:
+                      widget.list.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
               ),
-              onChanged: (String? value) {
-                setState(() {
-                  if (currentDropdownValue == '1-1') {
-                    dropdownValueOneOne = value!;
-                  } else if (currentDropdownValue == '1-2') {
-                    dropdownValueOneTwo = value!;
-                  } else if (currentDropdownValue == '1-3') {
-                    dropdownValueOneThree = value!;
-                  } else if (currentDropdownValue == '1-4') {
-                    dropdownValueOneFour = value!;
-                  } else if (currentDropdownValue == '1-5') {
-                    dropdownValueOneFive = value!;
-                  } else if (currentDropdownValue == '2-1') {
-                    dropdownValueTwoOne = value!;
-                  } else if (currentDropdownValue == '2-2') {
-                    dropdownValueTwoTwo = value!;
-                  } else if (currentDropdownValue == '2-3') {
-                    dropdownValueTwoThree = value!;
-                  } else if (currentDropdownValue == '2-4') {
-                    dropdownValueTwoFour = value!;
-                  } else if (currentDropdownValue == '2-5') {
-                    dropdownValueTwoFive = value!;
-                  } else if (currentDropdownValue == '3-1') {
-                    dropdownValueThreeOne = value!;
-                  } else if (currentDropdownValue == '3-2') {
-                    dropdownValueThreeTwo = value!;
-                  } else if (currentDropdownValue == '3-3') {
-                    dropdownValueThreeThree = value!;
-                  } else if (currentDropdownValue == '3-4') {
-                    dropdownValueThreeFour = value!;
-                  } else if (currentDropdownValue == '3-5') {
-                    dropdownValueThreeFive = value!;
-                  } else if (currentDropdownValue == '4-1') {
-                    dropdownValueFourOne = value!;
-                  } else if (currentDropdownValue == '4-2') {
-                    dropdownValueFourTwo = value!;
-                  } else if (currentDropdownValue == '4-3') {
-                    dropdownValueFourThree = value!;
-                  } else if (currentDropdownValue == '4-4') {
-                    dropdownValueFourFour = value!;
-                  } else if (currentDropdownValue == '4-5') {
-                    dropdownValueFourFive = value!;
-                  } else if (currentDropdownValue == '5-1') {
-                    dropdownValueFiveOne = value!;
-                  } else if (currentDropdownValue == '5-2') {
-                    dropdownValueFiveTwo = value!;
-                  } else if (currentDropdownValue == '5-3') {
-                    dropdownValueFiveThree = value!;
-                  } else if (currentDropdownValue == '5-4') {
-                    dropdownValueFiveFour = value!;
-                  } else if (currentDropdownValue == '5-5') {
-                    dropdownValueFiveFive = value!;
-                  } else if (currentDropdownValue == '6-1') {
-                    dropdownValueSixOne = value!;
-                  } else if (currentDropdownValue == '6-2') {
-                    dropdownValueSixTwo = value!;
-                  } else if (currentDropdownValue == '6-3') {
-                    dropdownValueSixThree = value!;
-                  } else if (currentDropdownValue == '6-4') {
-                    dropdownValueSixFour = value!;
-                  } else if (currentDropdownValue == '6-5') {
-                    dropdownValueSixFive = value!;
-                  }
-                });
-              },
-              items: widget.list.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
             );
           });
         },

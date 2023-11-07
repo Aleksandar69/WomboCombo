@@ -5,6 +5,7 @@ class SnackbarHelper {
       BuildContext context, String message, String headline) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        dismissDirection: DismissDirection.endToStart,
         behavior: SnackBarBehavior.floating,
         content: Container(
           padding: EdgeInsets.all(16),
@@ -40,6 +41,7 @@ class SnackbarHelper {
       BuildContext context, String message, String headline) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        dismissDirection: DismissDirection.endToStart,
         behavior: SnackBarBehavior.floating,
         content: Container(
           padding: EdgeInsets.all(16),

@@ -147,8 +147,8 @@ class GridDashboard extends StatelessWidget {
                       SizedBox(
                         height: 8,
                       ),
-                      if (friendRequests.length != 0 ||
-                          newMessages != 0 && data.title == "Friend List")
+                      if ((friendRequests.length != 0 || newMessages != 0) &&
+                          data.title == "Friend List")
                         Center(
                             child: ClipOval(
                           child: Container(

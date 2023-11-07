@@ -41,6 +41,44 @@ Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm,
               ),
             );
     }
+  } else if (previousScreen == 'fromCombosScreen') {
+    if (secs == 0) {
+      return Icon(Icons.done, color: Colors.green, size: 112);
+    } else {
+      return started
+          ? Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.3,
+              alignment: Alignment.center,
+              child: AutoSizeText(
+                '${secs}',
+                overflow: TextOverflow.clip,
+                textAlign: TextAlign.center,
+                minFontSize: 60,
+                maxFontSize: 90,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            )
+          : Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.3,
+              alignment: Alignment.center,
+              child: AutoSizeText(
+                '${initialCountdown}',
+                overflow: TextOverflow.clip,
+                textAlign: TextAlign.center,
+                minFontSize: 60,
+                maxFontSize: 90,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            );
+    }
   } else {
     if (secs == 0) {
       return Icon(Icons.done, color: Colors.green, size: 112);

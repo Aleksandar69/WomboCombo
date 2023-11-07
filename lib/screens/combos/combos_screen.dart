@@ -116,9 +116,9 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     _loadAndPlay();
   }
 
-  String previousScreen = 'fromHomeScreen';
+  String previousScreen = 'fromCombosScreen';
   var started = false;
-  var maxSeconds = 14;
+  var maxSeconds = 4;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -133,19 +133,19 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
 
   void playerSetSource() async {
     await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
-    await playerRing.setSource(AssetSource('sounds/bell.mp3'));
+    await playerRing.setSourceAsset('sounds/bell.mp3');
     await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
   }
 
-  void playBell() async {
+  playBell() async {
     return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
   }
 
-  void playBeep() async {
+  playBeep() async {
     return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
   }
 
-  void playTenSecsSound() async {
+  playTenSecsSound() async {
     return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
         volume: 1);
   }
@@ -188,7 +188,8 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     }
   }
 
-  void startTimer({bool reset = false}) {
+  var isDelayed = false;
+  startTimer({bool reset = false}) async {
     setState(() {
       Wakelock.enable();
     });
@@ -198,7 +199,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     if (reset) {
       resetTimer();
     }
-    timer = Timer.periodic(Duration(seconds: 1), (_) {
+    timer = Timer.periodic(Duration(seconds: 1), (_) async {
       if (!started) {
         if (initialCountdown > 0) {
           playBeep();
@@ -209,32 +210,45 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
             started = true;
           });
         }
-      } else if (secs > 0 && started) {
+      } else if (secs > 1 && started) {
         if (secs == 10) {
           playTenSecsSound();
-        } else if (secs <= 3 && secs > 0) {
+        } else if (secs <= 4 && secs > 1 && secs != 0) {
           playBeep();
         }
         setState(() => secs = secs - 1);
-      } else {
+      } else if (secs == 1) {
         playBell();
+        secs = secs - 1;
+      } else if (secs == 0 && isDelayed == false) {
+        isDelayed = true;
+      } else {
+        isDelayed = false;
+        // playBell();
+        if (widget.level == widget.currentUserMaxLvl) {
+          adjustPlayerLevel();
+          isLevelCompleted = true;
+        }
         setState(() => started = false);
         stopTimer(reset: false);
-        if (widget.level == widget.currentUserMaxLvl) {
-          widget.currentMartialArt == 'boxing'
-              ? userProvider.updateUserInfo(
-                  widget.userId, {'currentMaxLevelB': widget.level + 1})
-              : userProvider.updateUserInfo(
-                  widget.userId, {'currentMaxLevelKb': widget.level + 1});
-          isLevelCompleted = true;
-          SnackbarHelper.showSnackbarSuccess(
-            context,
-            'Level ${widget.level + 1} unlocked',
-            'Good Job!',
-          );
-        }
       }
     });
+  }
+
+  adjustPlayerLevel() async {
+    if (widget.level == widget.currentUserMaxLvl) {
+      widget.currentMartialArt == 'boxing'
+          ? await userProvider.updateUserInfo(
+              widget.userId, {'currentMaxLevelB': widget.level + 1})
+          : await userProvider.updateUserInfo(
+              widget.userId, {'currentMaxLevelKb': widget.level + 1});
+
+      await SnackbarHelper.showSnackbarSuccess(
+        context,
+        'Level ${widget.level + 1} unlocked',
+        'Good Job!',
+      );
+    }
   }
 
   @override
@@ -252,15 +266,24 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     '1': 'Jab',
     'b1': 'Jab Body',
     'j1': 'Leaping Jab',
+    '1j': 'Leaping Jab',
     '2': 'Cross',
     'b2': 'Cross Body',
+    '2b': 'Cross Body',
     '3': 'Left Hook',
     'b3': 'Left Hook Body',
+    '3b': 'Left Hook Body',
     'j3': 'Leaping Left Hook',
+    '3j': 'Leaping Left Hook',
     '4': 'Right Hook',
     'b4': 'Right Hook Body',
+    '4b': 'Right Hook Body',
     '5': 'Left Uppercut',
+    '5b': 'Left Uppercut Body',
+    'b5': 'Left Uppercut Body',
     '6': 'Right Uppercut',
+    '6b': 'Right Uppercut Body',
+    'b6': 'Right Uppercut Body',
     'flk': 'Front Low Kick',
     'fmk': 'Front Middle Kick',
     'fhk': 'Front High Kick',
@@ -335,7 +358,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                       wordsFromNumbsString,
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 40),
+                    SizedBox(height: 20),
                     darkMode
                         ? buildTimer(
                             previousScreen,
@@ -361,7 +384,6 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                             Color.fromARGB(255, 223, 235, 237),
                             Color(0xff023E8A),
                             context),
-                    SizedBox(height: 10),
                     buildButtons(
                         timer,
                         secs,

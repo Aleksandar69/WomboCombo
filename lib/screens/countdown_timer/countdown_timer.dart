@@ -128,7 +128,6 @@ class _CountdownTimerState extends State<CountdownTimer>
     final restMins = args[2];
     final restSecs = args[3];
     final rnds = args[4] + 1;
-    print('runde:  $rnds');
     previousScreen = args[5] as String;
     trainingLevel = args[6] as String;
     customCombos = args[7] as List;
@@ -147,7 +146,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     } else if (trainingLevel == 'Intermediate' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
-      currentAttacks = Combinations.advancedBoxing;
+      currentAttacks = Combinations.intermediateBoxing;
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
@@ -210,7 +209,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     flutterTts = FlutterTts();
     await flutterTts.setLanguage(language!);
     await flutterTts.setEngine(engine!);
-    await flutterTts.setSpeechRate(0.7);
+    await flutterTts.setSpeechRate(0.5);
 
     List<dynamic> voices = await flutterTts.getVoices;
 
@@ -475,7 +474,7 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   Timer? timerAttacks;
 
-  void startSpeakTimer() {
+  void startSpeakTimer() async {
     futureTimerHasEnded = false;
 
     if (previousScreen == 'fromMakeYourComboScreen') {
@@ -490,7 +489,12 @@ class _CountdownTimerState extends State<CountdownTimer>
       });
     } else if (trainingLevel == 'Beginner' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+      timerAttacks = Timer.periodic(
+          Duration(seconds: selectedMartialArt == "boxing" ? 5 : 5), (_) async {
+        selectedMartialArt == "boxing"
+            ? await flutterTts.setSpeechRate(0.6)
+            : await flutterTts.setSpeechRate(0.6);
+
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
@@ -501,33 +505,49 @@ class _CountdownTimerState extends State<CountdownTimer>
       });
     } else if (trainingLevel == 'Intermediate' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+      timerAttacks = Timer.periodic(
+          Duration(milliseconds: selectedMartialArt == "boxing" ? 6000 : 7000),
+          (_) async {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
         currentTerm = currentTerms;
+        selectedMartialArt == "boxing"
+            ? await flutterTts.setSpeechRate(0.5)
+            : await flutterTts.setSpeechRate(0.5);
+
         _speak();
         futureTimerHasEnded = true;
         timerAttacks?.cancel();
       });
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(milliseconds: 5000), (_) {
+      timerAttacks = Timer.periodic(
+          Duration(milliseconds: selectedMartialArt == "boxing" ? 6300 : 8200),
+          (_) async {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
         currentTerm = currentTerms;
+        selectedMartialArt == "boxing"
+            ? await flutterTts.setSpeechRate(0.45)
+            : await flutterTts.setSpeechRate(0.35);
         _speak();
         futureTimerHasEnded = true;
         timerAttacks?.cancel();
       });
     } else if (trainingLevel == 'Nightmare' &&
         previousScreen == 'fromQuickCombos') {
-      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+      timerAttacks = Timer.periodic(
+          Duration(milliseconds: selectedMartialArt == "boxing" ? 7500 : 9400),
+          (_) async {
         var rng = Random();
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
         currentTerm = currentTerms;
+        selectedMartialArt == "boxing"
+            ? await flutterTts.setSpeechRate(0.45)
+            : await flutterTts.setSpeechRate(0.35);
         _speak();
         futureTimerHasEnded = true;
         timerAttacks?.cancel();

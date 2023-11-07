@@ -42,6 +42,7 @@ class _FriendListState extends State<FriendList> {
   var fetchedFriendsRequests;
   var groupChatId;
   List messages = [];
+  var friendsAndMessages = {};
 
   getFriendList() async {
     currentUserId = authProvider.userId;
@@ -90,6 +91,7 @@ class _FriendListState extends State<FriendList> {
       noOfMessages = message.size;
       messages.add(noOfMessages);
     }
+
     setState(() {
       isLoading = false;
     });
@@ -247,25 +249,28 @@ class _FriendListState extends State<FriendList> {
                                                 MainAxisAlignment.end,
                                             children: [
                                               IconButton(
-                                                icon: Icon(
-                                                  Icons.messenger_outline,
-                                                  color: Colors.blue,
-                                                ),
-                                                color: Theme.of(context)
-                                                    .errorColor,
-                                                onPressed: () =>
+                                                  icon: Icon(
+                                                    Icons.messenger_outline,
+                                                    color: Colors.blue,
+                                                  ),
+                                                  color: Theme.of(context)
+                                                      .errorColor,
+                                                  onPressed: () {
                                                     Navigator.of(context)
                                                         .pushNamed(
-                                                  ChatScreen.routeName,
-                                                  arguments: [
-                                                    friendData[index]
-                                                        ['username'],
-                                                    friendData[index]
-                                                        ['image_url'],
-                                                    friendData[index].id,
-                                                  ],
-                                                ),
-                                              ),
+                                                      ChatScreen.routeName,
+                                                      arguments: [
+                                                        friendData[index]
+                                                            ['username'],
+                                                        friendData[index]
+                                                            ['image_url'],
+                                                        friendData[index].id
+                                                      ],
+                                                    );
+                                                    setState(() {
+                                                      messages[index] = 0;
+                                                    });
+                                                  }),
                                               IconButton(
                                                   onPressed: () {
                                                     _delete(

@@ -36,6 +36,38 @@ Widget buildTimer(previousScreen, started, secs, maxSeconds, initialCountdown,
               ],
       ),
     );
+  } else if (previousScreen == 'fromCombosScreen') {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.40,
+      height: MediaQuery.of(context).size.width * 0.40,
+      child: Stack(
+        fit: StackFit.expand,
+        children: started
+            ? [
+                CircularProgressIndicator(
+                  value: secs / (maxSeconds), // 1 - seconds / maxSeconds
+                  valueColor: AlwaysStoppedAnimation(color1),
+                  strokeWidth: 12,
+                  backgroundColor: color2,
+                ),
+                Center(
+                    child: buildTime(secs, previousScreen, started,
+                        initialCountdown, currentTerm, color3, context)),
+              ]
+            : [
+                CircularProgressIndicator(
+                  value: initialCountdown /
+                      initialCountdownMax, // 1 - seconds / maxSeconds
+                  valueColor: AlwaysStoppedAnimation(color1),
+                  strokeWidth: 12,
+                  backgroundColor: color2,
+                ),
+                Center(
+                    child: buildTime(secs, previousScreen, started,
+                        initialCountdown, currentTerm, color3, context)),
+              ],
+      ),
+    );
   } else {
     return started
         ? Column(

@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wombocombo/models/user.dart';
 
 class UserRepository {
-  updateUserInfo(String userId, updateData) {
-    FirebaseFirestore.instance
+  updateUserInfo(String userId, updateData) async {
+    await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .update(updateData);
