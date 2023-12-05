@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/screens/countdown_timer/set_timer_screen.dart';
@@ -10,6 +11,7 @@ import 'package:wombocombo/screens/make_your_combo/make_your_combo_screen.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
 import 'package:wombocombo/screens/think_on_your_feet/strikes_mapping.dart';
 import 'package:wombocombo/screens/think_on_your_feet/choose_martial_art_screen.dart';
+import 'package:wombocombo/widgets/api/purchase_api.dart';
 import '../presentation/custom_icons_icons.dart';
 import '../screens/combos/choose_martial_art.dart';
 
@@ -59,8 +61,24 @@ class GridDashboard extends StatelessWidget {
     subtitle: "Questions and Answers",
     img: Icons.question_mark_outlined,
   );
+  Items item9 = new Items(
+    title: "test payment",
+    subtitle: "lessgo",
+    img: Icons.monetization_on_outlined,
+  );
   @override
   Widget build(BuildContext context) {
+    fetchOffers() async {
+      final offerings = await PurchaseApi.fetchOffers();
+
+      if (offerings.isEmpty) {
+        SnackbarHelper.showSnackbarError(context, 'No plans found', 'Oops!');
+      } else {
+        final offer = offerings.first;
+        print('Offer: $offer');
+      }
+    }
+
     List<Items> myMenuItems = [
       item1,
       item2,
@@ -69,7 +87,8 @@ class GridDashboard extends StatelessWidget {
       item5,
       item6,
       item7,
-      item8
+      item8,
+      //  item9
     ];
     return Flexible(
       child: Consumer<ThemeNotifier>(builder: (context, value, child) {
@@ -105,6 +124,11 @@ class GridDashboard extends StatelessWidget {
                   } else if (data.title == "FAQ") {
                     Navigator.of(context).pushNamed(
                       FAQScreen.routeName,
+                    );
+                  } else if (data.title == "test") {
+                    ElevatedButton(
+                      onPressed: fetchOffers,
+                      child: Text('eyy'),
                     );
                   }
                 },

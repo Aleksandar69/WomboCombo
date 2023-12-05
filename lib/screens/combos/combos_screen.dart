@@ -7,12 +7,14 @@ import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/dark_mode_notifier.dart';
-import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
-import 'package:wombocombo/screens/combos/training_levels.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
 import 'package:wombocombo/widgets/timer/build_timer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
+import 'dart:ui' as ui;
+import 'package:after_layout/after_layout.dart';
+import '../../widgets/buttons/timer_button.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class CombosScreen extends StatefulWidget {
   static const routeName = '/combos';
@@ -52,11 +54,15 @@ class _CombosScreenState extends State<CombosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final orientation =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       key: const ValueKey<String>('home_page'),
-      appBar: AppBar(
-        title: Text(' Level ${currentLevel.toString()}'),
-      ),
+      appBar: orientation
+          ? AppBar(
+              title: Text(' Level ${currentLevel.toString()}'),
+            )
+          : null,
       body: Column(
         children: [
           Expanded(
@@ -67,6 +73,104 @@ class _CombosScreenState extends State<CombosScreen> {
       ),
     );
   }
+}
+
+OverlayEntry _getEntry(context) {
+  late OverlayEntry entry;
+  String previousScreen = 'fromCombosScreen';
+  var started = false;
+  var maxSeconds = 180;
+  late int secs = maxSeconds;
+  int initialCountdownMax = 3;
+  late int initialCountdown = initialCountdownMax;
+  String currentTerm = 'none';
+  var darkMode = true;
+  var currentStage = 1;
+
+  entry = OverlayEntry(
+    opaque: false,
+    maintainState: true,
+    builder: (_) => BackdropFilter(
+      filter: ui.ImageFilter.blur(
+        sigmaX: 4,
+        sigmaY: 4,
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            if (currentStage == 1)
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: AspectRatio(
+                  aspectRatio:
+                      _FighterVideoRemoteState._controller.value.aspectRatio,
+                  child: VideoPlayer(_FighterVideoRemoteState._controller),
+                ),
+              ),
+            if (currentStage == 1)
+              Text(
+                _FighterVideoRemoteState.wordsFromNumbsString,
+                textAlign: TextAlign.center,
+              ),
+            SizedBox(height: 20),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              height: MediaQuery.of(context).size.width * 0.40,
+              child: Stack(fit: StackFit.expand, children: [
+                CircularProgressIndicator(
+                  color: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                  value: initialCountdown /
+                      initialCountdownMax, // 1 - seconds / maxSeconds
+                  strokeWidth: 12,
+                ),
+                Center(),
+              ]),
+            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.09,
+                      width: MediaQuery.of(context).size.width * 0.18,
+                      child: RawMaterialButton(
+                        onPressed: () {},
+                        elevation: 2.0,
+                        shape: CircleBorder(eccentricity: 0.4),
+                        fillColor: Colors.transparent,
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  child: ButtonWidget(
+                    previousScreen: "fromCombosScreen",
+                    text: 'Reset',
+                    backgroundColor: Colors.transparent,
+                    color: Colors.transparent,
+                    onClicked: () {},
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 5),
+          ],
+        ),
+      ),
+    ),
+  );
+  return entry;
 }
 
 class _FighterVideoRemote extends StatefulWidget {
@@ -83,8 +187,15 @@ class _FighterVideoRemote extends StatefulWidget {
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
 
-class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
-  late VideoPlayerController _controller;
+class _FighterVideoRemoteState extends State<_FighterVideoRemote>
+    with AfterLayoutMixin<_FighterVideoRemote> {
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
+  final GlobalKey _five = GlobalKey();
+
+  static late VideoPlayerController _controller;
   late UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
   var isLoading = true;
@@ -111,14 +222,22 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
   }
 
   @override
+  void afterFirstLayout(BuildContext context) async {
+    //await Future.delayed(Duration(milliseconds: 1000));
+    //Overlay.of(context).insert(_getEntry(context));
+  }
+
+  @override
   void initState() {
     super.initState();
     _loadAndPlay();
+    // WidgetsBinding.instance.addPostFrameCallback(
+    //     (_) => ShowCaseWidget.of(context).startShowCase([_one]));
   }
 
   String previousScreen = 'fromCombosScreen';
   var started = false;
-  var maxSeconds = 4;
+  var maxSeconds = 180;
   late int secs = maxSeconds;
   int initialCountdownMax = 3;
   late int initialCountdown = initialCountdownMax;
@@ -303,15 +422,18 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
     'el': 'Evade Left',
     'er': 'Evade Right',
   };
+  static var wordsFromNumbsString;
+  static var darkMode;
 
   @override
   Widget build(BuildContext context) {
+    final orientation =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     var numbersSplit = widget.combo.split('-');
     List wordsFromNums = [];
     for (var i = 0; i < numbersSplit.length; i++) {
       wordsFromNums.add(comboMapping[numbersSplit[i]]);
     }
-    var wordsFromNumbsString;
     wordsFromNumbsString = wordsFromNums.join('->');
     return SingleChildScrollView(
       child: WillPopScope(
@@ -342,22 +464,38 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote> {
                 ),
               )
             : r.Consumer(builder: (context, ref, child) {
-                var darkMode = ref.watch(darkModeProvider);
+                darkMode = ref.watch(darkModeProvider);
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
                       padding: const EdgeInsets.all(20),
+                      height: orientation
+                          ? null
+                          : MediaQuery.of(context).size.height * 0.9,
+                      width: orientation
+                          ? null
+                          : MediaQuery.of(context).size.width * 0.70,
                       child: AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
                         child: VideoPlayer(_controller),
                       ),
                     ),
-                    Text(
-                      wordsFromNumbsString,
-                      textAlign: TextAlign.center,
-                    ),
+                    // Showcase(
+                    //   key: _four,
+                    //   description: 'test test',
+                    //   child: Text(
+                    //     wordsFromNumbsString,
+                    //     textAlign: TextAlign.center,
+                    //   ),
+                    // ),
+                    ElevatedButton(
+                        onPressed: () {
+                          ShowCaseWidget.of(context)
+                              .startShowCase([_one, _two, _three]);
+                        },
+                        child: Text('asd')),
                     SizedBox(height: 20),
                     darkMode
                         ? buildTimer(

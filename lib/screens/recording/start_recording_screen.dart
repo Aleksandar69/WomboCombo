@@ -201,8 +201,6 @@ class _StartRecordingState extends State<StartRecording> {
                           children: [
                             Container(
                               child: Container(
-                                  height: 640,
-                                  width: 360,
                                   child: MyRecordedRemoteVideo(
                                       _convertedVideo, false, false, true)),
                             ),

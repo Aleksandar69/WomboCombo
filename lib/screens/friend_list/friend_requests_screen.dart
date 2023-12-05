@@ -123,6 +123,7 @@ class _FriendRequestsState extends State<FriendRequests> {
                                               friendRequestUser[index]['id']);
                                           setState(() {
                                             friendRequestData.removeAt(index);
+                                            friendRequestUser.removeAt(index);
                                           });
 
                                           SnackbarHelper.showSnackbarSuccess(
@@ -141,6 +142,7 @@ class _FriendRequestsState extends State<FriendRequests> {
 
                                           setState(() {
                                             friendRequestData.removeAt(index);
+                                            friendRequestUser.removeAt(index);
                                           });
 
                                           SnackbarHelper.showSnackbarSuccess(

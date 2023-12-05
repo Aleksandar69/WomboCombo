@@ -213,7 +213,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
             return RawMaterialButton(
               onPressed: () {
                 if (_minutesController.selectedItem <= 0 &&
-                    _secondsController.selectedItem < 5) {
+                    _secondsController.selectedItem < 15) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('A round must be at least 15 seconds long'),

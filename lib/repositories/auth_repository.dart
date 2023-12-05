@@ -64,6 +64,14 @@ class AuthRepository {
       'currentMaxLevelB': 1,
       'currentMaxLevelKb': 1,
       'isTrainer': false,
+      'isSubscribed': false,
+      'subDate': "",
+      'firstTimeCombosScreen': true,
+      'firstTimeRecordScreen': true,
+      'firstTimeMakeComboScreen': true,
+      'firstTimeThinkQuick': true,
+      'firstTimeLeaderBoard': true,
+      'FfirstTimeFriendList': true,
     });
     return authResult;
   }

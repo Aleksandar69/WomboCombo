@@ -102,25 +102,39 @@ class _FriendListState extends State<FriendList> {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: const Text('Please Confirm'),
-            content: const Text('Remove user from friend list?'),
+            title: const Text('Please Confirm',
+                style: TextStyle(color: Colors.white)),
+            content: const Text('Remove user from friend list?',
+                style: TextStyle(color: Colors.white)),
+            backgroundColor: Color(0xff4285F4),
             actions: [
               TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Color(0xff0E1D36))),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child:
+                      const Text('No', style: TextStyle(color: Colors.white))),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Color(0xff0E1D36))),
                   onPressed: () {
                     friendProvider.deleteFriend(id);
                     Navigator.of(context).pop();
                     setState(() {
                       friendData.removeAt(index);
+                      friendsMerged.removeAt(index);
                     });
                     SnackbarHelper.showSnackbarSuccess(
                         context, '', 'User succesfully removed');
                   },
-                  child: const Text('Yes')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('No'))
+                  child: const Text(
+                    'Yes',
+                    style: TextStyle(color: Colors.white),
+                  )),
             ],
           );
         });

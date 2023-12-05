@@ -147,6 +147,16 @@ class _CountdownTimerState extends State<CountdownTimer>
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
       currentAttacks = Combinations.intermediateBoxing;
+      currentAttacks = [
+        '1, 1, 2, 3',
+        '3, 3, 4, 5, 3',
+        '1, 2, b3, 3, 4',
+        '1, 1, 4, 3, 4',
+        '1, 3, 6, 3',
+        '2, 5, 4, 3',
+        'b3, b4, 3, 4',
+        '3, b4, 5, 4'
+      ];
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
@@ -162,7 +172,19 @@ class _CountdownTimerState extends State<CountdownTimer>
     } else if (trainingLevel == 'Intermediate' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'kickboxing') {
-      currentAttacks = Combinations.intermediateKickboxing;
+      // currentAttacks = Combinations.intermediateKickboxing;
+      currentAttacks = [
+        '1, 1, 4, Front Low Kick',
+        '1, 2, 3, Rear Mid Kick',
+        '1, 1, 2, Front Mid Kick',
+        '3, Rear Mid Kick, 3, Rear High Kick',
+        'Rear Mid Kick, 2, 3',
+        'Left Low Kick, 2, 3, 6',
+        '3, 4, Left Low Kick, 4',
+        'b3, 3, Rear Low Kick, 3',
+        '1, 2, b3, Rear Knee Body',
+        '1, 1, Rear Body Kick, 3',
+      ];
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'kickboxing') {
@@ -424,14 +446,16 @@ class _CountdownTimerState extends State<CountdownTimer>
               totalPts = 1;
             }
           }
-          if (totalPts == 1) {
-            SnackbarHelper.showSnackbarSuccess(
-                context, "You've earned ${totalPts} point", "Good job!");
-          } else {
-            SnackbarHelper.showSnackbarSuccess(
-                context, "You've earned ${totalPts} points", "Good job!");
+          if (previousScreen == 'fromQuickCombos' ||
+              previousScreen == 'fromMakeYourComboScreen') {
+            if (totalPts == 1) {
+              SnackbarHelper.showSnackbarSuccess(
+                  context, "You've earned ${totalPts} point", "Good job!");
+            } else {
+              SnackbarHelper.showSnackbarSuccess(
+                  context, "You've earned ${totalPts} points", "Good job!");
+            }
           }
-
           // ScaffoldMessenger.of(context).showSnackBar(
           //   SnackBar(
           //     content: Text(pointsEarnedText),
@@ -478,8 +502,9 @@ class _CountdownTimerState extends State<CountdownTimer>
     futureTimerHasEnded = false;
 
     if (previousScreen == 'fromMakeYourComboScreen') {
-      timerAttacks = Timer.periodic(Duration(seconds: 5), (_) {
+      timerAttacks = Timer.periodic(Duration(milliseconds: 7300), (_) async {
         var rng = Random();
+        await flutterTts.setSpeechRate(0.5);
         var currentTerms =
             currentAttacks[rng.nextInt(currentAttacks.length)].toString();
         currentTerm = currentTerms;

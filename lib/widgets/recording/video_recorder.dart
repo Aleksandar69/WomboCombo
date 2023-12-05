@@ -67,11 +67,11 @@ class _VideoRecorderState extends State<VideoRecorder>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
 
-  static const countdownDuration = Duration(seconds: 15);
+  static const countdownDuration = Duration(seconds: 60);
   Duration duration = Duration();
   Timer? timer;
   bool countDown = true;
-  Duration startCountdownDuration = Duration(seconds: 3);
+  Duration startCountdownDuration = Duration(seconds: 10);
   Duration startDuration = Duration();
   Timer? initialTimer;
   var isInitialCountdownVisible = true;
