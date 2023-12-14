@@ -71,7 +71,8 @@ class AuthRepository {
       'firstTimeMakeComboScreen': true,
       'firstTimeThinkQuick': true,
       'firstTimeLeaderBoard': true,
-      'FfirstTimeFriendList': true,
+      'firstTimeFriendList': true,
+      'firstTimeMenu': true,
     });
     return authResult;
   }

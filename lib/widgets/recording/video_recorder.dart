@@ -10,6 +10,7 @@ import 'package:video_player/video_player.dart';
 import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 /// Camera example home widget.
 class VideoRecorder extends StatefulWidget {
@@ -66,6 +67,11 @@ class _VideoRecorderState extends State<VideoRecorder>
   double _maxAvailableZoom = 1.0;
   double _currentScale = 1.0;
   double _baseScale = 1.0;
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
+  final GlobalKey _five = GlobalKey();
 
   static const countdownDuration = Duration(seconds: 60);
   Duration duration = Duration();
@@ -111,8 +117,13 @@ class _VideoRecorderState extends State<VideoRecorder>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
+
     playerSetSource();
     reset();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(showcaseContext)
+            .startShowCase([_one, _two, _three, _four, _five]));
   }
 
   void playBell() async {
@@ -231,64 +242,122 @@ class _VideoRecorderState extends State<VideoRecorder>
       _initializeCameraController(cameraController.description);
     }
   }
+
   // #enddocregion AppLifecycle
+  late BuildContext showcaseContext;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Record your training session'),
+        title: const Text(' training session'),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black,
-                border: Border.all(
-                  color:
-                      controller != null && controller!.value.isRecordingVideo
+      body: ShowCaseWidget(
+        blurValue: 1,
+        disableBarrierInteraction: true,
+        builder: Builder(builder: (context) {
+          showcaseContext = context;
+          return Column(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: controller != null &&
+                              controller!.value.isRecordingVideo
                           ? Colors.redAccent
                           : Colors.grey,
-                  width: 3.0,
+                      width: 3.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Stack(children: [
+                      Showcase.withWidget(
+                        container: Column(
+                          children: [
+                            Container(
+                              width: 250,
+                              child: Text(
+                                'Recording starts after the 10 sec countown finishes. Show your skills!',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ShowCaseWidget.of(context).next();
+                                },
+                                child: Text("Watch me!")),
+                          ],
+                        ),
+                        height: 150,
+                        width: 150,
+                        key: _three,
+                        child: Center(
+                          child: _cameraPreviewWidget(),
+                        ),
+                      ),
+                      if (isInitialCountdownVisible && isStarted)
+                        Center(
+                          child: Text(
+                            startDuration.inSeconds.toString(),
+                            style: TextStyle(
+                                fontSize: 80,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: buildTime(),
+                      ),
+                    ]),
+                  ),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(1.0),
-                child: Stack(children: [
-                  Center(
-                    child: _cameraPreviewWidget(),
-                  ),
-                  if (isInitialCountdownVisible && isStarted)
-                    Center(
-                      child: Text(
-                        startDuration.inSeconds.toString(),
-                        style: TextStyle(
-                            fontSize: 80,
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold),
+              _captureControlRowWidget(),
+              _modeControlRowWidget(),
+              Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  children: <Widget>[
+                    Text("Cameras:", style: TextStyle(fontSize: 14)),
+                    Showcase.withWidget(
+                      container: Column(
+                        children: [
+                          Container(
+                            width: 400,
+                            child: Text('Select one of the available cameras',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 16)),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                ShowCaseWidget.of(context).next();
+                              },
+                              child: Text('Alright')),
+                        ],
                       ),
+                      height: 250,
+                      width: 250,
+                      key: _one,
+                      child: _cameraTogglesRowWidget(),
                     ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: buildTime(),
-                  ),
-                ]),
+                    // _cameraTogglesRowWidget(),
+                  ],
+                ),
               ),
-            ),
-          ),
-          _captureControlRowWidget(),
-          _modeControlRowWidget(),
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Row(
-              children: <Widget>[
-                Text("Available Cameras:"),
-                _cameraTogglesRowWidget(),
-              ],
-            ),
-          ),
-        ],
+            ],
+          );
+        }),
       ),
     );
   }
@@ -527,14 +596,34 @@ class _VideoRecorderState extends State<VideoRecorder>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.videocam),
-          color: Colors.blue,
-          onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
-              ? onVideoRecordButtonPressed
-              : null,
+        Showcase.withWidget(
+          targetBorderRadius: BorderRadius.circular(35),
+          container: Column(
+            children: [
+              Text('Click on record button to start recording',
+                  textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    ShowCaseWidget.of(showcaseContext).next();
+                  },
+                  child: Text('Okay')),
+            ],
+          ),
+          height: 150,
+          width: 150,
+          key: _two,
+          child: IconButton(
+            icon: const Icon(Icons.videocam),
+            color: Colors.blue,
+            onPressed: cameraController != null &&
+                    cameraController.value.isInitialized &&
+                    !cameraController.value.isRecordingVideo
+                ? onVideoRecordButtonPressed
+                : null,
+          ),
         ),
         IconButton(
           icon: cameraController != null &&
@@ -581,11 +670,18 @@ class _VideoRecorderState extends State<VideoRecorder>
       });
       return const Text('None');
     } else {
+      var frontCameraAdded = false;
+      var backCameraAdded = false;
       for (final CameraDescription cameraDescription in _cameras) {
-        if (toggles.length < 2) {
+        var isFront =
+            cameraDescription.lensDirection == CameraLensDirection.front;
+        if ((cameraDescription.lensDirection == CameraLensDirection.front &&
+                !frontCameraAdded) ||
+            (cameraDescription.lensDirection == CameraLensDirection.back &&
+                !backCameraAdded)) {
           toggles.add(
             SizedBox(
-              width: 90.0,
+              width: 130.0,
               child: RadioListTile<CameraDescription>(
                 title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
                 groupValue: controller?.description,
@@ -594,7 +690,14 @@ class _VideoRecorderState extends State<VideoRecorder>
               ),
             ),
           );
-        }
+          if (cameraDescription.lensDirection == CameraLensDirection.front) {
+            frontCameraAdded = true;
+          } else if (cameraDescription.lensDirection ==
+              CameraLensDirection.back) {
+            backCameraAdded = true;
+          }
+        } else if (cameraDescription.lensDirection ==
+            CameraLensDirection.external) {}
       }
     }
 

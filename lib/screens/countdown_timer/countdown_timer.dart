@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../widgets/timer/build_timer.dart';
 import '../../utils/combinations.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import 'package:wakelock/wakelock.dart';
 
@@ -25,6 +26,12 @@ enum TtsState { playing, stopped, paused, continued }
 
 class _CountdownTimerState extends State<CountdownTimer>
     with WidgetsBindingObserver {
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
+  final GlobalKey _five = GlobalKey();
+
   var currentAttacks = [];
   var currentUserId;
   late final AuthProvider authProvider =
@@ -147,19 +154,17 @@ class _CountdownTimerState extends State<CountdownTimer>
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
       currentAttacks = Combinations.intermediateBoxing;
-      currentAttacks = [
-        '1, 1, 2, 3',
-        '3, 3, 4, 5, 3',
-        '1, 2, b3, 3, 4',
-        '1, 1, 4, 3, 4',
-        '1, 3, 6, 3',
-        '2, 5, 4, 3',
-        'b3, b4, 3, 4',
-        '3, b4, 5, 4'
-      ];
+      // currentAttacks = [
+      //   '1, 1, 2, 3',
+      //   '1, 2, b3, 4',
+      //   '2, 3, 6, 3',
+      //   '3, b3, 3, 2'
+      // ];
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'boxing') {
+      //currentAttacks = ['1, 1, 2, 3, 6, 3, b4, 3', '1, 3, 2, b3, 4, 3, 6, 3'];
+
       currentAttacks = Combinations.advancedBoxing;
     } else if (trainingLevel == 'Nightmare' &&
         previousScreen == 'fromQuickCombos' &&
@@ -172,19 +177,12 @@ class _CountdownTimerState extends State<CountdownTimer>
     } else if (trainingLevel == 'Intermediate' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'kickboxing') {
-      // currentAttacks = Combinations.intermediateKickboxing;
-      currentAttacks = [
-        '1, 1, 4, Front Low Kick',
-        '1, 2, 3, Rear Mid Kick',
-        '1, 1, 2, Front Mid Kick',
-        '3, Rear Mid Kick, 3, Rear High Kick',
-        'Rear Mid Kick, 2, 3',
-        'Left Low Kick, 2, 3, 6',
-        '3, 4, Left Low Kick, 4',
-        'b3, 3, Rear Low Kick, 3',
-        '1, 2, b3, Rear Knee Body',
-        '1, 1, Rear Body Kick, 3',
-      ];
+      currentAttacks = Combinations.intermediateKickboxing;
+      //currentAttacks = [
+      //   '1, 1, 2, Front Mid Kick',
+      //   '1, 2, 3, Rear Low Kick',
+      //   '1, b1, 1, Rear Rear Mid Kick',
+      // ];
     } else if (trainingLevel == 'Advanced' &&
         previousScreen == 'fromQuickCombos' &&
         selectedMartialArt == 'kickboxing') {
@@ -202,7 +200,8 @@ class _CountdownTimerState extends State<CountdownTimer>
     secs = maxSeconds;
     rounds = maxRounds;
     playerSetSource();
-    startTimer();
+    //startTimer();
+
     super.didChangeDependencies();
   }
 
@@ -225,6 +224,14 @@ class _CountdownTimerState extends State<CountdownTimer>
     initTts();
     WidgetsBinding.instance.addObserver(this);
     getUser();
+    startShowCase();
+  }
+
+  startShowCase() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      ShowCaseWidget.of(showcaseContext)
+          .startShowCase([_one, _two, _three, _four, _five]);
+    });
   }
 
   initTts() async {
@@ -580,6 +587,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     }
   }
 
+  late BuildContext showcaseContext;
   @override
   Widget build(BuildContext context) => Scaffold(
         body: WillPopScope(
@@ -591,50 +599,206 @@ class _CountdownTimerState extends State<CountdownTimer>
             return false;
           },
           child: GradientWidget(
-            child: Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
+            child: ShowCaseWidget(
+              blurValue: 1,
+              disableBarrierInteraction: true,
+              builder: Builder(builder: (context) {
+                showcaseContext = context;
+                return Center(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        child: Text(
+                          'Round $currentRound',
+                          style: TextStyle(fontSize: 30, color: Colors.white),
+                        ),
+                      ),
+                      Showcase.withWidget(
+                        blurValue: 1,
+                        key: _three,
+                        container: Column(
+                          children: [
+                            Container(
+                              width: 300,
+                              child: Text(
+                                'Listen to the combinations and repeat them in real time',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ShowCaseWidget.of(context).next();
+                                },
+                                child: Text('Will do')),
+                          ],
+                        ),
+                        height: 20,
+                        width: 200,
+                        child: SizedBox(
+                          height: 0,
+                        ),
+                      ),
+                      Showcase.withWidget(
+                        blurValue: 1,
+                        key: _two,
+                        container: Column(
+                          children: [
+                            Container(
+                              width: 300,
+                              child: Text(
+                                'When the timer starts, leave your phone where you can hear it, or use your headphones',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ShowCaseWidget.of(context).next();
+                                  stopTimer();
+                                },
+                                child: Text('Okay, if I must...')),
+                          ],
+                        ),
+                        height: 300,
+                        width: 300,
+                        child: SizedBox(
+                          height: 0,
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            stopTimer();
+                            ShowCaseWidget.of(context).startShowCase(
+                                [_one, _two, _three, _four, _five]);
+                          },
+                          child: Text('asd')),
+                      buildTimer(
+                          previousScreen,
+                          started,
+                          secs,
+                          maxSeconds,
+                          initialCountdown,
+                          currentTerm,
+                          initialCountdownMax,
+                          Colors.white,
+                          Colors.green,
+                          Colors.white,
+                          context),
+                      Showcase.withWidget(
+                        blurValue: 1,
+                        key: _one,
+                        container: Column(
+                          children: [
+                            Container(
+                              width: 300,
+                              child: Text(
+                                "Hey There! We'll let you get back to your training in a second, we promise!",
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ShowCaseWidget.of(showcaseContext).next();
+                                  stopTimer();
+                                },
+                                child: Text('Hurry up')),
+                          ],
+                        ),
+                        height: 300,
+                        width: 300,
+                        child: SizedBox(
+                          height: 0,
+                        ),
+                      ),
+                      Showcase.withWidget(
+                        blurValue: 1,
+                        key: _four,
+                        container: Column(
+                          children: [
+                            Container(
+                              width: 300,
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(children: [
+                                  TextSpan(
+                                      text:
+                                          'When you finish your training session, you will earn',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold)),
+                                  TextSpan(
+                                      text: ' WomboCombo',
+                                      style: TextStyle(
+                                          color: Colors.amber,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold)),
+                                  TextSpan(
+                                      text:
+                                          ' points based on the difficulty and training duration!',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold))
+                                ]),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ShowCaseWidget.of(context).next();
+                                  startTimer();
+                                },
+                                child: Text('Let me train already!')),
+                          ],
+                        ),
+                        height: 20,
+                        width: 300,
+                        child: SizedBox(
+                          height: 0,
+                        ),
+                      ),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.1),
+                      buildButtons(
+                          timer,
+                          secs,
+                          maxSeconds,
+                          timerAttacks,
+                          stopTimer,
+                          startTimer,
+                          previousScreen,
+                          startSpeakTimer,
+                          isRunning,
+                          resetTimer,
+                          'countdownTimer',
+                          _one,
+                          context),
+                    ],
                   ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    child: Text(
-                      'Round $currentRound',
-                      style: TextStyle(fontSize: 30, color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.05,
-                  ),
-                  buildTimer(
-                      previousScreen,
-                      started,
-                      secs,
-                      maxSeconds,
-                      initialCountdown,
-                      currentTerm,
-                      initialCountdownMax,
-                      Colors.white,
-                      Colors.green,
-                      Colors.white,
-                      context),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                  buildButtons(
-                      timer,
-                      secs,
-                      maxSeconds,
-                      timerAttacks,
-                      stopTimer,
-                      startTimer,
-                      previousScreen,
-                      startSpeakTimer,
-                      isRunning,
-                      resetTimer,
-                      'countdownTimer',
-                      context),
-                ],
-              ),
+                );
+              }),
             ),
           ),
         ),

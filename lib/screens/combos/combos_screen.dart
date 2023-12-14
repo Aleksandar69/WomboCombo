@@ -63,13 +63,25 @@ class _CombosScreenState extends State<CombosScreen> {
               title: Text(' Level ${currentLevel.toString()}'),
             )
           : null,
-      body: Column(
-        children: [
-          Expanded(
-            child: _FighterVideoRemote(videoUrl, combo, currentLevel, videoId,
-                currentUserId, currentUserMaxLvl, currentMartialArt),
+      body: ShowCaseWidget(
+        blurValue: 1,
+        disableBarrierInteraction: true,
+        builder: Builder(
+          builder: (context) => Column(
+            children: [
+              Expanded(
+                child: _FighterVideoRemote(
+                    videoUrl,
+                    combo,
+                    currentLevel,
+                    videoId,
+                    currentUserId,
+                    currentUserMaxLvl,
+                    currentMartialArt),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -231,8 +243,9 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
   void initState() {
     super.initState();
     _loadAndPlay();
-    // WidgetsBinding.instance.addPostFrameCallback(
-    //     (_) => ShowCaseWidget.of(context).startShowCase([_one]));
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+        ShowCaseWidget.of(context)
+            .startShowCase([_one, _two, _three, _four, _five]));
   }
 
   String previousScreen = 'fromCombosScreen';
@@ -469,59 +482,174 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      height: orientation
-                          ? null
-                          : MediaQuery.of(context).size.height * 0.9,
-                      width: orientation
-                          ? null
-                          : MediaQuery.of(context).size.width * 0.70,
-                      child: AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
+                    Showcase.withWidget(
+                      container: Column(
+                        children: [
+                          Text('Watch Greg do the combo'),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                ShowCaseWidget.of(context).next();
+                              },
+                              child: Text('Alright')),
+                        ],
+                      ),
+                      height: 150,
+                      width: 150,
+                      key: _two,
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        height: orientation
+                            ? null
+                            : MediaQuery.of(context).size.height * 0.9,
+                        width: orientation
+                            ? null
+                            : MediaQuery.of(context).size.width * 0.70,
+                        child: AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller),
+                        ),
                       ),
                     ),
-                    // Showcase(
-                    //   key: _four,
-                    //   description: 'test test',
-                    //   child: Text(
-                    //     wordsFromNumbsString,
-                    //     textAlign: TextAlign.center,
-                    //   ),
-                    // ),
-                    ElevatedButton(
-                        onPressed: () {
-                          ShowCaseWidget.of(context)
-                              .startShowCase([_one, _two, _three]);
-                        },
-                        child: Text('asd')),
+                    Showcase.withWidget(
+                      container: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Are you ready to do some punching?"),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                ShowCaseWidget.of(context).next();
+                              },
+                              child: Text('Yes!')),
+                        ],
+                      ),
+                      height: 190,
+                      width: 192,
+                      key: _one,
+                      child: SizedBox(
+                        height: 0,
+                        width: 0,
+                      ),
+                    ),
+                    Showcase.withWidget(
+                      container: Column(
+                        children: [
+                          SizedBox(height: 10),
+                          Container(
+                            width: 200,
+                            child: Text(
+                              'Read the combo flow and try to memorize it',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                ShowCaseWidget.of(context).next();
+                              },
+                              child: Text('Okay')),
+                        ],
+                      ),
+                      height: 130,
+                      width: 150,
+                      key: _three,
+                      child: Text(
+                        wordsFromNumbsString,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    // ElevatedButton(
+                    //     onPressed: () {
+                    //       ShowCaseWidget.of(context).startShowCase(
+                    //           [_one, _two, _three, _four, _five]);
+                    //     },
+                    //     child: Text('asd')),
                     SizedBox(height: 20),
                     darkMode
-                        ? buildTimer(
-                            previousScreen,
-                            started,
-                            secs,
-                            maxSeconds,
-                            initialCountdown,
-                            currentTerm,
-                            initialCountdownMax,
-                            Color(0xff90E0EF),
-                            Color.fromARGB(255, 41, 62, 218),
-                            Color.fromARGB(255, 180, 207, 242),
-                            context)
-                        : buildTimer(
-                            previousScreen,
-                            started,
-                            secs,
-                            maxSeconds,
-                            initialCountdown,
-                            currentTerm,
-                            initialCountdownMax,
-                            Color(0xff90E0EF),
-                            Color.fromARGB(255, 223, 235, 237),
-                            Color(0xff023E8A),
-                            context),
+                        ? Showcase.withWidget(
+                            targetBorderRadius: BorderRadius.circular(100),
+                            targetPadding: EdgeInsets.all(10),
+                            key: _five,
+                            container: Column(
+                              children: [
+                                Container(
+                                  width: 300,
+                                  child: Text(
+                                    'Countdown starts, exercise the combo for 3 minutes to unlock the next level',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      ShowCaseWidget.of(context).next();
+                                    },
+                                    child: Text('Got it!')),
+                              ],
+                            ),
+                            height: 200,
+                            width: 300,
+                            child: buildTimer(
+                                previousScreen,
+                                started,
+                                secs,
+                                maxSeconds,
+                                initialCountdown,
+                                currentTerm,
+                                initialCountdownMax,
+                                Color(0xff90E0EF),
+                                Color.fromARGB(255, 41, 62, 218),
+                                Color.fromARGB(255, 180, 207, 242),
+                                context),
+                          )
+                        : Showcase.withWidget(
+                            targetBorderRadius: BorderRadius.circular(100),
+                            targetPadding: EdgeInsets.all(10),
+                            key: _five,
+                            container: Column(
+                              children: [
+                                Container(
+                                  width: 300,
+                                  child: Text(
+                                    'Countdown starts, exercise the combo for 3 minutes to unlock the next level',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      ShowCaseWidget.of(context).next();
+                                    },
+                                    child: Text('Got it!')),
+                              ],
+                            ),
+                            height: 200,
+                            width: 300,
+                            child: buildTimer(
+                                previousScreen,
+                                started,
+                                secs,
+                                maxSeconds,
+                                initialCountdown,
+                                currentTerm,
+                                initialCountdownMax,
+                                Color(0xff90E0EF),
+                                Color.fromARGB(255, 223, 235, 237),
+                                Color(0xff023E8A),
+                                context),
+                          ),
                     buildButtons(
                         timer,
                         secs,
@@ -534,6 +662,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                         isRunning,
                         resetTimer,
                         'combos',
+                        _four,
                         context),
                     SizedBox(height: 5),
                   ],

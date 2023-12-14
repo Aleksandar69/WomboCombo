@@ -39,7 +39,8 @@ class UserRepository {
       'firstTimeMakeComboScreen': true,
       'firstTimeThinkQuick': true,
       'firstTimeLeaderBoard': true,
-      'FfirstTimeFriendList': true,
+      'firstTimeFriendList': true,
+      'firstTimeMenu': true,
     });
   }
 
