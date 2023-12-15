@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/providers/videos_provider.dart';
 import 'package:wombocombo/screens/recording/start_recording_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -46,6 +48,10 @@ void _logError(String code, String? message) {
 
 class _VideoRecorderState extends State<VideoRecorder>
     with WidgetsBindingObserver, TickerProviderStateMixin {
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
   late final VideosProvider videosProvider =
       Provider.of<VideosProvider>(context, listen: false);
   CameraController? controller;
@@ -88,10 +94,16 @@ class _VideoRecorderState extends State<VideoRecorder>
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
+  var user;
+
+  void getUser() async {
+    user = await userProvider.getUser(authProvider.userId);
+  }
 
   @override
   void initState() {
     super.initState();
+    getUser();
     WidgetsBinding.instance.addObserver(this);
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -120,10 +132,6 @@ class _VideoRecorderState extends State<VideoRecorder>
 
     playerSetSource();
     reset();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        ShowCaseWidget.of(showcaseContext)
-            .startShowCase([_one, _two, _three, _four, _five]));
   }
 
   void playBell() async {
@@ -219,11 +227,19 @@ class _VideoRecorderState extends State<VideoRecorder>
     super.dispose();
   }
 
+  var showShowcase;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _cameras =
-        ModalRoute.of(context)!.settings.arguments as List<CameraDescription>;
+    var args = ModalRoute.of(context)!.settings.arguments as List;
+    _cameras = args[0] as List<CameraDescription>;
+    showShowcase = args[1];
+
+    if (showShowcase) {
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          ShowCaseWidget.of(showcaseContext)
+              .startShowCase([_one, _two, _three, _four, _five]));
+    }
   }
 
   // #docregion AppLifecycle
@@ -291,6 +307,9 @@ class _VideoRecorderState extends State<VideoRecorder>
                             ElevatedButton(
                                 onPressed: () {
                                   ShowCaseWidget.of(context).next();
+                                  userProvider.updateUserInfo(
+                                      authProvider.userId!,
+                                      {'firstTimeRecordScreen': false});
                                 },
                                 child: Text("Watch me!")),
                           ],

@@ -141,6 +141,11 @@ class _CountdownTimerState extends State<CountdownTimer>
     if (args[8] != null) {
       selectedMartialArt = args[8] as String;
     }
+    var showShowcase = args[9];
+
+    if (showShowcase) {
+      startShowCase();
+    }
 
     if (previousScreen == 'fromMakeYourComboScreen') {
       currentAttacks = List.from(customCombos);
@@ -224,7 +229,6 @@ class _CountdownTimerState extends State<CountdownTimer>
     initTts();
     WidgetsBinding.instance.addObserver(this);
     getUser();
-    startShowCase();
   }
 
   startShowCase() {
@@ -769,6 +773,8 @@ class _CountdownTimerState extends State<CountdownTimer>
                                 onPressed: () {
                                   ShowCaseWidget.of(context).next();
                                   startTimer();
+                                  userProvider.updateUserInfo(currentUserId,
+                                      {'firstTimeThinkQuick': false});
                                 },
                                 child: Text('Let me train already!')),
                           ],

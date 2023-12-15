@@ -173,7 +173,7 @@ class _StartRecordingState extends State<StartRecording> {
                   ),
                   onPressed: () {
                     Navigator.of(context).pushNamed(VideoRecorder.routeName,
-                        arguments: _cameras);
+                        arguments: [_cameras, user["firstTimeRecordScreen"]]);
 
                     //_recordVideo();
                   },

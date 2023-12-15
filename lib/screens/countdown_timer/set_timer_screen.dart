@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
+import 'package:wombocombo/providers/user_provider.dart';
 import 'countdown_timer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' as r;
 
@@ -19,6 +21,23 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   final _restControllerSec = FixedExtentScrollController(initialItem: 30);
   final _restControllerMin = FixedExtentScrollController(initialItem: 0);
   final _roundsController = FixedExtentScrollController(initialItem: 3);
+
+  late final AuthProvider authProvider =
+      Provider.of<AuthProvider>(context, listen: false);
+  late final UserProvider userProvider =
+      Provider.of<UserProvider>(context, listen: false);
+
+  var user;
+
+  void getUser() async {
+    user = await userProvider.getUser(authProvider.userId);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
 
   var previousScreen;
   late String difficultyLevel = 'Beginner';
@@ -244,6 +263,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                   difficultyLevel,
                   customCombos,
                   selectedMartialArt,
+                  user['firstTimeThinkQuick']
                 ]);
               },
               elevation: 2.0,

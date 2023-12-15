@@ -131,7 +131,8 @@ class _TrainingLevelState extends State<TrainingLevel> {
                                       videoId,
                                       currentUserData.id,
                                       currentMaxLevel,
-                                      currentMartialArt
+                                      currentMartialArt,
+                                      currentUserData['firstTimeCombosScreen']
                                     ]);
                                 if (result != null) {
                                   setState(() {

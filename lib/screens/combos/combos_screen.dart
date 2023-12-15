@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:wombocombo/helpers/snackbar_helper.dart';
+import 'package:wombocombo/providers/auth_provider.dart';
 import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
@@ -31,6 +32,7 @@ class _CombosScreenState extends State<CombosScreen> {
   var currentUserId;
   var currentUserMaxLvl;
   var currentMartialArt;
+  var showShowcase;
 
   @override
   void didChangeDependencies() {
@@ -45,6 +47,7 @@ class _CombosScreenState extends State<CombosScreen> {
     currentUserId = countdownTimerStuff[4] as String;
     currentUserMaxLvl = countdownTimerStuff[5] as int;
     currentMartialArt = countdownTimerStuff[6] as String;
+    showShowcase = countdownTimerStuff[7] as bool;
   }
 
   @override
@@ -77,7 +80,8 @@ class _CombosScreenState extends State<CombosScreen> {
                     videoId,
                     currentUserId,
                     currentUserMaxLvl,
-                    currentMartialArt),
+                    currentMartialArt,
+                    showShowcase),
               ),
             ],
           ),
@@ -193,8 +197,16 @@ class _FighterVideoRemote extends StatefulWidget {
   String userId;
   int currentUserMaxLvl;
   String currentMartialArt;
-  _FighterVideoRemote(this.videoUrl, this.combo, this.level, this.videoId,
-      this.userId, this.currentUserMaxLvl, this.currentMartialArt);
+  bool showShowcase;
+  _FighterVideoRemote(
+      this.videoUrl,
+      this.combo,
+      this.level,
+      this.videoId,
+      this.userId,
+      this.currentUserMaxLvl,
+      this.currentMartialArt,
+      this.showShowcase);
   @override
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
@@ -238,14 +250,21 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
     //await Future.delayed(Duration(milliseconds: 1000));
     //Overlay.of(context).insert(_getEntry(context));
   }
-
+  var user;
   @override
   void initState() {
     super.initState();
+    getUser();
+    if (widget.showShowcase) {
+      WidgetsBinding.instance.addPostFrameCallback((_) =>
+          ShowCaseWidget.of(context)
+              .startShowCase([_one, _two, _three, _four, _five]));
+    }
     _loadAndPlay();
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-        ShowCaseWidget.of(context)
-            .startShowCase([_one, _two, _three, _four, _five]));
+  }
+
+  void getUser() async {
+    user = await userProvider.getUser(widget.userId);
   }
 
   String previousScreen = 'fromCombosScreen';
@@ -381,11 +400,6 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
         'Good Job!',
       );
     }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
   }
 
   @override
@@ -583,7 +597,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Container(
                                   width: 300,
                                   child: Text(
-                                    'Countdown starts, exercise the combo for 3 minutes to unlock the next level',
+                                    'Repeat the combo for 3 minutes to unlock the next level',
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -591,8 +605,11 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                   height: 10,
                                 ),
                                 ElevatedButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       ShowCaseWidget.of(context).next();
+                                      await userProvider.updateUserInfo(
+                                          widget.userId,
+                                          {'firstTimeCombosScreen': false});
                                     },
                                     child: Text('Got it!')),
                               ],
