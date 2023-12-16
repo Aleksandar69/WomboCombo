@@ -70,6 +70,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
     super.didChangeDependencies();
   }
 
+  var isFirstTimeShowcase;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -252,19 +253,39 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                   );
                   return;
                 }
-                Navigator.of(context)
-                    .pushNamed(CountdownTimer.routeName, arguments: [
-                  _minutesController.selectedItem,
-                  _secondsController.selectedItem,
-                  _restControllerMin.selectedItem,
-                  _restControllerSec.selectedItem,
-                  _roundsController.selectedItem,
-                  previousScreen,
-                  difficultyLevel,
-                  customCombos,
-                  selectedMartialArt,
-                  user['firstTimeThinkQuick']
-                ]);
+                if (isFirstTimeShowcase == null) {
+                  Navigator.of(context)
+                      .pushNamed(CountdownTimer.routeName, arguments: [
+                    _minutesController.selectedItem,
+                    _secondsController.selectedItem,
+                    _restControllerMin.selectedItem,
+                    _restControllerSec.selectedItem,
+                    _roundsController.selectedItem,
+                    previousScreen,
+                    difficultyLevel,
+                    customCombos,
+                    selectedMartialArt,
+                    user['firstTimeThinkQuick']
+                  ]);
+                } else {
+                  Navigator.of(context)
+                      .pushNamed(CountdownTimer.routeName, arguments: [
+                    _minutesController.selectedItem,
+                    _secondsController.selectedItem,
+                    _restControllerMin.selectedItem,
+                    _restControllerSec.selectedItem,
+                    _roundsController.selectedItem,
+                    previousScreen,
+                    difficultyLevel,
+                    customCombos,
+                    selectedMartialArt,
+                    isFirstTimeShowcase
+                  ]);
+                }
+
+                setState(() {
+                  isFirstTimeShowcase = false;
+                });
               },
               elevation: 2.0,
               fillColor: darkMode

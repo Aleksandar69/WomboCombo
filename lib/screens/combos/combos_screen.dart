@@ -28,11 +28,10 @@ class _CombosScreenState extends State<CombosScreen> {
   late String combo;
   late String videoUrl;
   late String videoId;
-  var isLoading;
+  var isLoading = true;
   var currentUserId;
   var currentUserMaxLvl;
   var currentMartialArt;
-  var showShowcase;
 
   @override
   void didChangeDependencies() {
@@ -47,7 +46,6 @@ class _CombosScreenState extends State<CombosScreen> {
     currentUserId = countdownTimerStuff[4] as String;
     currentUserMaxLvl = countdownTimerStuff[5] as int;
     currentMartialArt = countdownTimerStuff[6] as String;
-    showShowcase = countdownTimerStuff[7] as bool;
   }
 
   @override
@@ -80,8 +78,7 @@ class _CombosScreenState extends State<CombosScreen> {
                     videoId,
                     currentUserId,
                     currentUserMaxLvl,
-                    currentMartialArt,
-                    showShowcase),
+                    currentMartialArt),
               ),
             ],
           ),
@@ -197,16 +194,15 @@ class _FighterVideoRemote extends StatefulWidget {
   String userId;
   int currentUserMaxLvl;
   String currentMartialArt;
-  bool showShowcase;
   _FighterVideoRemote(
-      this.videoUrl,
-      this.combo,
-      this.level,
-      this.videoId,
-      this.userId,
-      this.currentUserMaxLvl,
-      this.currentMartialArt,
-      this.showShowcase);
+    this.videoUrl,
+    this.combo,
+    this.level,
+    this.videoId,
+    this.userId,
+    this.currentUserMaxLvl,
+    this.currentMartialArt,
+  );
   @override
   _FighterVideoRemoteState createState() => _FighterVideoRemoteState();
 }
@@ -254,16 +250,19 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
   @override
   void initState() {
     super.initState();
-    getUser();
-    if (widget.showShowcase) {
-      WidgetsBinding.instance.addPostFrameCallback((_) =>
+
+    getUser().then((_) {
+      Future.delayed(const Duration(seconds: 1), () {
+        if (user["firstTimeCombosScreen"]) {
           ShowCaseWidget.of(context)
-              .startShowCase([_one, _two, _three, _four, _five]));
-    }
+              .startShowCase([_one, _two, _three, _four, _five]);
+        }
+      });
+    });
     _loadAndPlay();
   }
 
-  void getUser() async {
+  Future<void> getUser() async {
     user = await userProvider.getUser(widget.userId);
   }
 
@@ -646,8 +645,11 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                   height: 10,
                                 ),
                                 ElevatedButton(
-                                    onPressed: () {
+                                    onPressed: () async {
                                       ShowCaseWidget.of(context).next();
+                                      await userProvider.updateUserInfo(
+                                          widget.userId,
+                                          {'firstTimeCombosScreen': false});
                                     },
                                     child: Text('Got it!')),
                               ],

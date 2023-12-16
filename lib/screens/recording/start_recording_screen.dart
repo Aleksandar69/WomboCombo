@@ -150,7 +150,7 @@ class _StartRecordingState extends State<StartRecording> {
   }
 
   final _formKey = GlobalKey<FormState>();
-
+  var isFirstTimeShowcase;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,9 +172,16 @@ class _StartRecordingState extends State<StartRecording> {
                     style: TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushNamed(VideoRecorder.routeName,
-                        arguments: [_cameras, user["firstTimeRecordScreen"]]);
-
+                    if (isFirstTimeShowcase == null) {
+                      Navigator.of(context).pushNamed(VideoRecorder.routeName,
+                          arguments: [_cameras, user["firstTimeRecordScreen"]]);
+                    } else {
+                      Navigator.of(context).pushNamed(VideoRecorder.routeName,
+                          arguments: [_cameras, isFirstTimeShowcase]);
+                    }
+                    setState(() {
+                      isFirstTimeShowcase = false;
+                    });
                     //_recordVideo();
                   },
                 ),

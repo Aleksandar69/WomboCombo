@@ -52,14 +52,16 @@ class _TrainingLevelState extends State<TrainingLevel> {
   late final currentUserData;
   var currentMaxLevel;
   getCurrentUserLevel() async {
-    currentUserData = await userProvider.getUser(authProvider.userId);
-    setState(() {
-      if (currentMartialArt == 'boxing') {
-        currentMaxLevel = currentUserData['currentMaxLevelB'];
-      } else if (currentMartialArt == 'kickboxing') {
-        currentMaxLevel = currentUserData['currentMaxLevelKb'];
-      }
-    });
+    if (currentUserData != null) {
+      currentUserData = await userProvider.getUser(authProvider.userId);
+      setState(() {
+        if (currentMartialArt == 'boxing') {
+          currentMaxLevel = currentUserData['currentMaxLevelB'];
+        } else if (currentMartialArt == 'kickboxing') {
+          currentMaxLevel = currentUserData['currentMaxLevelKb'];
+        }
+      });
+    }
   }
 
   @override
@@ -131,8 +133,7 @@ class _TrainingLevelState extends State<TrainingLevel> {
                                       videoId,
                                       currentUserData.id,
                                       currentMaxLevel,
-                                      currentMartialArt,
-                                      currentUserData['firstTimeCombosScreen']
+                                      currentMartialArt
                                     ]);
                                 if (result != null) {
                                   setState(() {
