@@ -296,10 +296,12 @@ class _VideoRecorderState extends State<VideoRecorder>
                             Container(
                               width: 250,
                               child: Text(
-                                'Recording starts after the 10 sec countown finishes. Show your skills!',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16),
-                              ),
+                                  'Recording starts after the 10 sec countown finishes. Show your skills!',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 16)),
                             ),
                             SizedBox(
                               height: 10,
@@ -353,7 +355,10 @@ class _VideoRecorderState extends State<VideoRecorder>
                             width: 400,
                             child: Text('Select one of the available cameras',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 16)),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 16)),
                           ),
                           SizedBox(
                             height: 10,
@@ -619,8 +624,12 @@ class _VideoRecorderState extends State<VideoRecorder>
           targetBorderRadius: BorderRadius.circular(35),
           container: Column(
             children: [
-              Text('Click on record button to start recording',
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 14)),
+              Text('Click the record button to start recording',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16)),
               SizedBox(
                 height: 10,
               ),

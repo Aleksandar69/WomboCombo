@@ -12,4 +12,12 @@ class CombosProvider with ChangeNotifier {
   Stream<QuerySnapshot> getKickboxingCombosStream() {
     return combosRepository.getKickboxingCombosStream();
   }
+
+  getCombo(combos) {
+    return combosRepository.getCombo(combos);
+  }
+
+  getOneStrikeCombos() async {
+    return combosRepository.getOneStrikeCombos();
+  }
 }

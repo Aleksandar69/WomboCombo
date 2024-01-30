@@ -73,6 +73,7 @@ class AuthRepository {
       'firstTimeLeaderBoard': true,
       'firstTimeFriendList': true,
       'firstTimeMenu': true,
+      'firstTimeChoosingDifficulty': true
     });
     return authResult;
   }

@@ -34,13 +34,18 @@ Widget buildButtons(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Showcase.withWidget(
-                targetBorderRadius: BorderRadius.circular(35),
+                targetBorderRadius: BorderRadius.circular(60),
                 key: globalKey,
                 height: 60,
                 width: 60,
                 container: Column(
                   children: [
-                    Text('Click play'),
+                    Text('Click play',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 15)),
                     SizedBox(
                       height: 10,
                     ),
@@ -64,13 +69,13 @@ Widget buildButtons(
                         //  ShowCaseWidget.of(context).startShowCase([globalKey]);
                         startTimer(reset: false);
                         if (previousScreen == 'fromQuickCombos') {
-                          startSpeakTimer();
+                          startSpeakTimer(3800);
                         }
                       } else if (isCompleted && !isActive) {
                         // ShowCaseWidget.of(context).startShowCase([globalKey]);
                         startTimer(reset: true);
                         if (previousScreen == 'fromQuickCombos') {
-                          startSpeakTimer();
+                          startSpeakTimer(3800);
                         }
                       }
                     },
@@ -129,13 +134,13 @@ Widget buildButtons(
                       // ShowCaseWidget.of(context).startShowCase([globalKey]);
                       startTimer(reset: false);
                       if (previousScreen == 'fromQuickCombos') {
-                        startSpeakTimer();
+                        startSpeakTimer(3800);
                       }
                     } else if (isCompleted && !isActive) {
                       //ShowCaseWidget.of(context).startShowCase([globalKey]);
                       startTimer(reset: true);
                       if (previousScreen == 'fromQuickCombos') {
-                        startSpeakTimer();
+                        startSpeakTimer(3800);
                       }
                     }
                   },

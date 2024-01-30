@@ -52,16 +52,14 @@ class _TrainingLevelState extends State<TrainingLevel> {
   late final currentUserData;
   var currentMaxLevel;
   getCurrentUserLevel() async {
-    if (currentUserData != null) {
-      currentUserData = await userProvider.getUser(authProvider.userId);
-      setState(() {
-        if (currentMartialArt == 'boxing') {
-          currentMaxLevel = currentUserData['currentMaxLevelB'];
-        } else if (currentMartialArt == 'kickboxing') {
-          currentMaxLevel = currentUserData['currentMaxLevelKb'];
-        }
-      });
-    }
+    currentUserData = await userProvider.getUser(authProvider.userId);
+    setState(() {
+      if (currentMartialArt == 'boxing') {
+        currentMaxLevel = currentUserData['currentMaxLevelB'];
+      } else if (currentMartialArt == 'kickboxing') {
+        currentMaxLevel = currentUserData['currentMaxLevelKb'];
+      }
+    });
   }
 
   @override

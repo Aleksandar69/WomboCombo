@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
+import 'package:wombocombo/providers/combos_provider.dart';
 import 'package:wombocombo/providers/dark_mode_notifier.dart';
 import 'package:wombocombo/providers/theme_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
@@ -17,7 +18,7 @@ class SetTimeScreen extends StatefulWidget {
 
 class _SetTimeScreenState extends State<SetTimeScreen> {
   final _secondsController = FixedExtentScrollController(initialItem: 0);
-  final _minutesController = FixedExtentScrollController(initialItem: 1);
+  final _minutesController = FixedExtentScrollController(initialItem: 2);
   final _restControllerSec = FixedExtentScrollController(initialItem: 30);
   final _restControllerMin = FixedExtentScrollController(initialItem: 0);
   final _roundsController = FixedExtentScrollController(initialItem: 3);
@@ -26,6 +27,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
       Provider.of<AuthProvider>(context, listen: false);
   late final UserProvider userProvider =
       Provider.of<UserProvider>(context, listen: false);
+  final CombosProvider combosProvider = CombosProvider();
 
   var user;
 
@@ -33,6 +35,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
     user = await userProvider.getUser(authProvider.userId);
   }
 
+  var currentCombosDifficulty;
   @override
   void initState() {
     super.initState();
@@ -40,12 +43,26 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
   }
 
   var previousScreen;
-  late String difficultyLevel = 'Beginner';
+  late String difficultyLevel;
   late List customCombos = [];
-  var selectedMartialArt;
+  late String selectedMartialArt;
+  var oneStrikeComboB;
+  var twoSrikesComboB;
+  var threeStrikesComboB;
+  var fourStrikesComboB;
+  var fiveStrikesComboB;
+  var sixStrikesComboB;
+  var oneStrikeComboKb;
+  var twoSrikesCombosKb;
+  var threeStrikesCombosKb;
+  var fourStrikesCombosKb;
+  var fiveStrikesCombosKb;
+  var sixStrikesCombosKb;
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
+
     var previousArgs;
     if (ModalRoute.of(context)!.settings.arguments is List) {
       previousArgs = ModalRoute.of(context)!.settings.arguments as List;
@@ -67,7 +84,25 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
     } else {
       previousScreen = previousArgs;
     }
-    super.didChangeDependencies();
+    currentCombosDifficulty = difficultyLevel.toLowerCase() +
+        selectedMartialArt[0].toUpperCase() +
+        selectedMartialArt.substring(1);
+    getCombosList();
+  }
+
+  getCombosList() async {
+    oneStrikeComboB = await combosProvider.getCombo('oneStrikeBoxing');
+    twoSrikesComboB = await combosProvider.getCombo('twoStrikesBoxing');
+    threeStrikesComboB = await combosProvider.getCombo('threeStrikesBoxing');
+    fourStrikesComboB = await combosProvider.getCombo('fourStirkesBoxing');
+    fiveStrikesComboB = await combosProvider.getCombo('fiveStrikesBoxing');
+    sixStrikesComboB = await combosProvider.getCombo('sixStrikesBoxing');
+    oneStrikeComboKb = await combosProvider.getCombo('oneStrikeKb');
+    twoSrikesCombosKb = await combosProvider.getCombo('twoStrikesKb');
+    threeStrikesCombosKb = await combosProvider.getCombo('threeStrikesKb');
+    fourStrikesCombosKb = await combosProvider.getCombo('fourStrikesKb');
+    fiveStrikesCombosKb = await combosProvider.getCombo('fiveStrikesKb');
+    sixStrikesCombosKb = await combosProvider.getCombo('sixStrikesKb');
   }
 
   var isFirstTimeShowcase;
@@ -265,7 +300,19 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     difficultyLevel,
                     customCombos,
                     selectedMartialArt,
-                    user['firstTimeThinkQuick']
+                    user['firstTimeThinkQuick'],
+                    oneStrikeComboB,
+                    twoSrikesComboB,
+                    threeStrikesComboB,
+                    fourStrikesComboB,
+                    fiveStrikesComboB,
+                    sixStrikesComboB,
+                    oneStrikeComboKb,
+                    twoSrikesCombosKb,
+                    threeStrikesCombosKb,
+                    fourStrikesCombosKb,
+                    fiveStrikesCombosKb,
+                    sixStrikesCombosKb
                   ]);
                 } else {
                   Navigator.of(context)
@@ -279,7 +326,19 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                     difficultyLevel,
                     customCombos,
                     selectedMartialArt,
-                    isFirstTimeShowcase
+                    isFirstTimeShowcase,
+                    oneStrikeComboB,
+                    twoSrikesComboB,
+                    threeStrikesComboB,
+                    fourStrikesComboB,
+                    fiveStrikesComboB,
+                    sixStrikesComboB,
+                    oneStrikeComboKb,
+                    twoSrikesCombosKb,
+                    threeStrikesCombosKb,
+                    fourStrikesCombosKb,
+                    fiveStrikesCombosKb,
+                    sixStrikesCombosKb
                   ]);
                 }
 

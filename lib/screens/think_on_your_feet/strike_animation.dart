@@ -21,8 +21,11 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
     super.didChangeDependencies();
     var strikeNumber = ModalRoute.of(context)!.settings.arguments as String;
     strike = await getStrike(strikeNumber);
-    setState(() {
-      isLoading = false;
+
+    await Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 
@@ -32,30 +35,36 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
 
   @override
   Widget build(BuildContext context) {
+    var strikeNumber = ModalRoute.of(context)!.settings.arguments as String;
+
     return Scaffold(
-      body: isLoading
-          ? SizedBox(
-              height: MediaQuery.of(context).size.height / 1.3,
-              child: Center(
-                child: Column(
+        body: FutureBuilder(
+            future: strikesProvider.getStrike(strikeNumber),
+            builder: ((context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.3,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text("Please wait while the animation loads"),
+                      ],
+                    ),
+                  ),
+                );
+              else
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text("Please wait while the animation loads"),
+                    MyRecordedRemoteVideo(
+                        strike['strikeUrl'], true, true, false),
                   ],
-                ),
-              ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MyRecordedRemoteVideo(strike['strikeUrl'], true, true, false),
-                Text(strike['name']),
-              ],
-            ),
-    );
+                );
+            })));
   }
 }

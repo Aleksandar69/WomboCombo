@@ -498,7 +498,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                     Showcase.withWidget(
                       container: Column(
                         children: [
-                          Text('Watch Greg do the combo'),
+                          Text('Watch Greg do the combo',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                           SizedBox(
                             height: 10,
                           ),
@@ -531,7 +536,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Are you ready to do some punching?"),
+                          Text("Are you ready to do some punching?",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 15)),
                           SizedBox(
                             height: 10,
                           ),
@@ -539,7 +549,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                               onPressed: () {
                                 ShowCaseWidget.of(context).next();
                               },
-                              child: Text('Yes!')),
+                              child: Text('F*CK YEAH!')),
                         ],
                       ),
                       height: 190,
@@ -559,6 +569,10 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                             child: Text(
                               'Read the combo flow and try to memorize it',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 15),
                             ),
                           ),
                           SizedBox(
@@ -568,7 +582,11 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                               onPressed: () {
                                 ShowCaseWidget.of(context).next();
                               },
-                              child: Text('Okay')),
+                              child: Text('Okay',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 15))),
                         ],
                       ),
                       height: 130,
@@ -596,9 +614,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Container(
                                   width: 300,
                                   child: Text(
-                                    'Repeat the combo for 3 minutes to unlock the next level',
-                                    textAlign: TextAlign.center,
-                                  ),
+                                      'Repeat the combo for 3 minutes to unlock the next level',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 15)),
                                 ),
                                 SizedBox(
                                   height: 10,
@@ -637,9 +658,12 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Container(
                                   width: 300,
                                   child: Text(
-                                    'Countdown starts, exercise the combo for 3 minutes to unlock the next level',
-                                    textAlign: TextAlign.center,
-                                  ),
+                                      'Repeat the combo for 3 minutes to unlock the next level. Shadowboxing or using the boxing bag.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontSize: 15)),
                                 ),
                                 SizedBox(
                                   height: 10,

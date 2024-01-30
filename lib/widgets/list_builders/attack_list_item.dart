@@ -41,10 +41,17 @@ class AttackListItem extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.2,
                 child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed(StrikeAnimation.routeName,
-                          arguments: strike.id);
+                      if (strike.id == "fk" || strike.id == "rk") {
+                        return null;
+                      } else {
+                        Navigator.of(context).pushNamed(
+                            StrikeAnimation.routeName,
+                            arguments: strike.id);
+                      }
                     },
-                    child: Text("View")),
+                    child: strike.id == "fk" || strike.id == "rk"
+                        ? Text("Soon")
+                        : Text("View")),
               )
             ],
           ),
