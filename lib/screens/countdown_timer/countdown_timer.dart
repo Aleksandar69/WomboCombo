@@ -5,15 +5,14 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 import 'package:wombocombo/helpers/snackbar_helper.dart';
 import 'package:wombocombo/providers/auth_provider.dart';
-import 'package:wombocombo/providers/combos_provider.dart';
 import 'package:wombocombo/providers/user_provider.dart';
 import 'package:wombocombo/widgets/timer/build_buttons.dart';
 import '../../widgets/gradient.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../widgets/timer/build_timer.dart';
-import '../../utils/combinations.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:just_audio/just_audio.dart' as A;
 
 import 'package:wakelock/wakelock.dart';
 
@@ -66,6 +65,7 @@ class _CountdownTimerState extends State<CountdownTimer>
   late List customCombos = [];
   var pointsEarnedText;
   var selectedMartialArt;
+  var isLoading = true;
 
   late AnimationController _controller;
 
@@ -85,26 +85,44 @@ class _CountdownTimerState extends State<CountdownTimer>
   final playerRing = AudioPlayer();
   final playerTenSecs = AudioPlayer();
 
+  final playerBeep2 = A.AudioPlayer();
+  final playerRing2 = A.AudioPlayer();
+  final playerTenSecs2 = A.AudioPlayer();
+
   var user;
   var currentPoints;
 
   void playBell() async {
-    return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 1);
+    //return await playerRing.play(AssetSource('sounds/bell.mp3'), volume: 0.15);
+    playerRing2.seek(Duration.zero);
+    return await playerRing2.play();
   }
 
   void playBeep() async {
-    return await playerBeep.play(AssetSource('sounds/beep-0.mp3'), volume: 1);
+    // return await playerBeep.play(AssetSource('sounds/beep-0.mp3'),
+    //     volume: 0.15);
+    playerBeep2.seek(Duration.zero);
+    return await playerBeep2.play();
   }
 
   void playTenSecsSound() async {
-    return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
-        volume: 1);
+    // return await playerTenSecs.play(AssetSource('sounds/10secsremaining.mp3'),
+    //     volume: 1);
+
+    playerTenSecs2.seek(Duration.zero);
+    return await playerTenSecs2.play();
   }
 
   void playerSetSource() async {
     await playerBeep.setSource(AssetSource('sounds/beep-0.mp3'));
     await playerRing.setSource(AssetSource('sounds/bell.mp3'));
     await playerTenSecs.setSource(AssetSource('sounds/10secsremaining.mp3'));
+
+    await playerBeep2.setAsset('assets/sounds/beep-0.mp3');
+    await playerRing2.setAsset('assets/sounds/bell.mp3');
+    await playerTenSecs2.setAsset('assets/sounds/10secsremaining.mp3');
+    playerBeep2.setVolume(0.2);
+    playerRing2.setVolume(0.2);
   }
 
   void setUserPoints(userPoints) {
@@ -137,23 +155,28 @@ class _CountdownTimerState extends State<CountdownTimer>
   var fourStrikeCombosKb;
   var fiveStrikeCombosKb;
   var sixStrikeCombosKb;
+  var fourStrikesCombosKbWords;
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
+
     setState(() {
       Wakelock.enable();
     });
     final args = ModalRoute.of(context)!.settings.arguments as List;
+    playerSetSource();
+
     // final mnts = args[0];
     // final scnds = args[1];
     // final restMins = args[2];
     // final restSecs = args[3];
     // final rnds = args[4] + 1;
-    final mnts = 3;
-    final scnds = 0;
-    final restMins = 1;
-    final restSecs = 0;
-    final rnds = 4;
+    final mnts = 0;
+    final scnds = 10;
+    final restMins = 0;
+    final restSecs = 10;
+    final rnds = 2;
     previousScreen = args[5] as String;
     trainingLevel = args[6] as String;
     customCombos = args[7] as List;
@@ -173,6 +196,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     fourStrikeCombosKb = (args[19]['combos'] as String).split("| ");
     fiveStrikeCombosKb = (args[20]['combos'] as String).split("| ");
     sixStrikeCombosKb = (args[21]['combos'] as String).split("| ");
+    fourStrikesCombosKbWords = (args[22]['combos'] as String).split("| ");
 
     if (showShowcase) {
       startShowCase();
@@ -194,12 +218,11 @@ class _CountdownTimerState extends State<CountdownTimer>
     maxSeconds = totalDuration;
     secs = maxSeconds;
     rounds = maxRounds;
-    playerSetSource();
     if (!showShowcase) {
       startTimer();
     }
-
-    super.didChangeDependencies();
+    Future.delayed(Duration(seconds: 1));
+    isLoading = false;
   }
 
   @override
@@ -236,7 +259,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     await flutterTts.setEngine(engine!);
     await flutterTts.setSpeechRate(0.5);
     await flutterTts.setPitch(1.5);
-    await flutterTts.setVolume(1.0);
+    await flutterTts.setVolume(0.5);
 
     List<dynamic> voices = await flutterTts.getVoices;
 
@@ -308,8 +331,7 @@ class _CountdownTimerState extends State<CountdownTimer>
 
       ;
       ;
-      //secs = maxSeconds;
-      secs = 60;
+      secs = maxSeconds;
     });
     stopTimer();
     timerAttacks?.cancel();
@@ -318,7 +340,8 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   void resetAndStartTimer() {
     setState(() {
-      currentTerm = 'READY';
+      currentTerm = 'REST';
+      currentTermChanged = true;
       started = false;
       if (isInitialRun) {
         initialCountdown = initialCountdownMax;
@@ -346,11 +369,7 @@ class _CountdownTimerState extends State<CountdownTimer>
     }
   }
 
-  bool isFirstSwitchMade = false;
-  bool isSecondSwitchMade = false;
-  bool isThirdSwitchMade = false;
-  bool isFourthSwitchMade = false;
-  bool isFifthSwitchMade = false;
+  bool currentTermChanged = false;
   void startTimer({bool reset = false}) {
     setState(() {
       Wakelock.enable();
@@ -402,6 +421,10 @@ class _CountdownTimerState extends State<CountdownTimer>
           });
         }
       } else if (secs > 0) {
+        if (currentTermChanged) {
+          currentTerm = 'READY';
+        }
+        currentTermChanged = false;
         if (selectedMartialArt == "boxing") {
           if (futureTimerHasEnded == true &&
               (previousScreen == 'fromQuickCombos' ||
@@ -451,23 +474,21 @@ class _CountdownTimerState extends State<CountdownTimer>
                 }
               }
             } else if (trainingLevel == 'Advanced') {
-              if (currentRound == 1) {
-                if (secs <= 40 && secs > 8) {
-                  currentAttacks = fourStrikesCombosB;
-                  startSpeakTimer(5400);
-                } else if (secs <= 85 && secs > 8) {
-                  currentAttacks = fourStrikesCombosB;
-                  startSpeakTimer(5650);
-                } else if (secs <= 130 && secs > 8) {
-                  currentAttacks = threeStrikesCombosB;
-                  startSpeakTimer(5100);
-                } else if (secs <= 157 && secs > 8) {
-                  currentAttacks = twoStrikesCombosB;
-                  startSpeakTimer(4500);
-                } else if (secs < maxSeconds && secs > 8) {
-                  currentAttacks = oneStrikeCombosB;
-                  startSpeakTimer(3450);
-                }
+              if (secs <= 40 && secs > 8) {
+                currentAttacks = fourStrikesCombosB;
+                startSpeakTimer(5400);
+              } else if (secs <= 85 && secs > 8) {
+                currentAttacks = fourStrikesCombosB;
+                startSpeakTimer(5650);
+              } else if (secs <= 130 && secs > 8) {
+                currentAttacks = threeStrikesCombosB;
+                startSpeakTimer(5100);
+              } else if (secs <= 157 && secs > 8) {
+                currentAttacks = twoStrikesCombosB;
+                startSpeakTimer(4500);
+              } else if (secs < maxSeconds && secs > 8) {
+                currentAttacks = oneStrikeCombosB;
+                startSpeakTimer(3450);
               }
             } else if (trainingLevel == 'Expert') {
               if (secs <= 45 && secs > 8) {
@@ -475,7 +496,7 @@ class _CountdownTimerState extends State<CountdownTimer>
                   currentAttacks = fiveStrikesCombosB;
                 });
                 startSpeakTimer(6700);
-              } else if (secs <= 50 && secs > 8) {
+              } else if (secs <= 65 && secs > 8) {
                 setState(() {
                   currentAttacks = fiveStrikesCombosB;
                 });
@@ -567,70 +588,68 @@ class _CountdownTimerState extends State<CountdownTimer>
                 }
               }
             } else if (trainingLevel == 'Advanced') {
-              if (currentRound == 1) {
-                if (secs <= 40 && secs > 8) {
-                  currentAttacks = fourStrikeCombosKb;
-                  startSpeakTimer(6400);
-                } else if (secs <= 85 && secs > 8) {
-                  currentAttacks = fourStrikeCombosKb;
-                  startSpeakTimer(6800);
-                } else if (secs <= 130 && secs > 8) {
-                  currentAttacks = threeStrikeCombosKb;
-                  startSpeakTimer(5900);
-                } else if (secs <= 157 && secs > 8) {
-                  currentAttacks = twoStrikeCombosKb;
-                  startSpeakTimer(5100);
-                } else if (secs < maxSeconds && secs > 8) {
-                  currentAttacks = oneStrikeComboKb;
-                  startSpeakTimer(3850);
-                }
+              if (secs <= 40 && secs > 8) {
+                currentAttacks = fourStrikeCombosKb;
+                startSpeakTimer(6450);
+              } else if (secs <= 85 && secs > 8) {
+                currentAttacks = fourStrikeCombosKb;
+                startSpeakTimer(6700);
+              } else if (secs <= 130 && secs > 8) {
+                currentAttacks = threeStrikeCombosKb;
+                startSpeakTimer(5800);
+              } else if (secs <= 157 && secs > 8) {
+                currentAttacks = twoStrikeCombosKb;
+                startSpeakTimer(5000);
+              } else if (secs < maxSeconds && secs > 8) {
+                currentAttacks = oneStrikeComboKb;
+                startSpeakTimer(3850);
               }
             } else if (trainingLevel == 'Expert') {
               if (secs <= 45 && secs > 8) {
                 setState(() {
                   currentAttacks = fiveStrikeCombosKb;
                 });
-                startSpeakTimer(7700);
-              } else if (secs <= 50 && secs > 8) {
+                startSpeakTimer(7500);
+              } else if (secs <= 65 && secs > 8) {
                 setState(() {
                   currentAttacks = fiveStrikeCombosKb;
                 });
-                startSpeakTimer(8100);
+                startSpeakTimer(7800);
               } else if (secs <= 90 && secs > 8) {
                 currentAttacks = fourStrikeCombosKb;
-                startSpeakTimer(6400);
+                startSpeakTimer(6350);
               } else if (secs <= 105 && secs > 8) {
                 currentAttacks = fourStrikeCombosKb;
-                startSpeakTimer(6600);
+                startSpeakTimer(6450);
               } else if (secs <= 130 && secs > 8) {
                 currentAttacks = threeStrikeCombosKb;
                 startSpeakTimer(5700);
               } else if (secs <= 157 && secs > 8) {
                 currentAttacks = twoStrikeCombosKb;
-                startSpeakTimer(5200);
+                startSpeakTimer(4900);
               } else if (secs < maxSeconds && secs > 8) {
                 currentAttacks = oneStrikeComboKb;
-                startSpeakTimer(3950);
+                startSpeakTimer(3800);
               }
             } else if (trainingLevel == 'Master') {
               if (secs <= 57 && secs > 8) {
-                currentAttacks = sixStrikesCombosB;
-                startSpeakTimer(8000);
+                currentAttacks = sixStrikeCombosKb;
+                startSpeakTimer(7800);
               } else if (secs <= 82 && secs > 8) {
-                currentAttacks = fiveStrikesCombosB;
-                startSpeakTimer(7850);
+                currentAttacks = fiveStrikeCombosKb;
+                startSpeakTimer(7300);
               } else if (secs <= 100 && secs > 8) {
-                currentAttacks = fourStrikesCombosB;
-                startSpeakTimer(6100);
+                currentAttacks = fourStrikeCombosKb;
+                startSpeakTimer(6000);
               } else if (secs <= 135 && secs > 8) {
-                currentAttacks = threeStrikesCombosB;
-                startSpeakTimer(5700);
+                currentAttacks = threeStrikeCombosKb;
+                startSpeakTimer(5400);
               } else if (secs <= 165 && secs > 8) {
-                currentAttacks = twoStrikesCombosB;
-                startSpeakTimer(5200);
+                currentAttacks = twoStrikeCombosKb;
+                startSpeakTimer(4600);
               } else if (secs < maxSeconds && secs > 8) {
-                currentAttacks = oneStrikeCombosB;
-                startSpeakTimer(3950);
+                currentAttacks = oneStrikeComboKb;
+                startSpeakTimer(3450);
               }
             }
           }
@@ -639,6 +658,7 @@ class _CountdownTimerState extends State<CountdownTimer>
           playTenSecsSound();
         } else if (secs <= 3 && secs > 0) {
           playBeep();
+          print('secs u cntdwn timer: ' + secs.toString());
         }
         if (maxSeconds - secs == 1) {
           timerAttacks?.cancel();
@@ -666,22 +686,16 @@ class _CountdownTimerState extends State<CountdownTimer>
           _stop();
           var totalPts;
           if (previousScreen == 'fromQuickCombos') {
-            if (trainingLevel == 'Easy' && maxSeconds >= 60) {
-              totalPts = 1 + maxRounds;
-            } else if (trainingLevel == 'Easy' && maxSeconds < 60) {
-              totalPts = 1;
-            } else if (trainingLevel == 'Intermediate' && maxSeconds >= 60) {
-              totalPts = 2 + maxRounds;
-            } else if (trainingLevel == 'Intermediate' && maxSeconds < 60) {
-              totalPts = 2;
-            } else if (trainingLevel == 'Advanced' && maxSeconds >= 60) {
-              totalPts = 3 + maxRounds;
-            } else if (trainingLevel == 'Advanced' && maxSeconds < 60) {
-              totalPts = 3;
-            } else if (trainingLevel == 'Nightmare' && maxSeconds >= 60) {
-              totalPts = 5 + maxRounds;
-            } else if (trainingLevel == 'Nightmare' && maxSeconds < 60) {
-              totalPts = 5;
+            if (trainingLevel == 'Beginner') {
+              totalPts = maxRounds;
+            } else if (trainingLevel == 'Intermediate') {
+              totalPts = maxRounds * 2;
+            } else if (trainingLevel == 'Advanced') {
+              totalPts = maxRounds * 3;
+            } else if (trainingLevel == 'Expert') {
+              totalPts = maxRounds * 5;
+            } else if (trainingLevel == 'Master') {
+              totalPts = maxRounds * 6;
             }
             pointsEarnedText = '+$totalPts WomboCombo Points';
             setUserPoints(currentPoints + totalPts);
@@ -965,6 +979,7 @@ class _CountdownTimerState extends State<CountdownTimer>
                           Colors.white,
                           Colors.green,
                           Colors.white,
+                          rounds,
                           context),
                       Showcase.withWidget(
                         blurValue: 1,

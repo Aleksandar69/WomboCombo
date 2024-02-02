@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm,
-    color, context) {
+    color, rounds, context) {
   if (previousScreen == 'fromHomeScreen') {
     if (secs == 0) {
       return Icon(Icons.done, color: Colors.green, size: 112);
@@ -80,9 +80,21 @@ Widget buildTime(secs, previousScreen, started, initialCountdown, currentTerm,
             );
     }
   } else {
-    if (secs == 0) {
-      return Icon(Icons.done, color: Colors.green, size: 112);
+    if (secs == 0 && rounds == 1) {
+      print('secs1: ' + secs.toString());
+      return Center(
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.4,
+          width: MediaQuery.of(context).size.width,
+          alignment: Alignment.center,
+          child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: Icon(Icons.done, color: Colors.green, size: 112)),
+        ),
+      );
     } else {
+      print('secs2: ' + secs.toString());
+
       return Center(
         child: Container(
           height: MediaQuery.of(context).size.height * 0.4,

@@ -647,6 +647,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Color(0xff90E0EF),
                                 Color.fromARGB(255, 41, 62, 218),
                                 Color.fromARGB(255, 180, 207, 242),
+                                null,
                                 context),
                           )
                         : Showcase.withWidget(
@@ -691,6 +692,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Color(0xff90E0EF),
                                 Color.fromARGB(255, 223, 235, 237),
                                 Color(0xff023E8A),
+                                null,
                                 context),
                           ),
                     buildButtons(

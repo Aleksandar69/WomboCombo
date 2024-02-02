@@ -21,12 +21,6 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
     super.didChangeDependencies();
     var strikeNumber = ModalRoute.of(context)!.settings.arguments as String;
     strike = await getStrike(strikeNumber);
-
-    await Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        isLoading = false;
-      });
-    });
   }
 
   getStrike(strikeNumber) async {
@@ -61,8 +55,8 @@ class _StrikeAnimationState extends State<StrikeAnimation> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    MyRecordedRemoteVideo(
-                        strike['strikeUrl'], true, true, false),
+                    MyRecordedRemoteVideo(strike['strikeUrl'], true, true,
+                        false, 'strikeanimation'),
                   ],
                 );
             })));

@@ -8,8 +8,9 @@ class MyRecordedRemoteVideo extends StatefulWidget {
   var isRemote;
   var isAutoplay;
   var showProgressIndicator;
-  MyRecordedRemoteVideo(
-      this.video, this.isRemote, this.isAutoplay, this.showProgressIndicator);
+  var previousScreen;
+  MyRecordedRemoteVideo(this.video, this.isRemote, this.isAutoplay,
+      this.showProgressIndicator, this.previousScreen);
 
   @override
   _MyRecordedRemoteVideoState createState() => _MyRecordedRemoteVideoState();

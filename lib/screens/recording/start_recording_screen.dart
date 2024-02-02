@@ -208,8 +208,8 @@ class _StartRecordingState extends State<StartRecording> {
                           children: [
                             Container(
                               child: Container(
-                                  child: MyRecordedRemoteVideo(
-                                      _convertedVideo, false, false, true)),
+                                  child: MyRecordedRemoteVideo(_convertedVideo,
+                                      false, false, true, null)),
                             ),
                             Form(
                               key: _formKey,

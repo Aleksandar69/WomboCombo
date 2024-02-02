@@ -105,6 +105,9 @@ class _AuthFormState extends State<AuthForm> {
                     if (value!.isEmpty || value.length < 4) {
                       return 'Username must be at least 4 characters long.';
                     }
+                    if (value!.contains(' ')) {
+                      return "Username mustn't contain spaces";
+                    }
                     if (value.length > 20) {
                       return "Username mustn't be more than 20 characters long.";
                     }
@@ -124,6 +127,9 @@ class _AuthFormState extends State<AuthForm> {
                   }
                   if (value!.isEmpty || value.length < 7) {
                     return 'Password must be at least 7 characters long.';
+                  }
+                  if (value!.contains(' ')) {
+                    return "Password mustn't contain spaces";
                   }
                   return null;
                 },
