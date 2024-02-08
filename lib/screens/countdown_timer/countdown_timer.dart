@@ -167,16 +167,16 @@ class _CountdownTimerState extends State<CountdownTimer>
     final args = ModalRoute.of(context)!.settings.arguments as List;
     playerSetSource();
 
-    // final mnts = args[0];
-    // final scnds = args[1];
-    // final restMins = args[2];
-    // final restSecs = args[3];
-    // final rnds = args[4] + 1;
-    final mnts = 0;
-    final scnds = 10;
-    final restMins = 0;
-    final restSecs = 10;
-    final rnds = 2;
+    final mnts = args[0];
+    final scnds = args[1];
+    final restMins = args[2];
+    final restSecs = args[3];
+    final rnds = args[4] + 1;
+    // final mnts = 0;
+    // final scnds = 10;
+    // final restMins = 0;
+    // final restSecs = 10;
+    // final rnds = 2;
     previousScreen = args[5] as String;
     trainingLevel = args[6] as String;
     customCombos = args[7] as List;
@@ -427,8 +427,7 @@ class _CountdownTimerState extends State<CountdownTimer>
         currentTermChanged = false;
         if (selectedMartialArt == "boxing") {
           if (futureTimerHasEnded == true &&
-              (previousScreen == 'fromQuickCombos' ||
-                  previousScreen == 'fromMakeYourComboScreen')) {
+              (previousScreen == 'fromQuickCombos')) {
             if (trainingLevel == 'Beginner') {
               if (secs <= 60 && secs > 8) {
                 currentAttacks = twoStrikesCombosB;
@@ -541,8 +540,7 @@ class _CountdownTimerState extends State<CountdownTimer>
           }
         } else if (selectedMartialArt == "kickboxing") {
           if (futureTimerHasEnded == true &&
-              (previousScreen == 'fromQuickCombos' ||
-                  previousScreen == 'fromMakeYourComboScreen')) {
+              (previousScreen == 'fromQuickCombos')) {
             if (trainingLevel == 'Beginner') {
               if (secs <= 60 && secs > 8) {
                 currentAttacks = twoStrikeCombosKb;
@@ -736,8 +734,79 @@ class _CountdownTimerState extends State<CountdownTimer>
 
   void startSpeakTimer(duration) async {
     futureTimerHasEnded = false;
+    List<String> currentTermSplit;
+    if (currentTerm != 'READY') {
+      currentTermSplit = currentTerm.split(',');
+    } else {
+      currentTermSplit = ['1', '2', '3', '4'];
+    }
+    var comboLength = currentTermSplit.length;
+    var isKb = currentTerm.contains('Kick');
+    var milliseconds = 5000;
+    if (isKb) {
+      switch (comboLength) {
+        case 1:
+          milliseconds = 3800;
+          break;
+        case 2:
+          milliseconds = 4900;
+          break;
+        case 3:
+          milliseconds = 5700;
+
+          break;
+        case 4:
+          milliseconds = 6450;
+
+          break;
+        case 5:
+          milliseconds = 4900;
+
+          break;
+        case 6:
+          milliseconds = 7800;
+
+          break;
+        case 7:
+          milliseconds = 8300;
+          break;
+        default:
+          milliseconds = 6000;
+      }
+    } else {
+      switch (comboLength) {
+        case 1:
+          milliseconds = 3500;
+          break;
+        case 2:
+          milliseconds = 4600;
+          break;
+        case 3:
+          milliseconds = 5250;
+
+          break;
+        case 4:
+          milliseconds = 6000;
+
+          break;
+        case 5:
+          milliseconds = 4600;
+
+          break;
+        case 6:
+          milliseconds = 7500;
+
+          break;
+        case 7:
+          milliseconds = 8000;
+          break;
+        default:
+          milliseconds = 6000;
+      }
+    }
     if (previousScreen == 'fromMakeYourComboScreen') {
-      timerAttacks = Timer.periodic(Duration(milliseconds: 7300), (_) async {
+      timerAttacks =
+          Timer.periodic(Duration(milliseconds: milliseconds), (_) async {
         var rng = Random();
         await flutterTts.setSpeechRate(0.5);
         var currentTerms =

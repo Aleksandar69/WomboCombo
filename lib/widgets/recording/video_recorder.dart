@@ -296,7 +296,7 @@ class _VideoRecorderState extends State<VideoRecorder>
                             Container(
                               width: 250,
                               child: Text(
-                                  'Recording starts after the 10 sec countown finishes. Show your skills!',
+                                  'Recording starts after the 10 sec countown finishes. You can record up to a minute. Show your skills!',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,

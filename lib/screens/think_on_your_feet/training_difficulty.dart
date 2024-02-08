@@ -157,7 +157,7 @@ class _TrainingDiffState extends State<TrainingDiff> {
                         Container(
                           width: 250,
                           child: Text(
-                              "If you're experienced, Easy difficulty is a good place to start",
+                              "If you're experienced, Intermediate difficulty is a good place to start",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,

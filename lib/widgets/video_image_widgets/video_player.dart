@@ -81,7 +81,7 @@ class _MyRecordedRemoteVideoState extends State<MyRecordedRemoteVideo> {
                   SizedBox(
                     height: 10,
                   ),
-                  Text("Please wait while the animation loads"),
+                  Text("Please wait while the video loads"),
                 ],
               ),
             ),

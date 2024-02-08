@@ -199,7 +199,7 @@ class _FriendListState extends State<FriendList> {
                           ),
                           Center(
                             child: Text(
-                                'No friends yet, go to leaderboard to send a request!'),
+                                'No friends yet, go to the leaderboard to send a request!'),
                           ),
                         ],
                       )
