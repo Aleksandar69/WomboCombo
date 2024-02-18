@@ -436,7 +436,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
     'rmk': 'Rear Middle Kick',
     'rhk': 'Rear High Kick',
     'fpk': 'Front Push Kick',
-    'lpk': 'Rear Push Kick',
+    'rpk': 'Rear Push Kick',
     'tr': 'Turn Right',
     'tl': 'Turn Left',
     'sfr': 'Step Forward Right',

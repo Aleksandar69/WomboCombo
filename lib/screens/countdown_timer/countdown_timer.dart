@@ -204,6 +204,7 @@ class _CountdownTimerState extends State<CountdownTimer>
 
     if (previousScreen == 'fromMakeYourComboScreen') {
       currentAttacks = List.from(customCombos);
+      var test = 'asd';
     }
     if (previousScreen == 'fromQuickCombos' && selectedMartialArt == 'boxing') {
       currentAttacks = oneStrikeCombosB;
@@ -671,7 +672,7 @@ class _CountdownTimerState extends State<CountdownTimer>
             (previousScreen == 'fromQuickCombos' ||
                 previousScreen == 'fromMakeYourComboScreen') &&
             secs >= 5) {
-          startSpeakTimer(3800);
+          startSpeakTimer(5500);
         }
         setState(() => secs = secs - 1);
       } else {

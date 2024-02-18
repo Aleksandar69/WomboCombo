@@ -33,8 +33,10 @@ class MakeYourComboScreen extends StatefulWidget {
     'Rear Low Kick',
     'Rear Mid Kick',
     'Rear High Kick',
+    'Rear Knee',
+    'Front Knee',
     'Front Teep',
-    'Rear Teep'
+    'Rear Teep',
   ];
 
   @override
@@ -81,6 +83,18 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
   late String dropdownValueSixFour;
   late String dropdownValueSixFive;
 
+  late String dropdownValueSevenOne;
+  late String dropdownValueSevenTwo;
+  late String dropdownValueSevenThree;
+  late String dropdownValueSevenFour;
+  late String dropdownValueSevenFive;
+
+  late String dropdownValueEightOne;
+  late String dropdownValueEightTwo;
+  late String dropdownValueEightThree;
+  late String dropdownValueEightFour;
+  late String dropdownValueEightFive;
+
   List combos1 = [];
   String combos1Str = '';
   List combos2 = [];
@@ -93,6 +107,10 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
   String combos5Str = '';
   List combos6 = [];
   String combos6Str = '';
+  List combos7 = [];
+  String combos7Str = '';
+  List combos8 = [];
+  String combos8Str = '';
 
   List combosCombined = [];
 
@@ -104,16 +122,21 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
   bool fifthRowActivated = false;
   bool sixsthRowActivated = false;
   bool seventhRowActivated = false;
+  bool eigthRowActivated = false;
+  bool ninthRowActivated = false;
   bool isChecked = false;
 
   List savedComboList = [];
+  var hasAddedCustomCombos = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     Provider.of<CustomComboProvider>(context, listen: false).fetchAttacks();
 
-    if (ModalRoute.of(context)!.settings.arguments != null) {
+    if (ModalRoute.of(context)!.settings.arguments != null &&
+        !hasAddedCustomCombos) {
+      hasAddedCustomCombos = true;
       final savedCustomCombo =
           ModalRoute.of(context)!.settings.arguments as CustomCombo;
 
@@ -230,7 +253,6 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
           dropdownValueFiveFive =
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
-
         if (savedComboListLength >= 6 &&
             savedComboList.asMap()[5] != null &&
             savedComboList.asMap()[5].toString().isNotEmpty) {
@@ -251,6 +273,50 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
               attacksLength >= 4 ? attacksList[3] : widget.list.first;
 
           dropdownValueSixFive =
+              attacksLength >= 5 ? attacksList[4] : widget.list.first;
+        }
+        if (savedComboListLength >= 7 &&
+            savedComboList.asMap()[6] != null &&
+            savedComboList.asMap()[6].toString().isNotEmpty) {
+          seventhRowActivated = true;
+
+          var attacksList = savedComboList.asMap()[6].split(', ');
+          var attacksLength = attacksList.length;
+          dropdownValueSevenOne =
+              attacksLength >= 1 ? attacksList[0] : widget.list.first;
+
+          dropdownValueSevenTwo =
+              attacksLength >= 2 ? attacksList[1] : widget.list.first;
+
+          dropdownValueSevenThree =
+              attacksLength >= 3 ? attacksList[2] : widget.list.first;
+
+          dropdownValueSevenFour =
+              attacksLength >= 4 ? attacksList[3] : widget.list.first;
+
+          dropdownValueSevenFive =
+              attacksLength >= 5 ? attacksList[4] : widget.list.first;
+        }
+        if (savedComboListLength >= 8 &&
+            savedComboList.asMap()[7] != null &&
+            savedComboList.asMap()[7].toString().isNotEmpty) {
+          eigthRowActivated = true;
+
+          var attacksList = savedComboList.asMap()[7].split(', ');
+          var attacksLength = attacksList.length;
+          dropdownValueEightOne =
+              attacksLength >= 1 ? attacksList[0] : widget.list.first;
+
+          dropdownValueEightTwo =
+              attacksLength >= 2 ? attacksList[1] : widget.list.first;
+
+          dropdownValueEightThree =
+              attacksLength >= 3 ? attacksList[2] : widget.list.first;
+
+          dropdownValueEightFour =
+              attacksLength >= 4 ? attacksList[3] : widget.list.first;
+
+          dropdownValueEightFive =
               attacksLength >= 5 ? attacksList[4] : widget.list.first;
         }
       }
@@ -293,7 +359,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos1.add(dropdownValueOneThree);
                       combos1.add(dropdownValueOneFour);
                       combos1.add(dropdownValueOneFive);
-                      for (var i = 0; i < combos1.length - 1; i++) {
+                      for (var i = 0; i < combos1.length; i++) {
                         if (combos1[i] != ' ') {
                           combos1Str += combos1[i] + ', ';
                         }
@@ -309,7 +375,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos2.add(dropdownValueTwoThree);
                       combos2.add(dropdownValueTwoFour);
                       combos2.add(dropdownValueTwoFive);
-                      for (var i = 0; i < combos2.length - 1; i++) {
+                      for (var i = 0; i < combos2.length; i++) {
                         if (combos2[i] != ' ') {
                           combos2Str += combos2[i] + ', ';
                         }
@@ -325,7 +391,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos3.add(dropdownValueThreeThree);
                       combos3.add(dropdownValueThreeFour);
                       combos3.add(dropdownValueThreeFive);
-                      for (var i = 0; i < combos3.length - 1; i++) {
+                      for (var i = 0; i < combos3.length; i++) {
                         if (combos3[i] != ' ') {
                           combos3Str += combos3[i] + ', ';
                         }
@@ -342,7 +408,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos4.add(dropdownValueFourThree);
                       combos4.add(dropdownValueFourFour);
                       combos4.add(dropdownValueFourFive);
-                      for (var i = 0; i < combos4.length - 1; i++) {
+                      for (var i = 0; i < combos4.length; i++) {
                         if (combos4[i] != ' ') {
                           combos4Str += combos4[i] + ', ';
                         }
@@ -358,7 +424,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos5.add(dropdownValueFiveThree);
                       combos5.add(dropdownValueFiveFour);
                       combos5.add(dropdownValueFiveFive);
-                      for (var i = 0; i < combos5.length - 1; i++) {
+                      for (var i = 0; i < combos5.length; i++) {
                         if (combos5[i] != ' ') {
                           combos5Str += combos5[i] + ', ';
                         }
@@ -375,7 +441,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       combos6.add(dropdownValueSixThree);
                       combos6.add(dropdownValueSixFour);
                       combos6.add(dropdownValueSixFive);
-                      for (var i = 0; i < combos6.length - 1; i++) {
+                      for (var i = 0; i < combos6.length; i++) {
                         if (combos6[i] != ' ') {
                           combos6Str += combos6[i] + ', ';
                         }
@@ -383,6 +449,40 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       if (combos6Str.isNotEmpty || combos6Str != '') {
                         combos6Str =
                             combos6Str.substring(0, combos6Str.length - 2);
+                      }
+
+                      combos7.clear();
+                      combos7Str = '';
+                      combos7.add(dropdownValueSevenOne);
+                      combos7.add(dropdownValueSevenTwo);
+                      combos7.add(dropdownValueSevenThree);
+                      combos7.add(dropdownValueSevenFour);
+                      combos7.add(dropdownValueSevenFive);
+                      for (var i = 0; i < combos7.length; i++) {
+                        if (combos7[i] != ' ') {
+                          combos7Str += combos7[i] + ', ';
+                        }
+                      }
+                      if (combos7Str.isNotEmpty || combos7Str != '') {
+                        combos7Str =
+                            combos7Str.substring(0, combos7Str.length - 2);
+                      }
+                      combos7.clear();
+
+                      combos8Str = '';
+                      combos8.add(dropdownValueEightOne);
+                      combos8.add(dropdownValueEightTwo);
+                      combos8.add(dropdownValueEightThree);
+                      combos8.add(dropdownValueEightFour);
+                      combos8.add(dropdownValueEightFive);
+                      for (var i = 0; i < combos8.length; i++) {
+                        if (combos8[i] != ' ') {
+                          combos8Str += combos8[i] + ', ';
+                        }
+                      }
+                      if (combos8Str.isNotEmpty || combos8Str != '') {
+                        combos8Str =
+                            combos8Str.substring(0, combos8Str.length - 2);
                       }
 
                       combosCombined.clear();
@@ -401,6 +501,12 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       }
                       if (sixsthRowActivated) {
                         combosCombined.add(combos6Str);
+                      }
+                      if (seventhRowActivated) {
+                        combosCombined.add(combos7Str);
+                      }
+                      if (eigthRowActivated) {
+                        combosCombined.add(combos8Str);
                       }
 
                       var splitCombos = combosCombined.join('|');
@@ -469,6 +575,18 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
       dropdownValueSixThree = widget.list.first;
       dropdownValueSixFour = widget.list.first;
       dropdownValueSixFive = widget.list.first;
+
+      dropdownValueSevenOne = widget.list.first;
+      dropdownValueSevenTwo = widget.list.first;
+      dropdownValueSevenThree = widget.list.first;
+      dropdownValueSevenFour = widget.list.first;
+      dropdownValueSevenFive = widget.list.first;
+
+      dropdownValueEightOne = widget.list.first;
+      dropdownValueEightTwo = widget.list.first;
+      dropdownValueEightThree = widget.list.first;
+      dropdownValueEightFour = widget.list.first;
+      dropdownValueEightFive = widget.list.first;
     }
   }
 
@@ -500,7 +618,8 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos1.add(dropdownValueOneThree);
                 combos1.add(dropdownValueOneFour);
                 combos1.add(dropdownValueOneFive);
-                for (var i = 0; i < combos1.length - 1; i++) {
+
+                for (var i = 0; i < combos1.length; i++) {
                   if (combos1[i] != ' ') {
                     combos1Str += combos1[i] + ', ';
                   }
@@ -517,7 +636,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos2.add(dropdownValueTwoThree);
                 combos2.add(dropdownValueTwoFour);
                 combos2.add(dropdownValueTwoFive);
-                for (var i = 0; i < combos2.length - 1; i++) {
+                for (var i = 0; i < combos2.length; i++) {
                   if (combos2[i] != ' ') {
                     combos2Str += combos2[i] + ', ';
                   }
@@ -532,7 +651,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos3.add(dropdownValueThreeThree);
                 combos3.add(dropdownValueThreeFour);
                 combos3.add(dropdownValueThreeFive);
-                for (var i = 0; i < combos3.length - 1; i++) {
+                for (var i = 0; i < combos3.length; i++) {
                   if (combos3[i] != ' ') {
                     combos3Str += combos3[i] + ', ';
                   }
@@ -548,7 +667,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos4.add(dropdownValueFourThree);
                 combos4.add(dropdownValueFourFour);
                 combos4.add(dropdownValueFourFive);
-                for (var i = 0; i < combos4.length - 1; i++) {
+                for (var i = 0; i < combos4.length; i++) {
                   if (combos4[i] != ' ') {
                     combos4Str += combos4[i] + ', ';
                   }
@@ -563,7 +682,7 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos5.add(dropdownValueFiveThree);
                 combos5.add(dropdownValueFiveFour);
                 combos5.add(dropdownValueFiveFive);
-                for (var i = 0; i < combos5.length - 1; i++) {
+                for (var i = 0; i < combos5.length; i++) {
                   if (combos5[i] != ' ') {
                     combos5Str += combos5[i] + ', ';
                   }
@@ -579,13 +698,45 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 combos6.add(dropdownValueSixThree);
                 combos6.add(dropdownValueSixFour);
                 combos6.add(dropdownValueSixFive);
-                for (var i = 0; i < combos6.length - 1; i++) {
+                for (var i = 0; i < combos6.length; i++) {
                   if (combos6[i] != ' ') {
                     combos6Str += combos6[i] + ', ';
                   }
                 }
                 if (combos6Str.isNotEmpty || combos6Str != '') {
                   combos6Str = combos6Str.substring(0, combos6Str.length - 2);
+                }
+
+                combos7.clear();
+                combos7Str = '';
+                combos7.add(dropdownValueSevenOne);
+                combos7.add(dropdownValueSevenTwo);
+                combos7.add(dropdownValueSevenThree);
+                combos7.add(dropdownValueSevenFour);
+                combos7.add(dropdownValueSevenFive);
+                for (var i = 0; i < combos7.length; i++) {
+                  if (combos7[i] != ' ') {
+                    combos7Str += combos7[i] + ', ';
+                  }
+                }
+                if (combos7Str.isNotEmpty || combos7Str != '') {
+                  combos7Str = combos7Str.substring(0, combos7Str.length - 2);
+                }
+
+                combos8.clear();
+                combos8Str = '';
+                combos8.add(dropdownValueEightOne);
+                combos8.add(dropdownValueEightTwo);
+                combos8.add(dropdownValueEightThree);
+                combos8.add(dropdownValueEightFour);
+                combos8.add(dropdownValueEightFive);
+                for (var i = 0; i < combos8.length; i++) {
+                  if (combos8[i] != ' ') {
+                    combos8Str += combos8[i] + ', ';
+                  }
+                }
+                if (combos8Str.isNotEmpty || combos8Str != '') {
+                  combos8Str = combos8Str.substring(0, combos8Str.length - 2);
                 }
 
                 combosCombined.clear();
@@ -604,6 +755,12 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                 }
                 if (sixsthRowActivated) {
                   combosCombined.add(combos6Str);
+                }
+                if (seventhRowActivated) {
+                  combosCombined.add(combos7Str);
+                }
+                if (eigthRowActivated) {
+                  combosCombined.add(combos8Str);
                 }
                 Navigator.of(context).pushNamed(SetTimeScreen.routeName,
                     arguments: ['fromMakeYourComboScreen', combosCombined]);
@@ -679,7 +836,27 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                   attackDropdownItem(dropdownValueSixFive, '6-5'),
                 ],
               ),
-            if (!sixsthRowActivated)
+            if (seventhRowActivated)
+              Row(
+                children: [
+                  attackDropdownItem(dropdownValueSevenOne, '7-1'),
+                  attackDropdownItem(dropdownValueSevenTwo, '7-2'),
+                  attackDropdownItem(dropdownValueSevenThree, '7-3'),
+                  attackDropdownItem(dropdownValueSevenFour, '7-4'),
+                  attackDropdownItem(dropdownValueSevenFive, '7-5'),
+                ],
+              ),
+            if (eigthRowActivated)
+              Row(
+                children: [
+                  attackDropdownItem(dropdownValueEightOne, '8-1'),
+                  attackDropdownItem(dropdownValueEightTwo, '8-2'),
+                  attackDropdownItem(dropdownValueEightThree, '8-3'),
+                  attackDropdownItem(dropdownValueEightFour, '8-4'),
+                  attackDropdownItem(dropdownValueEightFive, '8-5'),
+                ],
+              ),
+            if (!eigthRowActivated)
               TextButton.icon(
                 style: ButtonStyle(
                   alignment: Alignment.center,
@@ -698,6 +875,10 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                       fifthRowActivated = true;
                     } else if (!sixsthRowActivated) {
                       sixsthRowActivated = true;
+                    } else if (!seventhRowActivated) {
+                      seventhRowActivated = true;
+                    } else if (!eigthRowActivated) {
+                      eigthRowActivated = true;
                     }
                   });
                 },
@@ -805,6 +986,26 @@ class _MakeYourComboScreenState extends State<MakeYourComboScreen> {
                         dropdownValueSixFour = value!;
                       } else if (currentDropdownValue == '6-5') {
                         dropdownValueSixFive = value!;
+                      } else if (currentDropdownValue == '7-1') {
+                        dropdownValueSevenOne = value!;
+                      } else if (currentDropdownValue == '7-2') {
+                        dropdownValueSevenTwo = value!;
+                      } else if (currentDropdownValue == '7-3') {
+                        dropdownValueSevenThree = value!;
+                      } else if (currentDropdownValue == '7-4') {
+                        dropdownValueSevenFour = value!;
+                      } else if (currentDropdownValue == '7-5') {
+                        dropdownValueSevenFive = value!;
+                      } else if (currentDropdownValue == '8-1') {
+                        dropdownValueEightOne = value!;
+                      } else if (currentDropdownValue == '8-2') {
+                        dropdownValueEightTwo = value!;
+                      } else if (currentDropdownValue == '8-3') {
+                        dropdownValueEightThree = value!;
+                      } else if (currentDropdownValue == '8-4') {
+                        dropdownValueEightFour = value!;
+                      } else if (currentDropdownValue == '8-5') {
+                        dropdownValueEightFive = value!;
                       }
                     });
                   },

@@ -122,12 +122,6 @@ class _AuthFormState extends State<AuthForm> {
                   user.password = value!;
                 },
                 validator: (value) {
-                  if (value != _confirmPasswordController.text) {
-                    return "Passwords don't match";
-                  }
-                  if (value!.isEmpty || value.length < 7) {
-                    return 'Password must be at least 7 characters long.';
-                  }
                   if (value!.contains(' ')) {
                     return "Password mustn't contain spaces";
                   }
@@ -146,6 +140,9 @@ class _AuthFormState extends State<AuthForm> {
                     }
                     if (value!.isEmpty || value.length < 7) {
                       return 'Password must be at least 7 characters long.';
+                    }
+                    if (value!.contains(' ')) {
+                      return "Password mustn't contain spaces";
                     }
                     return null;
                   },
