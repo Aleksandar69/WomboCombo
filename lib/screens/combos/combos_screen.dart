@@ -659,7 +659,7 @@ class _FighterVideoRemoteState extends State<_FighterVideoRemote>
                                 Container(
                                   width: 300,
                                   child: Text(
-                                      'Repeat the combo for 3 minutes to unlock the next level. Shadowboxing or using the boxing bag.',
+                                      'Repeat the combo for 3 minutes to unlock the next level. Shadowboxing or by using the boxing bag.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,

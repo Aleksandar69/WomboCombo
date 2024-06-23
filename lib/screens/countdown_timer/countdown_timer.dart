@@ -657,7 +657,6 @@ class _CountdownTimerState extends State<CountdownTimer>
           playTenSecsSound();
         } else if (secs <= 3 && secs > 0) {
           playBeep();
-          print('secs u cntdwn timer: ' + secs.toString());
         }
         if (maxSeconds - secs == 1) {
           timerAttacks?.cancel();
@@ -672,7 +671,8 @@ class _CountdownTimerState extends State<CountdownTimer>
             (previousScreen == 'fromQuickCombos' ||
                 previousScreen == 'fromMakeYourComboScreen') &&
             secs >= 5) {
-          startSpeakTimer(5500);
+          startSpeakTimer(9000);
+          print('in the conditional custom');
         }
         setState(() => secs = secs - 1);
       } else {
@@ -979,7 +979,7 @@ class _CountdownTimerState extends State<CountdownTimer>
                             Container(
                               width: 300,
                               child: Text(
-                                'Listen to the combinations and repeat them in real time by shadoboxing or using boxing bag',
+                                'Listen to the combinations and repeat them in real time by shadoboxing or by using the boxing bag',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,

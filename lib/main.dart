@@ -105,9 +105,14 @@ class MyApp extends r.ConsumerWidget {
             home: StreamBuilder(
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return HomeScreen();
+                  return MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.1),
+                      child: HomeScreen());
                 }
-                return AuthScreen();
+                return MediaQuery(
+                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.1),
+                    child: AuthScreen());
               },
               stream: FirebaseAuth.instance.authStateChanges(),
             ),

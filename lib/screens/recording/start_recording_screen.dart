@@ -220,6 +220,9 @@ class _StartRecordingState extends State<StartRecording> {
                                       if (value!.length > 40) {
                                         return "The title mustn't exceed 40 characters";
                                       }
+                                              if (value!.length == 0) {
+                                        return "The title mustn't be empty";
+                                      }
                                     },
                                     controller: _videoTitleController,
                                     decoration: InputDecoration(
@@ -229,7 +232,7 @@ class _StartRecordingState extends State<StartRecording> {
                                   ),
                                   ElevatedButton(
                                     child: Text('Save'),
-                                    onPressed: () {
+                                    onPressed: () {                                      
                                       if (_formKey.currentState!.validate()) {
                                         confirmFileForUpload();
                                       } else {

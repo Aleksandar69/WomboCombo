@@ -182,8 +182,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: previousScreen == 'fromQuickCombos'
-                                      ? Colors.grey
-                                      : Colors.white),
+                                      ? Colors.grey : Theme.of(context).primaryColor),
                             ),
                           ],
                         ),
@@ -232,7 +231,7 @@ class _SetTimeScreenState extends State<SetTimeScreen> {
                                   fontWeight: FontWeight.bold,
                                   color: previousScreen == 'fromQuickCombos'
                                       ? Colors.grey
-                                      : Colors.white),
+                                      : Theme.of(context).primaryColor),
                             ),
                           ],
                         ),
